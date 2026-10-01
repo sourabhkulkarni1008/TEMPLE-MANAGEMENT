@@ -73,7 +73,7 @@ const AdminQueueManagement = () => {
       <div className="dashboard-content">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
           <div>
-            <h1 style={{ fontSize: '1.6rem', color: '#0f172a' }}>Central Queue &amp; Holding Bay Supervision</h1>
+            <h1 style={{ fontSize: '1.6rem', color: '#0f172a' }}>Central Queue &amp; Holding Day Supervision</h1>
             <p style={{ fontSize: '0.9rem', color: '#64748b' }}>Supervise queue token throughput, pause lanes during crowd surges, and calibrate waiting batches</p>
           </div>
           <button onClick={fetchQueues} className="btn btn-secondary btn-sm">
@@ -135,7 +135,7 @@ const AdminQueueManagement = () => {
               {q.highCrowdWarning && (
                 <div className="alert alert-danger" style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '0.5rem', fontSize: '0.8rem', marginBottom: '1rem' }}>
                   <AlertTriangle size={15} />
-                  <span>High density holding bay alarm active.</span>
+                  <span>High density holding day alarm active.</span>
                 </div>
               )}
 

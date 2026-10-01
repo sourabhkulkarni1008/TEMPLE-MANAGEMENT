@@ -81,7 +81,7 @@ const StaffQueueControl = () => {
               <ListOrdered color="#b45309" /> Queue Regulation &amp; Token Dispatch
             </h1>
             <p style={{ fontSize: '0.9rem', color: '#64748b' }}>
-              Monitor holding bay counts, call next token, and manage batch throughput
+              Monitor holding day counts, call next token, and manage batch throughput
             </p>
           </div>
           <button onClick={fetchQueues} className="btn btn-secondary btn-sm">
@@ -131,7 +131,7 @@ const StaffQueueControl = () => {
                   <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#0f172a', margin: '4px 0' }}>
                     {q.waitingCount}
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Inside Holding Bays</div>
+                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Inside Holding Days</div>
                 </div>
 
                 <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1.25rem', textAlign: 'center' }}>

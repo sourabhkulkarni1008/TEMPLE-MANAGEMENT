@@ -43,7 +43,7 @@ export const askAssistant = async (req, res, next) => {
     } else if (q.includes('crowd') || q.includes('rush') || q.includes('busy')) {
       const totalVisitors = areas.reduce((acc, a) => acc + a.currentCount, 0);
       category = 'CROWD';
-      answer = `Current total estimated crowd inside the temple complex is ${totalVisitors} pilgrims. Queue bays are moving steadily with an estimated wait time of 15-25 minutes. You can check the real-time zone map under the "Crowd Status" tab.`;
+      answer = `Current total estimated crowd inside the temple complex is ${totalVisitors} pilgrims. Queue days are moving steadily with an estimated wait time of 15-25 minutes. You can check the real-time zone map under the "Crowd Status" tab.`;
     } else if (q.includes('emergency') || q.includes('help') || q.includes('lost') || q.includes('doctor') || q.includes('medical')) {
       category = 'EMERGENCY';
       answer = `For immediate help on temple grounds, use the "Emergency SOS" button in the menu or contact our 24/7 Helpline at ${settings.helplinePhone || '+91 98765 43210'}. First-aid medical posts are stationed at the Main Entrance and Darshan Hall exit.`;

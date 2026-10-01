@@ -9,7 +9,7 @@ const PilgrimEmergency = () => {
   const [emergencies, setEmergencies] = useState([]);
   const [form, setForm] = useState({
     emergencyType: 'Medical',
-    area: 'Queue Complex & Holding Bays',
+    area: 'Queue Complex & Holding Days',
     description: '',
     reporterName: user?.name || '',
     reporterPhone: user?.phone || ''
@@ -109,7 +109,7 @@ const PilgrimEmergency = () => {
                   onChange={(e) => setForm({ ...form, area: e.target.value })}
                 >
                   <option value="Main Entrance & Security Gate">Main Entrance & Security Gate</option>
-                  <option value="Queue Complex & Holding Bays">Queue Complex & Holding Bays</option>
+                  <option value="Queue Complex & Holding Days">Queue Complex & Holding Days</option>
                   <option value="Main Sanctum / Darshan Hall">Main Sanctum / Darshan Hall</option>
                   <option value="Prasadam Distribution Counter">Prasadam Distribution Counter</option>
                   <option value="Exit Corridor & Shoe Stand">Exit Corridor & Shoe Stand</option>
@@ -134,7 +134,7 @@ const PilgrimEmergency = () => {
               <textarea
                 className="form-textarea"
                 required
-                placeholder="e.g., Near Bay 2 pillar 8, elderly person needs water and chair..."
+                placeholder="e.g., Near Day 2 pillar 8, elderly person needs water and chair..."
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
               />

@@ -13,7 +13,7 @@ const StaffTasks = () => {
 
   const tasks = [
     { title: 'Morning Perimeter Inspection', desc: 'Inspect barricades, turnstiles, and QR scanner devices at Gate 1.', done: true },
-    { title: 'Verify Digital Darshan Passes', desc: 'Continuous verification and crowd pacing through primary holding bays.', done: true },
+    { title: 'Verify Digital Darshan Passes', desc: 'Continuous verification and crowd pacing through primary holding days.', done: true },
     { title: 'Queue Density Monitoring', desc: 'Report any abnormal queue bottleneck exceeding 80% occupancy to Central Control.', done: false },
     { title: 'Handover & Log Reconciliation', desc: 'Reconcile total pilgrim check-in numbers with Evening Shift Supervisor.', done: false }
   ];

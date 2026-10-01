@@ -60,7 +60,7 @@ const LiveCrowdPublic = () => {
               onClick={handleSimulateTick}
               className="btn btn-secondary btn-sm"
               disabled={simulating}
-              title="Simulates natural pilgrim movements across all holding bays"
+              title="Simulates natural pilgrim movements across all holding days"
             >
               <Sparkles size={14} />
               <span>{simulating ? 'Simulating...' : 'Simulate Demo Shift'}</span>

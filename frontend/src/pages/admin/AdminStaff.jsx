@@ -211,7 +211,7 @@ const AdminStaff = () => {
                     onChange={(e) => setForm({ ...form, assignedArea: e.target.value })}
                   >
                     <option value="Main Entrance & Security Gate">Main Entrance & Security Gate</option>
-                    <option value="Queue Complex & Holding Bays">Queue Complex & Holding Bays</option>
+                    <option value="Queue Complex & Holding Days">Queue Complex & Holding Days</option>
                     <option value="Main Sanctum / Darshan Hall">Main Sanctum / Darshan Hall</option>
                     <option value="Prasadam Distribution Counter">Prasadam Distribution Counter</option>
                     <option value="Exit Corridor & Shoe Stand">Exit Corridor & Shoe Stand</option>

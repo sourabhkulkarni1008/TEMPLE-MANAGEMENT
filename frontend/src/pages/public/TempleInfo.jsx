@@ -103,7 +103,7 @@ const TempleInfo = () => {
             Free blessed Annadanam meals are served continuously in the <strong>Annapurna Dining Hall</strong> from <strong>11:30 AM to 03:00 PM</strong> and <strong>07:30 PM to 09:30 PM</strong>.
           </p>
           <p style={{ fontSize: '0.9rem', lineHeight: 1.6 }}>
-            Special traditional Laddus and Pulihora prasad counters are operational adjacent to the Exit Corridor (Bay 4).
+            Special traditional Laddus and Pulihora prasad counters are operational adjacent to the Exit Corridor (Day 4).
           </p>
         </div>
 

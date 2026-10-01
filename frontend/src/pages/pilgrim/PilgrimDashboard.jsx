@@ -70,7 +70,7 @@ const PilgrimDashboard = () => {
             title="Estimated Waiting"
             value="15 - 20m"
             icon={Clock}
-            subtext="At Queue Holding Bays"
+            subtext="At Queue Holding Days"
           />
         </div>
 
@@ -79,12 +79,12 @@ const PilgrimDashboard = () => {
           <div className="card" style={{ background: '#fffbeb', borderColor: '#fde68a', marginBottom: '1.5rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
               <div>
-                <span className="badge badge-confirmed" style={{ marginBottom: '4px' }}>&bull; Active Upcoming Darshan</span>
+                <span className="badge badge-confirmed" style={{ marginBottom: '4px' }}>Active Upcoming Darshan</span>
                 <h3 style={{ fontSize: '1.15rem', color: '#92400e', marginTop: '2px' }}>
                   {activeBooking.darshanType} ({activeBooking.id})
                 </h3>
                 <p style={{ fontSize: '0.85rem', color: '#78350f', marginTop: '2px' }}>
-                  Date: <strong>{activeBooking.bookingDate}</strong> &bull; Time: <strong>{activeBooking.slotTime}</strong> &bull; Pilgrims: <strong>{activeBooking.numberOfPeople} Person(s)</strong>
+                  Date: <strong>{activeBooking.bookingDate}</strong> • Time: <strong>{activeBooking.slotTime}</strong> • Pilgrims: <strong>{activeBooking.numberOfPeople} Person(s)</strong>
                 </p>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
