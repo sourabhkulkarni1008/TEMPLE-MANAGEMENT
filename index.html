@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Temple Management & Pilgrim Flow System</title>
+  <meta name="description" content="Online Darshan Booking, Live CCTV Crowd Vision, Smart Queue Regulation & Emergency Management">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- QR Code Generator Library via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- HTML5 QR Code Scanner Library for Live Camera Scanning -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <!-- Lucide Icons via CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --primary: #b45309;
+      --primary-hover: #92400e;
+      --primary-light: #fef3c7;
+      --primary-dark: #78350f;
+      --bg-main: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-alt: #f1f5f9;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --success-bg: #dcfce7;
+      --success-text: #166534;
+      --warning-bg: #fef9c3;
+      --warning-text: #854d0e;
+      --danger-bg: #fee2e2;
+      --danger-text: #991b1b;
+      --info-bg: #e0f2fe;
+      --info-text: #075985;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', system-ui, sans-serif; background-color: var(--bg-main); color: var(--text-main); line-height: 1.5; }
+    a { color: var(--primary); text-decoration: none; cursor: pointer; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+    
+    /* Top Bar */
+    .top-nav { background: #ffffff; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; height: 64px; display: flex; align-items: center; }
+    .brand-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; color: #0f172a; font-size: 1.05rem; }
+    .brand-icon { background: var(--primary); color: #fff; padding: 6px; border-radius: 6px; display: flex; }
+    .nav-links { display: flex; align-items: center; gap: 1.25rem; font-size: 0.9rem; font-weight: 500; }
+    .nav-link { color: var(--text-muted); cursor: pointer; transition: color 0.15s; }
+    .nav-link:hover, .nav-link.active { color: var(--primary); text-decoration: none; font-weight: 600; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; font-size: 0.875rem; font-weight: 500; padding: 0.55rem 1rem; border-radius: 6px; border: 1px solid transparent; cursor: pointer; text-decoration: none; transition: all 0.15s; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); text-decoration: none; }
+    .btn-secondary { background: #fff; color: var(--text-main); border-color: var(--border); }
+    .btn-secondary:hover { background: var(--bg-alt); text-decoration: none; }
+    .btn-danger { background: #dc2626; color: #fff; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-success { background: #16a34a; color: #fff; }
+    .btn-success:hover { background: #15803d; }
+    .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
+    .btn-lg { padding: 0.75rem 1.4rem; font-size: 0.95rem; }
+
+    /* Cards & Grids */
+    .card { background: #ffffff; border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; box-shadow: var(--shadow-sm); margin-bottom: 1.25rem; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .card-title { font-size: 1.1rem; font-weight: 600; color: #0f172a; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+
+    /* Forms */
+    .form-group { margin-bottom: 1rem; }
+    .form-label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.3rem; color: var(--text-main); }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.9rem; background: #fff; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(180,83,9,0.15); }
+    .form-textarea { min-height: 80px; }
+
+    /* Badges */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 9999px; font-size: 0.725rem; font-weight: 600; text-transform: uppercase; }
+    .badge-low { background: var(--success-bg); color: var(--success-text); }
+    .badge-moderate { background: var(--warning-bg); color: var(--warning-text); }
+    .badge-high { background: var(--danger-bg); color: var(--danger-text); }
+    .badge-confirmed { background: var(--success-bg); color: var(--success-text); }
+    .badge-checked-in { background: #dbeafe; color: #1e40af; }
+    .badge-cancelled { background: #f1f5f9; color: #64748b; }
+
+    /* Tables */
+    .table-container { width: 100%; overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
+    .table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem; }
+    .table th { background: var(--bg-alt); padding: 0.65rem 0.85rem; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    .table td { padding: 0.65rem 0.85rem; border-bottom: 1px solid var(--border); }
+    .table tbody tr:hover { background: #fafafa; }
+
+    /* Alerts */
+    .alert { padding: 0.85rem 1rem; border-radius: 6px; margin-bottom: 1.25rem; font-size: 0.875rem; border: 1px solid transparent; }
+    .alert-info { background: var(--info-bg); color: var(--info-text); border-color: #bae6fd; }
+    .alert-warning { background: var(--warning-bg); color: var(--warning-text); border-color: #fef08a; }
+    .alert-danger { background: var(--danger-bg); color: var(--danger-text); border-color: #fecaca; }
+    .alert-success { background: var(--success-bg); color: var(--success-text); border-color: #bbf7d0; }
+
+    /* Modals */
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
+    .modal-content { background: #fff; border-radius: 8px; max-width: 520px; width: 100%; padding: 1.5rem; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-md); }
+
+    /* Scanner Animations */
+    .scanner-laser { position: absolute; left: 0; width: 100%; height: 2px; background: #22c55e; box-shadow: 0 0 10px #22c55e, 0 0 20px #22c55e; animation: scanAnimation 2s infinite ease-in-out; pointer-events: none; z-index: 10; }
+    @keyframes scanAnimation { 0% { top: 8%; opacity: 0.8; } 50% { top: 88%; opacity: 1; } 100% { top: 8%; opacity: 0.8; } }
+    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.9); } }
+    #qr-reader { border: none !important; }
+    #qr-reader video { border-radius: 6px; width: 100% !important; object-fit: cover; }
+    #qr-reader__scan_region { display: flex; justify-content: center; align-items: center; }
+
+    /* CCTV Feeds & Camera Matrix */
+    .cctv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .cctv-feed-card { background: #0b0f19; border: 1px solid #1e293b; border-radius: 8px; overflow: hidden; color: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
+    .cctv-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #0f172a; border-bottom: 1px solid #1e293b; font-size: 0.75rem; }
+    .cctv-video-container { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .cctv-canvas { width: 100%; height: 100%; display: block; }
+    .cctv-hud-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; padding: 8px; display: flex; flex-direction: column; justify-content: space-between; }
+    .cctv-hud-top { display: flex; justify-content: space-between; font-family: monospace; font-size: 0.65rem; color: #4ade80; text-shadow: 0 0 4px rgba(0,0,0,0.9); }
+    .cctv-hud-bottom { display: flex; justify-content: space-between; align-items: flex-end; font-family: monospace; font-size: 0.65rem; color: #f8fafc; text-shadow: 0 0 4px rgba(0,0,0,0.9); }
+    .cctv-scanline { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); background-size: 100% 3px, 6px 100%; pointer-events: none; }
+    
+    /* Email Modal & OTP Input */
+    .otp-inputs { display: flex; gap: 8px; justify-content: center; margin: 1.25rem 0; }
+    .otp-input-digit { width: 44px; height: 50px; text-align: center; font-size: 1.4rem; font-weight: 700; font-family: monospace; border: 1.5px solid #cbd5e1; border-radius: 6px; }
+    .otp-input-digit:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px var(--primary-light); }
+
+    /* Responsive */
+    @media(max-width: 1024px) { .cctv-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media(max-width: 900px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: 1fr; } }
+    @media(max-width: 860px) { .booking-grid-layout { grid-template-columns: 1fr !important; } }
+    @media(max-width: 640px) { .cctv-grid { grid-template-columns: 1fr; } }
+    @media(max-width: 600px) { .grid-2, .grid-4 { grid-template-columns: 1fr; } .nav-links { display: none; } }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="top-nav">
+    <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+      <div class="brand-logo" onclick="switchView('home')" style="cursor:pointer;">
+        <div class="brand-icon"><i data-lucide="landmark"></i></div>
+        <div>
+          <div>Sri Siddhivinayak</div>
+          <div style="font-size:0.7rem; color:#64748b; font-weight:400;">Temple Management & Flow System</div>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <a class="nav-link active" id="nav-home" onclick="switchView('home')">Home</a>
+        <a class="nav-link" id="nav-book" onclick="switchView('book')">Book Darshan</a>
+        <a class="nav-link" id="nav-crowd" onclick="switchView('crowd')">Live Crowd</a>
+        <a class="nav-link" id="nav-temple" onclick="switchView('temple')">Temple Info</a>
+        <a class="nav-link" id="nav-help" onclick="switchView('help')">Help & SOS</a>
+      </nav>
+
+      <!-- Role Switcher & Profile -->
+      <div style="display:flex; align-items:center; gap:8px;">
+        <select id="role-select" onchange="changeRole(this.value)" class="form-select" style="padding:4px 8px; font-size:0.8rem; font-weight:600; width:auto; border-color:var(--primary);">
+          <option value="PILGRIM">Pilgrim View (Ananya)</option>
+          <option value="STAFF">Staff View (Rajesh - Gate Entry)</option>
+          <option value="ADMIN">Admin View (Executive Officer)</option>
+        </select>
+        <button id="dashboard-btn" onclick="openCurrentDashboard()" class="btn btn-primary btn-sm">
+          <i data-lucide="user" style="width:14px; height:14px;"></i>
+          <span id="role-dashboard-label">Dashboard</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Notification Toast Banner (Dynamic) -->
+  <div id="toast-container" class="container" style="margin-top:1rem; display:none;">
+    <div id="toast-msg" class="alert alert-warning" style="display:flex; justify-content:space-between; align-items:center;">
+      <span id="toast-text"></span>
+      <button onclick="document.getElementById('toast-container').style.display='none'" style="background:none; border:none; cursor:pointer; font-weight:bold;">&times;</button>
+    </div>
+  </div>
+
+  <!-- Main Dynamic View Container -->
+  <main class="container" style="padding: 1.5rem 1rem 3rem;">
+    
+    <!-- ==================== 1. HOME VIEW ==================== -->
+    <div id="view-home">
+      <!-- Festival Banner -->
+      <div class="alert alert-warning" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <i data-lucide="sparkles" style="color:#b45309;"></i>
+          <span><strong>Festival Mode Active: Maha Shivaratri Brahmotsavam</strong> &bull; Extended Darshan hours active till 11:45 PM.</span>
+        </div>
+        <button onclick="switchView('book')" class="btn btn-primary btn-sm">Reserve Festival Pass</button>
+      </div>
+
+      <!-- Hero Banner -->
+      <div class="card" style="padding:2.25rem 2rem; margin-bottom:1.5rem;">
+        <div style="max-width:760px;">
+          <span class="badge" style="background:#fef3c7; color:#b45309; margin-bottom:0.75rem;">Official Pilgrim Portal</span>
+          <h1 style="font-size:2rem; font-weight:700; color:#0f172a; margin-bottom:0.5rem;">Plan your temple visit with ease.</h1>
+          <p style="color:#475569; font-size:1rem; margin-bottom:1.5rem; line-height:1.6;">
+            Book darshan slots online, generate digital QR tokens, check live crowd density across holding bays, and reduce queue wait times.
+          </p>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button onclick="switchView('book')" class="btn btn-primary btn-lg"><i data-lucide="calendar-check"></i> Book Darshan Slot</button>
+            <button onclick="switchView('crowd')" class="btn btn-secondary btn-lg"><i data-lucide="eye"></i> Check Live Crowd</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-Time Metrics -->
+      <div class="grid-4" style="margin-bottom:1.5rem;">
+        <div class="card">
+          <div style="font-size:0.8rem; color:#64748b;">Current Inside Crowd</div>
+          <div style="font-size:1.6rem; font-weight:700; color:#0f172a;" id="home-crowd-count">730 pilgrims</div>
+          <div style="margin-top:4px;"><span class="badge badge-low" id="home-crowd-badge">LOW CROWD</span></div>
+        </div>
+        <div class="card">
+          <div style="font-size:0.8rem; color:#64748b;">Queue Waiting Time</div>
+          <div style="font-size:1.6rem; font-weight:700; color:#0f172a;" id="home-queue-wait">15 - 20 mins</div>
+          <div style="font-size:0.75rem; color:#166534; margin-top:4px;">&check; Steady queue pace</div>
+        </div>
+        <div class="card">
+          <div style="font-size:0.8rem; color:#64748b;">Temple Gate Timings</div>
+          <div style="font-size:1.3rem; font-weight:700; color:#0f172a;">05:00 AM - 10:30 PM</div>
+          <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">Maha Aarti at 07:00 PM</div>
+        </div>
+        <div class="card">
+          <div style="font-size:0.8rem; color:#64748b;">24/7 Helpline</div>
+          <div style="font-size:1.3rem; font-weight:700; color:#0f172a;">+91 98765 43210</div>
+          <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">First-Aid & Help Desk Active</div>
+        </div>
+      </div>
+
+      <!-- Live Crowd Flow Map -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Live Temple Zone Flow & Crowd Map</h2>
+            <p style="font-size:0.8rem; color:#64748b;">Sequential pilgrim transit from Main Gate to Sanctum & Exit</p>
+          </div>
+          <button onclick="simulateCrowdShift()" class="btn btn-secondary btn-sm"><i data-lucide="sparkles" style="width:14px; height:14px;"></i> Simulate Shift</button>
+        </div>
+        <div id="heatmap-container" style="display:flex; gap:12px; overflow-x:auto; padding:0.5rem 0 1rem;"></div>
+      </div>
+
+      <!-- Darshan Types Preview -->
+      <div style="margin-top:1.5rem;">
+        <h2 style="font-size:1.3rem; margin-bottom:0.75rem;">Available Darshan Categories</h2>
+        <div class="grid-2" id="home-darshan-cards"></div>
+      </div>
+    </div>
+
+    <!-- ==================== 2. BOOK DARSHAN WIZARD ==================== -->
+    <div id="view-book" style="display:none; max-width:960px; margin:0 auto;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+        <div>
+          <h1 style="font-size:1.5rem; color:#0f172a;">Reserve Online Darshan Entry Pass</h1>
+          <p style="font-size:0.85rem; color:#64748b;">Advance slot registration with UIDAI / Govt ID Verification for Gate Security</p>
+        </div>
+        <button onclick="switchView('home')" class="btn btn-secondary btn-sm">Cancel</button>
+      </div>
+
+      <form id="booking-form" onsubmit="handleBookingSubmit(event)">
+        <div style="display:grid; grid-template-columns:1.35fr 1fr; gap:1.5rem; align-items:start;" class="booking-grid-layout">
+          
+          <!-- LEFT COLUMN: Visit Selection & Pilgrim Details -->
+          <div class="card" style="padding:1.5rem;">
+            <h2 class="card-title" style="font-size:1.1rem; margin-bottom:1rem; display:flex; align-items:center; gap:8px;">
+              <i data-lucide="calendar" style="color:var(--primary);"></i> Step 1: Visit Schedule & Details
+            </h2>
+
+            <div class="form-group">
+              <label class="form-label">Date of Visit</label>
+              <input type="date" id="book-date" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Darshan Category</label>
+              <select id="book-type" class="form-select" onchange="updateSlots()">
+                <option value="General Darshan (Sarva Darshanam)" data-price="0">General Darshan (Free - 200 quota)</option>
+                <option value="Special Quick Darshan (Sheegra Darshanam)" data-price="300">Special Quick Darshan (₹300 - 100 quota)</option>
+                <option value="Senior Citizen & Specially-Abled Darshan" data-price="0">Senior Citizen / Specially Abled (Free - 60 quota)</option>
+                <option value="Suprabhata & Abhishekam Special Entry" data-price="500">Suprabhata Special Ritual Entry (₹500 - 50 quota)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Time Slot (2-Hour Window)</label>
+              <select id="book-slot" class="form-select">
+                <option value="06:00 AM - 08:00 AM">06:00 AM - 08:00 AM (Available)</option>
+                <option value="08:00 AM - 10:00 AM">08:00 AM - 10:00 AM (Available)</option>
+                <option value="10:00 AM - 12:00 PM">10:00 AM - 12:00 PM (Available)</option>
+                <option value="12:00 PM - 02:00 PM">12:00 PM - 02:00 PM (Available)</option>
+                <option value="04:00 PM - 06:00 PM">04:00 PM - 06:00 PM (Available)</option>
+                <option value="06:00 PM - 08:00 PM">06:00 PM - 08:00 PM (Available)</option>
+              </select>
+            </div>
+
+            <div style="border-top:1px solid var(--border); padding-top:1rem; margin-top:1rem;">
+              <h3 style="font-size:0.95rem; font-weight:700; margin-bottom:0.75rem; color:#0f172a;">Primary Pilgrim Information</h3>
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" id="book-name" class="form-input" required placeholder="e.g. Ananya Deshmukh" value="Ananya Deshmukh" oninput="updateIdCardPreview()">
+              </div>
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">Mobile Phone</label>
+                  <input type="tel" id="book-phone" class="form-input" required placeholder="+91 98201 55667" value="+91 98201 55667">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Pilgrims Count (1-6)</label>
+                  <input type="number" id="book-count" class="form-input" min="1" max="6" value="2" required>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg" style="width:100%; margin-top:1rem;">
+              <i data-lucide="check-circle-2"></i> Confirm Booking & Generate QR Pass
+            </button>
+          </div>
+
+          <!-- RIGHT COLUMN: SEPARATE GOVERNMENT ID / MASKED AADHAAR & PAN SIDEBAR -->
+          <div class="card" style="padding:1.5rem; background:#ffffff; border:1.5px solid #cbd5e1; position:sticky; top:80px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+              <h2 class="card-title" style="font-size:1rem; margin-bottom:0; display:flex; align-items:center; gap:6px;">
+                <i data-lucide="shield-check" style="color:var(--primary);"></i> Govt ID Verification
+              </h2>
+              <span class="badge badge-confirmed" style="font-size:0.7rem; letter-spacing:0.5px;">MANDATORY</span>
+            </div>
+            
+            <p style="font-size:0.775rem; color:#64748b; margin-bottom:1rem; line-height:1.4;">
+              Select government ID proof for primary pilgrim authentication at Entry Gate:
+            </p>
+
+            <!-- ID Type Selection Tabs -->
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label class="form-label" style="font-size:0.8rem; font-weight:600;">ID Proof Document</label>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                <button type="button" id="id-tab-aadhaar" onclick="setIdType('AADHAAR')" class="btn btn-sm" style="background:#fef3c7; color:#b45309; border:1.5px solid #b45309; font-weight:600; text-align:center; padding:6px 4px; font-size:0.75rem;">
+                  🪪 Masked Aadhaar
+                </button>
+                <button type="button" id="id-tab-pan" onclick="setIdType('PAN')" class="btn btn-sm" style="background:#f8fafc; color:#475569; border:1px solid #cbd5e1; font-weight:600; text-align:center; padding:6px 4px; font-size:0.75rem;">
+                  💳 PAN Card
+                </button>
+                <button type="button" id="id-tab-voter" onclick="setIdType('VOTER')" class="btn btn-sm" style="background:#f8fafc; color:#475569; border:1px solid #cbd5e1; font-weight:600; text-align:center; padding:6px 4px; font-size:0.75rem;">
+                  🗳️ Voter ID (EPIC)
+                </button>
+                <button type="button" id="id-tab-passport" onclick="setIdType('PASSPORT')" class="btn btn-sm" style="background:#f8fafc; color:#475569; border:1px solid #cbd5e1; font-weight:600; text-align:center; padding:6px 4px; font-size:0.75rem;">
+                  ✈️ Passport
+                </button>
+              </div>
+            </div>
+
+            <!-- Dynamic Input Box -->
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label class="form-label" id="id-input-label" style="font-size:0.8rem; font-weight:600;">Masked Aadhaar Number (UIDAI Compliant)</label>
+              <input type="text" id="book-idproof" class="form-input" placeholder="XXXX-XXXX-1920" value="XXXX-XXXX-1920" oninput="handleIdInputChange(this.value)" style="font-family:monospace; font-weight:600; font-size:0.9rem; letter-spacing:0.5px;">
+              <div id="id-helper-note" style="font-size:0.72rem; color:#64748b; margin-top:4px;">
+                UIDAI Privacy Compliant: Full 12-digit number is never stored. Only masked token & last 4 digits are verified.
+              </div>
+            </div>
+
+            <!-- Live Interactive Virtual ID Card Badge -->
+            <div id="virtual-id-card" style="background:linear-gradient(135deg, #1e293b, #0f172a); color:#fff; border-radius:8px; padding:1rem; border:1px solid #334155; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom:1rem;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+                <div>
+                  <div style="font-size:0.65rem; color:#94a3b8; text-transform:uppercase; letter-spacing:1px;" id="card-issuer-label">GOVT OF INDIA &bull; UIDAI</div>
+                  <div style="font-size:0.85rem; font-weight:700; color:#f8fafc;" id="card-type-label">Masked Aadhaar Card</div>
+                </div>
+                <span style="background:rgba(34,197,94,0.2); color:#4ade80; border:1px solid #22c55e; border-radius:4px; font-size:0.65rem; padding:2px 6px; font-weight:600;">
+                  ENCRYPTED
+                </span>
+              </div>
+
+              <div style="font-family:monospace; font-size:1.1rem; font-weight:700; letter-spacing:1.5px; color:#fef3c7; margin-bottom:0.75rem;" id="card-number-preview">
+                XXXX-XXXX-1920
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:flex-end; font-size:0.72rem; color:#cbd5e1; border-top:1px solid rgba(255,255,255,0.1); padding-top:6px;">
+                <div>
+                  <div style="font-size:0.6rem; color:#94a3b8;">HOLDER NAME</div>
+                  <div style="font-weight:600;" id="card-name-preview">Ananya Deshmukh</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:0.6rem; color:#94a3b8;">GATE STATUS</div>
+                  <div style="color:#4ade80; font-weight:600;">✓ Verified for Check-In</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:0.6rem 0.75rem; font-size:0.72rem; color:#475569; display:flex; align-items:center; gap:6px;">
+              <i data-lucide="lock" style="width:14px; height:14px; color:#16a34a; flex-shrink:0;"></i>
+              <span>All identity data is hashed and compliant with Indian Digital Personal Data Protection Act.</span>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- ==================== 3. BOOKING SUCCESS / DIGITAL PASS VIEW ==================== -->
+    <div id="view-pass" style="display:none; max-width:580px; margin:0 auto;">
+      <div class="card" style="border:2px solid var(--primary); padding:2rem; text-align:center;">
+        <span class="badge badge-confirmed" style="margin-bottom:0.5rem;">&check; BOOKING CONFIRMED</span>
+        <h2 style="font-size:1.35rem; margin-bottom:2px;">Official Digital Darshan Entry Pass</h2>
+        <div style="font-size:0.8rem; color:#64748b; margin-bottom:1.25rem;">Sri Siddhivinayak & Venkateswara Temple Complex</div>
+
+        <!-- Canvas for QR generation -->
+        <div id="qrcode-box" style="margin:1rem auto; padding:10px; background:#fff; border:1px solid #e2e8f0; border-radius:8px; display:inline-block;"></div>
+        
+        <div style="font-weight:700; font-family:monospace; font-size:1.1rem; color:#0f172a; margin-top:6px;" id="pass-id">DAR-2026-000101</div>
+        <div style="font-size:0.75rem; color:#64748b; margin-bottom:1.5rem;">Show this QR Code at the Entry Gate Scanner</div>
+
+        <!-- Summary details -->
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:1rem; text-align:left; font-size:0.85rem; margin-bottom:1.5rem;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <div><span style="color:#64748b; font-size:0.75rem;">PRIMARY PILGRIM:</span> <strong id="pass-name">Ananya Deshmukh</strong></div>
+            <div><span style="color:#64748b; font-size:0.75rem;">PHONE:</span> <strong id="pass-phone">+91 98201 55667</strong></div>
+            <div><span style="color:#64748b; font-size:0.75rem;">DATE:</span> <strong id="pass-date">2026-10-01</strong></div>
+            <div><span style="color:#64748b; font-size:0.75rem;">TIME SLOT:</span> <strong id="pass-slot">08:00 AM - 10:00 AM</strong></div>
+            <div><span style="color:#64748b; font-size:0.75rem;">CATEGORY:</span> <strong id="pass-type">General Darshan</strong></div>
+            <div><span style="color:#64748b; font-size:0.75rem;">TOTAL PERSONS:</span> <strong id="pass-people">2 Person(s)</strong></div>
+            <div style="grid-column:1 / -1; border-top:1px dashed #cbd5e1; padding-top:6px; margin-top:2px;">
+              <span style="color:#64748b; font-size:0.75rem;">GOVT ID VERIFICATION:</span> <strong id="pass-idproof" style="font-family:monospace; color:#166534;">AADHAAR (XXXX-XXXX-1920) ✓</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email Sent Confirmation Banner -->
+        <div class="alert alert-success" style="margin-bottom:1.25rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; text-align:left;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <i data-lucide="mail-check" style="color:#16a34a; width:20px; height:20px; flex-shrink:0;"></i>
+            <span style="font-size:0.8rem;">Official PDF Ticket &amp; QR Entry Token emailed to <strong id="pass-sent-email">ananya.deshmukh@gmail.com</strong></span>
+          </div>
+          <button type="button" onclick="openEmailPreviewModal()" class="btn btn-primary btn-sm" style="font-size:0.75rem; padding:4px 10px;">
+            <i data-lucide="mail-open" style="width:13px; height:13px;"></i> View Email Preview
+          </button>
+        </div>
+
+        <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+          <button onclick="window.print()" class="btn btn-secondary btn-sm"><i data-lucide="printer"></i> Print Pass</button>
+          <button onclick="openEmailPreviewModal()" class="btn btn-secondary btn-sm"><i data-lucide="mail"></i> Email E-Ticket</button>
+          <button onclick="sendWhatsappPass()" class="btn btn-secondary btn-sm" style="color:#16a34a;"><i data-lucide="send"></i> Send WhatsApp Copy</button>
+          <button onclick="switchView('pilgrim-dashboard')" class="btn btn-primary btn-sm">Go to My Bookings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 4. PILGRIM DASHBOARD ==================== -->
+    <div id="view-pilgrim" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
+        <div>
+          <h1 style="font-size:1.6rem;">Pilgrim Dashboard</h1>
+          <p style="font-size:0.85rem; color:#64748b;">Welcome, Ananya Deshmukh &bull; Manage your visits and passes</p>
+        </div>
+        <button onclick="switchView('book')" class="btn btn-primary"><i data-lucide="plus-circle"></i> Book New Darshan</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">My Registered Darshan Passes</h2>
+        </div>
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Booking ID</th>
+                <th>Category</th>
+                <th>Visit Date</th>
+                <th>Time Slot</th>
+                <th>Party</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="pilgrim-bookings-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 5. STAFF QR SCANNER & QUEUE CONSOLE ==================== -->
+    <div id="view-staff" style="display:none; max-width:840px; margin:0 auto;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
+        <div>
+          <h1 style="font-size:1.6rem; color:#0f172a;">Staff Gate & Queue Console</h1>
+          <p style="font-size:0.85rem; color:#64748b;">Officer: Rajesh Sharma (EMP-SEC-101) &bull; Main Gate Entry</p>
+        </div>
+        <span class="badge badge-confirmed">Shift: Morning (06:00 - 14:00)</span>
+      </div>
+
+      <!-- QR Scanner Box with Live Camera Support -->
+      <div class="card" style="padding:1.5rem; margin-bottom:1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:0.75rem;">
+          <h2 class="card-title" style="margin-bottom:0;"><i data-lucide="qr-code" style="color:var(--primary);"></i> Gate Token Verification</h2>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button id="btn-camera-toggle" onclick="toggleCameraScanner()" class="btn btn-primary btn-sm" style="display:flex; align-items:center; gap:6px;">
+              <i data-lucide="camera" style="width:15px; height:15px;"></i> <span id="camera-btn-text">Open Live Camera Scan</span>
+            </button>
+            <label class="btn btn-secondary btn-sm" style="display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;">
+              <i data-lucide="image" style="width:15px; height:15px;"></i> Scan QR Image File
+              <input type="file" id="qr-file-input" accept="image/*" style="display:none;" onchange="handleQrFileUpload(this)">
+            </label>
+          </div>
+        </div>
+
+        <!-- Live Camera Viewfinder Box -->
+        <div id="camera-scanner-container" style="display:none; background:#0f172a; border-radius:8px; padding:1rem; margin-bottom:1rem; color:#fff; border:2px solid var(--primary);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="display:inline-block; width:10px; height:10px; background:#22c55e; border-radius:50%; animation:pulse 1.5s infinite;"></span>
+              <span style="font-size:0.85rem; font-weight:600;">Live Camera Viewfinder Active</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+              <select id="camera-device-select" onchange="changeCameraDevice(this.value)" style="background:#1e293b; color:#fff; border:1px solid #475569; padding:4px 8px; border-radius:4px; font-size:0.75rem;">
+                <option value="">Detecting Cameras...</option>
+              </select>
+              <button onclick="toggleContinuousScan()" id="btn-continuous-mode" class="btn btn-sm" style="background:#334155; color:#fff; font-size:0.75rem; padding:4px 8px;">
+                Mode: Single Scan
+              </button>
+              <button onclick="stopCameraScanner()" class="btn btn-danger btn-sm" style="padding:4px 8px; font-size:0.75rem;">
+                ✕ Close Camera
+              </button>
+            </div>
+          </div>
+
+          <div style="position:relative; width:100%; max-width:440px; margin:0 auto; background:#000; border-radius:8px; overflow:hidden; min-height:240px; display:flex; align-items:center; justify-content:center;">
+            <div id="qr-reader" style="width:100%;"></div>
+            <div id="scanner-laser" class="scanner-laser" style="display:none;"></div>
+          </div>
+          <p style="text-align:center; font-size:0.75rem; color:#94a3b8; margin-top:0.6rem; margin-bottom:0;">
+            Point your webcam or phone camera at the pilgrim's printed or mobile QR pass
+          </p>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-bottom:0.75rem;">
+          <input type="text" id="scanner-input" class="form-input" placeholder="Scan camera or enter token (e.g. QR-DAR-2026-000101)..." style="font-family:monospace; font-size:0.95rem;">
+          <button onclick="handleScanVerify()" class="btn btn-primary">Verify Token</button>
+        </div>
+
+        <div style="background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:0.65rem; font-size:0.75rem;">
+          <strong>Quick Test Tokens:</strong>
+          <a onclick="setScanToken('QR-DAR-2026-000101-SECURE-TOKEN-X79')" style="margin-left:8px; text-decoration:underline;">Test Valid Pass</a> |
+          <a onclick="setScanToken('QR-ALREADY-USED-SAMPLE')" style="margin-left:8px; text-decoration:underline;">Test Already Used</a> |
+          <a onclick="setScanToken('INVALID-CODE-999')" style="margin-left:8px; text-decoration:underline;">Test Invalid Token</a>
+        </div>
+
+        <!-- Scan Result Box -->
+        <div id="scan-feedback" style="margin-top:1rem; display:none;"></div>
+      </div>
+
+      <!-- Queue Control Box -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Holding Bay Queue Regulation</h2>
+          <span class="badge badge-confirmed" id="staff-queue-status">ACTIVE</span>
+        </div>
+        <div class="grid-3" style="margin-bottom:1rem; text-align:center;">
+          <div style="background:#f8fafc; padding:1rem; border-radius:6px;">
+            <div style="font-size:0.75rem; color:#64748b;">NOW SERVING</div>
+            <div style="font-size:2rem; font-weight:800; color:var(--primary); font-family:monospace;" id="staff-serving-token">A-142</div>
+          </div>
+          <div style="background:#f8fafc; padding:1rem; border-radius:6px;">
+            <div style="font-size:0.75rem; color:#64748b;">WAITING PILGRIMS</div>
+            <div style="font-size:2rem; font-weight:800;" id="staff-waiting-count">58</div>
+          </div>
+          <div style="background:#f8fafc; padding:1rem; border-radius:6px;">
+            <div style="font-size:0.75rem; color:#64748b;">EST. WAIT TIME</div>
+            <div style="font-size:2rem; font-weight:800;" id="staff-wait-time">25m</div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <button onclick="advanceQueue()" class="btn btn-primary btn-lg" style="flex:2;"><i data-lucide="skip-forward"></i> Call Next Token Batch</button>
+          <button id="pause-queue-btn" onclick="togglePauseQueue()" class="btn btn-secondary btn-lg" style="flex:1;"><i data-lucide="pause"></i> Pause Lane</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 6. ADMIN EXECUTIVE DASHBOARD ==================== -->
+    <div id="view-admin" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
+        <div>
+          <h1 style="font-size:1.6rem;">Executive Administrator Console</h1>
+          <p style="font-size:0.85rem; color:#64748b;">Sri Siddhivinayak Temple &bull; Central Flow & AI Vision Oversight</p>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button onclick="downloadCSV('bookings')" class="btn btn-secondary btn-sm"><i data-lucide="download"></i> Export Bookings CSV</button>
+          <button onclick="downloadCSV('crowd')" class="btn btn-primary btn-sm"><i data-lucide="download"></i> Export Crowd Logs CSV</button>
+        </div>
+      </div>
+
+      <!-- Top Metrics -->
+      <div class="grid-4" style="margin-bottom:1.5rem;">
+        <div class="card">
+          <div style="font-size:0.8rem; color:#64748b;">Today's Registered Footfall</div>
+          <div style="font-size:1.8rem; font-weight:700;">840 pilgrims</div>
+          <div style="font-size:0.75rem; color:#166534; margin-top:4px;">42 slot bookings verified</div>
+        </div>
+        <div class="card">
+          <div style="font-size:0.8rem; color:#64748b;">Ground Staff On Duty</div>
+          <div style="font-size:1.8rem; font-weight:700;">19 / 20 Active</div>
+          <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">Across all 6 zones</div>
+        </div>
+        <div class="card">
+          <div style="font-size:0.8rem; color:#64748b;">Emergency Distress Calls</div>
+          <div style="font-size:1.8rem; font-weight:700; color:#166534;" id="admin-emg-count">0 Open</div>
+          <div style="font-size:0.75rem; color:#166534; margin-top:4px;">Average response: 2.5m</div>
+        </div>
+        <div class="card">
+          <div style="font-size:0.8rem; color:#64748b;">Festival Surge Mode</div>
+          <div style="font-size:1.3rem; font-weight:700; color:#b45309;">ACTIVE</div>
+          <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">+25 reserve staff deployed</div>
+        </div>
+      </div>
+
+      <!-- Live CCTV Stream Sim & Heatmap -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header">
+          <h2 class="card-title">CCTV YOLOv8 Vision Density Stream</h2>
+          <button onclick="simulateCrowdShift()" class="btn btn-secondary btn-sm"><i data-lucide="sparkles"></i> Trigger Natural Crowd Shift</button>
+        </div>
+        <div id="admin-heatmap-container" style="display:flex; gap:12px; overflow-x:auto; padding:0.5rem 0 1rem;"></div>
+      </div>
+
+      <!-- Broadcast Notice & Staff Roster -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Publish Temple Announcement</h2></div>
+          <form onsubmit="handleBroadcastNotice(event)">
+            <div class="form-group">
+              <label class="form-label">Notice Title</label>
+              <input type="text" id="admin-broadcast-title" class="form-input" required placeholder="e.g. Maha Aarti Schedule Announcement">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Message Details</label>
+              <textarea id="admin-broadcast-text" class="form-textarea" required placeholder="Broadcast text visible to all pilgrims..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;">Publish Broadcast Notice</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Staff Zone Deployments (20 Active)</h2></div>
+          <div class="table-container" style="max-height:220px; overflow-y:auto;">
+            <table class="table">
+              <thead>
+                <tr><th>Code</th><th>Name</th><th>Department</th><th>Zone</th></tr>
+              </thead>
+              <tbody id="admin-staff-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 7. LIVE CROWD PUBLIC & CCTV VISION CENTER ==================== -->
+    <div id="view-crowd" style="display:none;">
+      <!-- Title & Controls Header -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:10px;">
+        <div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="width:10px; height:10px; background:#22c55e; border-radius:50%; display:inline-block; animation:pulse 1.5s infinite;"></span>
+            <h1 style="font-size:1.6rem; color:#0f172a; margin-bottom:0;">Live CCTV & AI Crowd Vision Center</h1>
+          </div>
+          <p style="font-size:0.85rem; color:#64748b; margin-top:2px;">
+            Real-time YOLOv8 automated headcount, optical tracking, and holding bay flow regulation
+          </p>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button onclick="toggleAiBoundingBoxes()" id="btn-toggle-boxes" class="btn btn-secondary btn-sm">
+            <i data-lucide="scan" style="width:14px; height:14px;"></i> AI Bounding Boxes: ON
+          </button>
+          <button onclick="simulateCrowdShift()" class="btn btn-primary btn-sm">
+            <i data-lucide="sparkles" style="width:14px; height:14px;"></i> Simulate Live Shift
+          </button>
+        </div>
+      </div>
+
+      <!-- Real-Time Metric Strip -->
+      <div class="grid-4" style="margin-bottom:1.25rem;">
+        <div class="card" style="padding:1rem;">
+          <div style="font-size:0.75rem; color:#64748b; font-weight:600;">DETECTED HEADCOUNT</div>
+          <div style="font-size:1.6rem; font-weight:800; color:var(--primary);" id="crowd-page-total">903 pilgrims</div>
+          <div style="font-size:0.7rem; color:#166534; margin-top:2px;">Across all 6 monitored zones</div>
+        </div>
+        <div class="card" style="padding:1rem;">
+          <div style="font-size:0.75rem; color:#64748b; font-weight:600;">EST. SANCTUM WAIT</div>
+          <div style="font-size:1.6rem; font-weight:800; color:#0f172a;" id="crowd-page-wait">28 mins</div>
+          <div style="font-size:0.7rem; color:#64748b; margin-top:2px;">Average queue transit speed</div>
+        </div>
+        <div class="card" style="padding:1rem;">
+          <div style="font-size:0.75rem; color:#64748b; font-weight:600;">AI VISION CAMERAS</div>
+          <div style="font-size:1.6rem; font-weight:800; color:#166534;">6 / 6 Online</div>
+          <div style="font-size:0.7rem; color:#64748b; margin-top:2px;">30 FPS • YOLOv8 Neural Net</div>
+        </div>
+        <div class="card" style="padding:1rem;">
+          <div style="font-size:0.75rem; color:#64748b; font-weight:600;">FLOW ADVISORY</div>
+          <div style="font-size:1.3rem; font-weight:800; color:#15803d;">OPTIMAL FLOW</div>
+          <div style="font-size:0.7rem; color:#64748b; margin-top:2px;">Lane 2 &amp; 3 fast-track open</div>
+        </div>
+      </div>
+
+      <!-- Live Zone Density Heatmap Strip -->
+      <div class="card" style="margin-bottom:1.5rem; padding:1rem;">
+        <div style="font-size:0.8rem; font-weight:700; margin-bottom:0.5rem; color:#0f172a;">Live Zone Density Strip</div>
+        <div id="public-crowd-heatmap" style="display:flex; gap:12px; overflow-x:auto; padding:0.25rem 0;"></div>
+      </div>
+
+      <!-- Live 6-Camera CCTV Video Matrix -->
+      <div style="margin-bottom:1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+          <h2 style="font-size:1.15rem; font-weight:700; color:#0f172a; display:flex; align-items:center; gap:8px;">
+            <i data-lucide="video" style="color:var(--primary);"></i> Live CCTV Computer Vision Feeds (6 Angles)
+          </h2>
+          <span style="font-size:0.75rem; color:#64748b;">Click any camera feed to zoom into High-Definition inspection</span>
+        </div>
+
+        <div class="cctv-grid" id="cctv-matrix-container">
+          <!-- Dynamically populated CCTV cards with animated canvases -->
+        </div>
+      </div>
+
+      <!-- Queue Transit & Holding Bay Flow Timeline -->
+      <div class="card" style="margin-bottom:1.5rem; padding:1.5rem;">
+        <h2 class="card-title" style="margin-bottom:1rem;"><i data-lucide="clock" style="color:var(--primary);"></i> Sequential Pilgrim Transit & Wait-Time Timeline</h2>
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:1rem; text-align:center;" id="transit-timeline-grid">
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:1rem;">
+            <div style="font-size:0.7rem; color:#64748b; font-weight:600;">STAGE 1</div>
+            <div style="font-size:1rem; font-weight:700; color:#0f172a; margin:4px 0;">Main Gate & Security</div>
+            <div style="font-size:1.4rem; font-weight:800; color:#166534;" id="wait-stage-1">4 mins</div>
+            <div style="font-size:0.7rem; color:#64748b;">QR Verification & Bag Scan</div>
+          </div>
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:1rem;">
+            <div style="font-size:0.7rem; color:#64748b; font-weight:600;">STAGE 2</div>
+            <div style="font-size:1rem; font-weight:700; color:#0f172a; margin:4px 0;">Holding Bay Complex</div>
+            <div style="font-size:1.4rem; font-weight:800; color:#b45309;" id="wait-stage-2">14 mins</div>
+            <div style="font-size:0.7rem; color:#64748b;">Bays A & B Regulated Flow</div>
+          </div>
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:1rem;">
+            <div style="font-size:0.7rem; color:#64748b; font-weight:600;">STAGE 3</div>
+            <div style="font-size:1rem; font-weight:700; color:#0f172a; margin:4px 0;">Sanctum Corridor</div>
+            <div style="font-size:1.4rem; font-weight:800; color:#166534;" id="wait-stage-3">8 mins</div>
+            <div style="font-size:0.7rem; color:#64748b;">Inner Shrine Queue Line</div>
+          </div>
+          <div style="background:#fef3c7; border:1.5px solid #b45309; border-radius:8px; padding:1rem;">
+            <div style="font-size:0.7rem; color:#b45309; font-weight:700;">FINAL STAGE</div>
+            <div style="font-size:1rem; font-weight:700; color:#78350f; margin:4px 0;">Deity Darshan</div>
+            <div style="font-size:1.4rem; font-weight:800; color:#b45309;" id="wait-stage-4">2 mins</div>
+            <div style="font-size:0.7rem; color:#78350f;">Maha Darshan & Prasadam</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2-Column: Peak Hours Forecast & Live Ground Facilities -->
+      <div class="grid-2">
+        <!-- Today's Peak Hours Forecast Bar Chart -->
+        <div class="card" style="padding:1.5rem;">
+          <div class="card-header" style="margin-bottom:0.75rem;">
+            <h2 class="card-title" style="font-size:1rem;"><i data-lucide="bar-chart-3" style="color:var(--primary);"></i> Today's Hourly Crowd Forecast</h2>
+            <span class="badge" style="background:#dcfce7; color:#166534; font-size:0.7rem;">BEST: 01:30 PM - 04:00 PM</span>
+          </div>
+          <p style="font-size:0.75rem; color:#64748b; margin-bottom:1rem;">Historical & AI predictive density pattern across visiting hours:</p>
+          
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; height:120px; padding:0 8px; border-bottom:1px solid #cbd5e1; gap:6px;">
+            <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+              <div style="width:100%; height:60px; background:#fca5a5; border-radius:3px 3px 0 0;" title="06 AM - 08 AM: High Rush"></div>
+              <span style="font-size:0.65rem; color:#64748b; margin-top:4px;">06-08</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+              <div style="width:100%; height:85px; background:#ef4444; border-radius:3px 3px 0 0;" title="08 AM - 10 AM: Peak Surge"></div>
+              <span style="font-size:0.65rem; color:#64748b; margin-top:4px;">08-10</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+              <div style="width:100%; height:75px; background:#fca5a5; border-radius:3px 3px 0 0;" title="10 AM - 12 PM: Moderate High"></div>
+              <span style="font-size:0.65rem; color:#64748b; margin-top:4px;">10-12</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+              <div style="width:100%; height:30px; background:#86efac; border-radius:3px 3px 0 0;" title="12 PM - 02 PM: Calm"></div>
+              <span style="font-size:0.65rem; color:#64748b; margin-top:4px;">12-14</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+              <div style="width:100%; height:22px; background:#22c55e; border-radius:3px 3px 0 0;" title="02 PM - 04 PM: Lowest Crowd Window"></div>
+              <span style="font-size:0.65rem; color:#15803d; font-weight:700; margin-top:4px;">14-16</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+              <div style="width:100%; height:70px; background:#fde047; border-radius:3px 3px 0 0;" title="04 PM - 06 PM: Moderate"></div>
+              <span style="font-size:0.65rem; color:#64748b; margin-top:4px;">16-18</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+              <div style="width:100%; height:95px; background:#ef4444; border-radius:3px 3px 0 0;" title="06 PM - 08 PM: Evening Maha Aarti Peak"></div>
+              <span style="font-size:0.65rem; color:#64748b; margin-top:4px;">18-20</span>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
+              <div style="width:100%; height:45px; background:#86efac; border-radius:3px 3px 0 0;" title="08 PM - 10 PM: Moderate Low"></div>
+              <span style="font-size:0.65rem; color:#64748b; margin-top:4px;">20-22</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Facilities Status -->
+        <div class="card" style="padding:1.5rem;">
+          <h2 class="card-title" style="font-size:1rem; margin-bottom:0.75rem;"><i data-lucide="shield" style="color:var(--primary);"></i> Live Ground Facilities &amp; Assistance</h2>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:8px 12px; border-radius:6px; font-size:0.8rem;">
+              <span>🛺 Senior Citizen Golf Carts</span>
+              <span class="badge badge-confirmed">3 OF 4 ACTIVE</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:8px 12px; border-radius:6px; font-size:0.8rem;">
+              <span>♿ Free Wheelchair Help Desk</span>
+              <span class="badge badge-confirmed">AVAILABLE AT GATE 2</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:8px 12px; border-radius:6px; font-size:0.8rem;">
+              <span>👟 Footwear Deposit Counters</span>
+              <span class="badge badge-confirmed">LANES 1-6 OPEN</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:8px 12px; border-radius:6px; font-size:0.8rem;">
+              <span>🍲 Free Annadanam Hall Serving</span>
+              <span class="badge" style="background:#fef3c7; color:#b45309;">MEAL WINDOW OPEN</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== EMAIL OTP LOGIN MODAL ==================== -->
+    <div id="otp-modal" class="modal-overlay" style="display:none;">
+      <div class="modal-content" style="max-width:440px;">
+        <div style="text-align:center; margin-bottom:1.25rem;">
+          <div style="width:48px; height:48px; background:#fef3c7; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 0.75rem; color:#b45309;">
+            <i data-lucide="mail-check" style="width:24px; height:24px;"></i>
+          </div>
+          <h2 style="font-size:1.3rem; color:#0f172a; margin-bottom:4px;">Pilgrim Email Authentication</h2>
+          <p style="font-size:0.8rem; color:#64748b;">Verify your email to prevent bot registrations and receive your QR Entry Pass</p>
+        </div>
+
+        <!-- Step A: Enter Email -->
+        <div id="otp-step-email">
+          <div class="form-group">
+            <label class="form-label">Devotee / Pilgrim Email Address</label>
+            <input type="email" id="auth-email-input" class="form-input" placeholder="e.g. ananya.deshmukh@gmail.com" value="ananya.deshmukh@gmail.com" required>
+          </div>
+          <button type="button" onclick="sendOtpCode()" id="btn-send-otp" class="btn btn-primary" style="width:100%;">
+            Send 6-Digit Verification OTP
+          </button>
+        </div>
+
+        <!-- Step B: Enter 6-Digit OTP -->
+        <div id="otp-step-code" style="display:none;">
+          <div class="alert alert-info" style="font-size:0.775rem; padding:8px 12px; margin-bottom:0.75rem;">
+            Code dispatched to <strong id="otp-target-email">ananya.deshmukh@gmail.com</strong>
+          </div>
+
+          <div class="otp-inputs">
+            <input type="text" maxlength="1" class="otp-input-digit" id="otp-1" oninput="handleOtpInput(1)">
+            <input type="text" maxlength="1" class="otp-input-digit" id="otp-2" oninput="handleOtpInput(2)">
+            <input type="text" maxlength="1" class="otp-input-digit" id="otp-3" oninput="handleOtpInput(3)">
+            <input type="text" maxlength="1" class="otp-input-digit" id="otp-4" oninput="handleOtpInput(4)">
+            <input type="text" maxlength="1" class="otp-input-digit" id="otp-5" oninput="handleOtpInput(5)">
+            <input type="text" maxlength="1" class="otp-input-digit" id="otp-6" oninput="handleOtpInput(6)">
+          </div>
+
+          <div style="background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:0.6rem; font-size:0.75rem; text-align:center; margin-bottom:1rem;">
+            <span>Evaluation Helper: </span>
+            <a onclick="demoAutoFillOtp()" style="color:var(--primary); font-weight:700; text-decoration:underline; cursor:pointer;">
+              ⚡ 1-Click Auto-Fill Demo OTP (<span id="demo-otp-display">749201</span>)
+            </a>
+          </div>
+
+          <button type="button" onclick="verifyOtpCode()" class="btn btn-primary" style="width:100%; margin-bottom:0.5rem;">
+            Verify &amp; Unlock Darshan Booking
+          </button>
+          
+          <div style="text-align:center;">
+            <a onclick="sendOtpCode()" style="font-size:0.75rem; color:#64748b; text-decoration:underline;">Resend Code</a>
+          </div>
+        </div>
+
+        <div style="text-align:center; margin-top:1rem; border-top:1px solid #e2e8f0; padding-top:0.75rem;">
+          <button onclick="closeOtpModal()" class="btn btn-secondary btn-sm" style="font-size:0.75rem;">Close / Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== EMAIL CONFIRMATION PREVIEW MODAL ==================== -->
+    <div id="email-preview-modal" class="modal-overlay" style="display:none;">
+      <div class="modal-content" style="max-width:580px; padding:0; overflow:hidden;">
+        <!-- Email Client Simulation Header -->
+        <div style="background:#0f172a; color:#fff; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:8px; font-size:0.85rem;">
+            <i data-lucide="mail" style="color:#f59e0b; width:16px; height:16px;"></i>
+            <span><strong>Inbox: Official Temple E-Ticket Dispatch</strong></span>
+          </div>
+          <button onclick="closeEmailPreviewModal()" style="background:none; border:none; color:#fff; cursor:pointer; font-size:1.2rem;">&times;</button>
+        </div>
+
+        <div style="padding:1.5rem; background:#f8fafc; max-height:80vh; overflow-y:auto;">
+          <!-- Email Envelope details -->
+          <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:6px; padding:0.75rem 1rem; margin-bottom:1rem; font-size:0.775rem;">
+            <div><strong>From:</strong> reservations@srisiddhivinayaktemple.org (Verified Official)</div>
+            <div><strong>To:</strong> <span id="email-preview-to">ananya.deshmukh@gmail.com</span></div>
+            <div><strong>Subject:</strong> Confirmed Darshan Entry Pass #<span id="email-preview-sub-id">DAR-2026-000101</span> &bull; Sri Siddhivinayak Temple</div>
+            <div><strong>Date:</strong> <span id="email-preview-timestamp">Today at 01:25 PM</span></div>
+          </div>
+
+          <!-- Email Content Body -->
+          <div style="background:#ffffff; border:2px solid #b45309; border-radius:8px; padding:1.5rem; text-align:center;">
+            <div style="font-size:1.1rem; font-weight:800; color:#b45309; margin-bottom:2px;">Sri Siddhivinayak Temple Administration</div>
+            <div style="font-size:0.75rem; color:#64748b; margin-bottom:1rem;">Official Digital Darshan E-Ticket &amp; Security Pass</div>
+
+            <div id="email-qrcode-box" style="margin:0 auto 1rem; padding:8px; background:#fff; border:1px solid #e2e8f0; border-radius:6px; display:inline-block;"></div>
+
+            <div style="font-family:monospace; font-weight:800; font-size:1.2rem; color:#0f172a; margin-bottom:1rem;" id="email-preview-booking-id">
+              DAR-2026-000101
+            </div>
+
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:0.85rem; text-align:left; font-size:0.8rem; margin-bottom:1rem; line-height:1.6;">
+              <div><strong>Primary Devotee:</strong> <span id="email-preview-name">Ananya Deshmukh</span></div>
+              <div><strong>Visit Date:</strong> <span id="email-preview-date">2026-10-01</span></div>
+              <div><strong>Time Slot:</strong> <span id="email-preview-slot">08:00 AM - 10:00 AM</span></div>
+              <div><strong>Darshan Category:</strong> <span id="email-preview-type">General Darshan</span></div>
+              <div><strong>Devotee Party:</strong> <span id="email-preview-people">2 Person(s)</span></div>
+              <div><strong>Verified Govt ID:</strong> <span id="email-preview-idproof">AADHAAR (XXXX-XXXX-1920)</span></div>
+            </div>
+
+            <div style="font-size:0.75rem; color:#64748b; text-align:left; border-top:1px dashed #cbd5e1; padding-top:0.75rem;">
+              <strong>Important Devotee Instructions:</strong>
+              <ul style="padding-left:1.2rem; margin-top:4px;">
+                <li>Present this digital QR pass directly on your smartphone screen at Gate 1 Scanner.</li>
+                <li>Carry the original ID proof used during registration for random security audit.</li>
+                <li>Traditional Indian dress code is compulsory inside the Sanctum Sanctorum.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:#f1f5f9; padding:0.75rem 1rem; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.75rem; color:#64748b;">Attached: Official_Pass_E_Ticket.pdf (142 KB)</span>
+          <button onclick="closeEmailPreviewModal()" class="btn btn-primary btn-sm">Close Email</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 8. TEMPLE INFO VIEW ==================== -->
+    <div id="view-temple" style="display:none; max-width:850px; margin:0 auto;">
+      <h1 style="font-size:1.6rem; margin-bottom:0.5rem;">Temple Information & Guidelines</h1>
+      <p style="font-size:0.85rem; color:#64748b; margin-bottom:1.5rem;">Daily schedules, dress code, Annadanam, and facilities</p>
+      <div class="card">
+        <h2 class="card-title" style="margin-bottom:0.75rem;">Daily Pooja & Aarti Timings</h2>
+        <ul style="padding-left:1.25rem; font-size:0.9rem; line-height:1.8;">
+          <li><strong>05:00 AM:</strong> Suprabhata Seva & Temple Gate Opening</li>
+          <li><strong>06:00 AM - 12:30 PM:</strong> Morning Darshan Queue Slots</li>
+          <li><strong>12:30 PM - 03:30 PM:</strong> Madhyahna Pooja & Annadanam Break</li>
+          <li><strong>04:00 PM - 07:00 PM:</strong> Evening General Darshan</li>
+          <li><strong>07:00 PM:</strong> Maha Deeparadhana / Grand Evening Aarti</li>
+          <li><strong>08:00 PM - 10:30 PM:</strong> Night Darshan & Temple Closure</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ==================== 9. HELP & SOS VIEW ==================== -->
+    <div id="view-help" style="display:none; max-width:700px; margin:0 auto;">
+      <div class="card" style="border-color:#fca5a5;">
+        <h2 class="card-title" style="color:#991b1b; margin-bottom:0.5rem;"><i data-lucide="alert-triangle"></i> Ground Emergency SOS Dispatch</h2>
+        <p style="font-size:0.85rem; color:#64748b; margin-bottom:1rem;">Immediately transmits your location to on-duty medical and security staff</p>
+        <form onsubmit="handleSosSubmit(event)">
+          <div class="form-group">
+            <label class="form-label">Nature of Emergency</label>
+            <select id="sos-type" class="form-select">
+              <option>Medical (Dizziness, Heat, First-aid)</option>
+              <option>Lost Child / Missing Person</option>
+              <option>Security / Crowd Bottleneck</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Your Current Temple Area</label>
+            <select id="sos-area" class="form-select">
+              <option>Main Entrance & Security Gate</option>
+              <option>Queue Complex & Holding Bays</option>
+              <option>Main Sanctum / Darshan Hall</option>
+              <option>Prasadam Counter</option>
+              <option>Exit Corridor & Shoe Stand</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Describe Situation & Landmark</label>
+            <textarea id="sos-desc" class="form-textarea" required placeholder="e.g. Near holding bay 3, person needs immediate water and seating..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-danger btn-lg" style="width:100%;">Transmit Emergency SOS Alert</button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ==================== CHATBOT WIDGET ==================== -->
+  <div id="chatbot-container" style="position:fixed; bottom:20px; right:20px; z-index:999;">
+    <button id="chat-toggle-btn" onclick="toggleChatbot()" class="btn btn-primary" style="border-radius:9999px; padding:10px 16px; box-shadow:0 4px 12px rgba(180,83,9,0.3);">
+      <i data-lucide="message-square"></i> <span>Temple Assistant</span>
+    </button>
+
+    <div id="chat-box" style="display:none; width:340px; height:460px; background:#fff; border:1px solid var(--border); border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.15); flex-direction:column; overflow:hidden; position:absolute; bottom:50px; right:0;">
+      <div style="background:var(--primary); color:#fff; padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-weight:600; font-size:0.9rem;">Temple Information Assistant</div>
+        <button onclick="toggleChatbot()" style="background:none; border:none; color:#fff; font-size:1.1rem; cursor:pointer;">&times;</button>
+      </div>
+      <div id="chat-messages" style="flex:1; padding:12px; overflow-y:auto; background:#f8fafc; font-size:0.85rem; display:flex; flex-direction:column; gap:8px;">
+        <div style="background:#fff; padding:8px 12px; border-radius:6px; border:1px solid #e2e8f0;">
+          Namaste! I am your Temple Assistant. You can ask me about darshan timings, dress code, parking, or booking cancellation.
+        </div>
+      </div>
+      <div style="padding:6px; background:#fff; border-top:1px solid #f1f5f9; display:flex; gap:4px; overflow-x:auto;">
+        <button onclick="sendQuickQuery('What time does darshan start?')" style="background:#f1f5f9; border:none; border-radius:10px; padding:2px 8px; font-size:0.7rem; cursor:pointer; white-space:nowrap;">Darshan Timings</button>
+        <button onclick="sendQuickQuery('What is the dress code?')" style="background:#f1f5f9; border:none; border-radius:10px; padding:2px 8px; font-size:0.7rem; cursor:pointer; white-space:nowrap;">Dress Code</button>
+        <button onclick="sendQuickQuery('Where is parking?')" style="background:#f1f5f9; border:none; border-radius:10px; padding:2px 8px; font-size:0.7rem; cursor:pointer; white-space:nowrap;">Parking Area</button>
+      </div>
+      <form onsubmit="handleChatSubmit(event)" style="padding:8px; border-top:1px solid var(--border); display:flex; gap:6px;">
+        <input type="text" id="chat-input" placeholder="Type a question..." style="flex:1; padding:6px 8px; border:1px solid #cbd5e1; border-radius:4px; font-size:0.85rem;">
+        <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="send" style="width:14px; height:14px;"></i></button>
+      </form>
+    </div>
+  </div>
+
+  <!-- State & Logic Script -->
+  <script>
+    // State Store
+    const state = {
+      role: 'PILGRIM',
+      areas: [
+        { id: 'area-1', name: 'Main Entrance Gate', capacity: 250, count: 110, level: 'LOW', pct: 44.0, cam: 'CAM-01' },
+        { id: 'area-2', name: 'Queue Holding Bays', capacity: 350, count: 285, level: 'HIGH', pct: 81.4, cam: 'CAM-02' },
+        { id: 'area-3', name: 'Sanctum Darshan Hall', capacity: 180, count: 105, level: 'MODERATE', pct: 58.3, cam: 'CAM-03' },
+        { id: 'area-4', name: 'Prasadam Distribution', capacity: 200, count: 95, level: 'LOW', pct: 47.5, cam: 'CAM-04' },
+        { id: 'area-5', name: 'Exit & Shoe Stand', capacity: 150, count: 45, level: 'LOW', pct: 30.0, cam: 'CAM-05' },
+        { id: 'area-6', name: 'North & South Parking', capacity: 300, count: 190, level: 'MODERATE', pct: 63.3, cam: 'CAM-06' }
+      ],
+      queue: { token: 'A-142', waiting: 58, waitTime: 25, status: 'ACTIVE' },
+      bookings: [
+        { id: 'DAR-2026-000101', name: 'Ananya Deshmukh', phone: '+91 98201 55667', type: 'General Darshan (Sarva Darshanam)', date: '2026-10-01', slot: '08:00 AM - 10:00 AM', people: 2, status: 'CONFIRMED', qr: 'QR-DAR-2026-000101-SECURE-TOKEN-X79' },
+        { id: 'DAR-2026-000102', name: 'Ananya Deshmukh', phone: '+91 98201 55667', type: 'Special Quick Darshan (Sheegra Darshanam)', date: '2026-10-02', slot: '10:00 AM - 12:00 PM', people: 3, status: 'CONFIRMED', qr: 'QR-DAR-2026-000102-SECURE-TOKEN-M42' },
+        { id: 'DAR-2026-000088', name: 'Ananya Deshmukh', phone: '+91 98201 55667', type: 'General Darshan', date: '2026-09-20', slot: '06:00 AM - 08:00 AM', people: 1, status: 'CHECKED_IN', qr: 'QR-PAST-TOKEN-88' }
+      ],
+      staff: [
+        { code: 'EMP-SEC-101', name: 'Rajesh Sharma', dept: 'Entry Management', area: 'Main Entrance Gate' },
+        { code: 'EMP-QUE-102', name: 'Venkatesh Rao', dept: 'Queue Management', area: 'Queue Holding Bays' },
+        { code: 'EMP-SEC-103', name: 'Manish Verma', dept: 'Security', area: 'Sanctum Darshan Hall' },
+        { code: 'EMP-HLP-104', name: 'Kavita Sundaram', dept: 'Help Desk', area: 'Main Entrance Gate' },
+        { code: 'EMP-MED-105', name: 'Dr. Srinivas Murthy', dept: 'Medical Unit', area: 'Sanctum Darshan Hall' }
+      ],
+      categories: [
+        { id: 'cat-gen', name: 'General Darshan (Sarva Darshanam)', desc: 'Free general admission queue through standard holding bays with holy prasadam.', price: 'Free', isFree: true, dur: '45-60m', quota: 200, remaining: 142 },
+        { id: 'cat-quick', name: 'Special Quick Darshan (Sheegra Darshanam)', desc: 'Dedicated priority bypass line with accelerated sanctum entry.', price: '₹300', isFree: false, dur: '20-30m', quota: 100, remaining: 68 },
+        { id: 'cat-sr', name: 'Senior Citizen & Specially-Abled Darshan', desc: 'Battery-operated buggy transport assistance with zero-stairway movement.', price: 'Free', isFree: true, dur: '20m', quota: 60, remaining: 41 },
+        { id: 'cat-sup', name: 'Suprabhata & Abhishekam Special Entry', desc: 'Early morning Vedic ritual viewing with sacred theertham blessings.', price: '₹500', isFree: false, dur: '60m', quota: 50, remaining: 19 }
+      ],
+      slots: [
+        { time: '06:00 AM - 08:00 AM', booked: 32, max: 100 },
+        { time: '08:00 AM - 10:00 AM', booked: 55, max: 100 },
+        { time: '10:00 AM - 12:00 PM', booked: 64, max: 100 },
+        { time: '12:00 PM - 02:00 PM', booked: 40, max: 100 },
+        { time: '04:00 PM - 06:00 PM', booked: 35, max: 100 },
+        { time: '06:00 PM - 08:00 PM', booked: 20, max: 100 }
+      ]
+    };
+
+    // Defensive helper to safely invoke Lucide icons
+    function safeCreateIcons() {
+      try {
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+          window.lucide.createIcons();
+        }
+      } catch (e) {
+        console.warn('Lucide icon rendering warning:', e);
+      }
+    }
+
+    // Defensive helper to safely render QR codes with fallback
+    function safeRenderQr(container, text, width = 160, height = 160) {
+      if (!container) return;
+      container.innerHTML = '';
+      try {
+        if (typeof QRCode !== 'undefined') {
+          new QRCode(container, { text: text || '', width, height, colorDark: "#0f172a", colorLight: "#ffffff" });
+        } else {
+          container.innerHTML = `<div style="padding:10px; font-family:monospace; font-size:11px; background:#f1f5f9; border-radius:6px; word-break:break-all;"><strong>[SECURE QR TOKEN]</strong><br>${text || 'TOKEN'}</div>`;
+        }
+      } catch (e) {
+        console.warn('QR Code generation fallback:', e);
+        container.innerHTML = `<div style="padding:10px; font-family:monospace; font-size:11px; background:#f1f5f9; border-radius:6px; word-break:break-all;"><strong>[SECURE QR TOKEN]</strong><br>${text || 'TOKEN'}</div>`;
+      }
+    }
+
+    // Simulate Crowd Fluctuation
+    function simulateCrowdShift() {
+      state.areas.forEach(a => {
+        const delta = Math.floor((Math.random() - 0.48) * (a.capacity * 0.12));
+        a.count = Math.max(15, Math.min(a.capacity, a.count + delta));
+        a.pct = parseFloat(((a.count / a.capacity) * 100).toFixed(1));
+        if (a.pct >= 75) a.level = 'HIGH';
+        else if (a.pct >= 45) a.level = 'MODERATE';
+        else a.level = 'LOW';
+      });
+
+      const total = state.areas.reduce((s, a) => s + a.count, 0);
+      document.getElementById('home-crowd-count').innerText = `${total} pilgrims`;
+      renderHeatmaps();
+      showToast(`AI Computer Vision Updated: Total detected crowd inside temple is ${total} pilgrims.`);
+    }
+
+    function showToast(text) {
+      document.getElementById('toast-text').innerText = text;
+      document.getElementById('toast-container').style.display = 'block';
+    }
+
+    // Government ID State & Handlers
+    let currentIdType = 'AADHAAR';
+
+    function setIdType(type) {
+      currentIdType = type;
+      const btnAadhaar = document.getElementById('id-tab-aadhaar');
+      const btnPan = document.getElementById('id-tab-pan');
+      const btnVoter = document.getElementById('id-tab-voter');
+      const btnPassport = document.getElementById('id-tab-passport');
+      const label = document.getElementById('id-input-label');
+      const input = document.getElementById('book-idproof');
+      const note = document.getElementById('id-helper-note');
+      const cardType = document.getElementById('card-type-label');
+      const cardIssuer = document.getElementById('card-issuer-label');
+
+      // Reset tab button styles
+      [btnAadhaar, btnPan, btnVoter, btnPassport].forEach(b => {
+        b.style.background = '#f8fafc';
+        b.style.color = '#475569';
+        b.style.border = '1px solid #cbd5e1';
+      });
+
+      if (type === 'AADHAAR') {
+        btnAadhaar.style.background = '#fef3c7';
+        btnAadhaar.style.color = '#b45309';
+        btnAadhaar.style.border = '1.5px solid #b45309';
+        label.innerText = 'Masked Aadhaar Number (UIDAI Compliant)';
+        input.placeholder = 'XXXX-XXXX-1920';
+        input.value = 'XXXX-XXXX-1920';
+        note.innerText = 'UIDAI Privacy Compliant: Full 12-digit number is never stored. Only masked token & last 4 digits are verified.';
+        cardType.innerText = 'Masked Aadhaar Card';
+        cardIssuer.innerText = 'GOVT OF INDIA • UIDAI';
+      } else if (type === 'PAN') {
+        btnPan.style.background = '#fef3c7';
+        btnPan.style.color = '#b45309';
+        btnPan.style.border = '1.5px solid #b45309';
+        label.innerText = 'Permanent Account Number (PAN Card)';
+        input.placeholder = 'ABCDE1234F';
+        input.value = 'ABCDE1234F';
+        note.innerText = 'Income Tax Dept Format: 10 alphanumeric characters (5 letters, 4 digits, 1 letter).';
+        cardType.innerText = 'Income Tax PAN Card';
+        cardIssuer.innerText = 'INCOME TAX DEPT • GOVT OF INDIA';
+      } else if (type === 'VOTER') {
+        btnVoter.style.background = '#fef3c7';
+        btnVoter.style.color = '#b45309';
+        btnVoter.style.border = '1.5px solid #b45309';
+        label.innerText = 'Voter Identity Card (EPIC Number)';
+        input.placeholder = 'WBF1982736';
+        input.value = 'WBF1982736';
+        note.innerText = 'Election Commission of India (ECI) Photo Identity Card.';
+        cardType.innerText = 'Elector Photo ID (Voter)';
+        cardIssuer.innerText = 'ELECTION COMMISSION OF INDIA';
+      } else if (type === 'PASSPORT') {
+        btnPassport.style.background = '#fef3c7';
+        btnPassport.style.color = '#b45309';
+        btnPassport.style.border = '1.5px solid #b45309';
+        label.innerText = 'Passport Number (Indian / Foreign)';
+        input.placeholder = 'Z8472910';
+        input.value = 'Z8472910';
+        note.innerText = 'Ministry of External Affairs Passport / Travel Document for NRI & International pilgrims.';
+        cardType.innerText = 'Republic of India Passport';
+        cardIssuer.innerText = 'MINISTRY OF EXTERNAL AFFAIRS';
+      }
+      handleIdInputChange(input.value);
+    }
+
+    function handleIdInputChange(val) {
+      const cardNum = document.getElementById('card-number-preview');
+      let cleanVal = val.trim();
+      if (currentIdType === 'PAN') {
+        cleanVal = cleanVal.toUpperCase();
+        document.getElementById('book-idproof').value = cleanVal;
+      }
+      cardNum.innerText = cleanVal || '••••••••••••';
+      updateIdCardPreview();
+    }
+
+    function updateIdCardPreview() {
+      const name = document.getElementById('book-name').value || 'Ananya Deshmukh';
+      document.getElementById('card-name-preview').innerText = name;
+    }
+
+    // Booking Submission Handler
+    function handleBookingSubmit(e) {
+      e.preventDefault();
+      const date = document.getElementById('book-date').value || new Date().toISOString().split('T')[0];
+      const type = document.getElementById('book-type').value;
+      const slot = document.getElementById('book-slot').value;
+      const name = document.getElementById('book-name').value;
+      const phone = document.getElementById('book-phone').value;
+      const people = parseInt(document.getElementById('book-count').value, 10) || 1;
+      const idProof = document.getElementById('book-idproof').value || 'XXXX-XXXX-1920';
+
+      // Deduct from remaining passes for this category & slot
+      const cat = state.categories.find(c => c.name === type);
+      if (cat) {
+        if (cat.remaining < people) {
+          alert(`Selected category only has ${cat.remaining} passes remaining. Requested: ${people}.`);
+          return;
+        }
+        cat.remaining = Math.max(0, cat.remaining - people);
+      }
+
+      const slotObj = state.slots.find(s => s.time === slot);
+      if (slotObj) {
+        slotObj.booked += people;
+      }
+
+      const num = state.bookings.length + 126;
+      const bookingId = `DAR-2026-${String(num).padStart(6, '0')}`;
+      const token = `QR-${bookingId}-SECURE-TOKEN-X79`;
+
+      const formattedIdProof = `${currentIdType}: ${idProof}`;
+      const newBooking = { id: bookingId, name, phone, type, date, slot, people, status: 'CONFIRMED', qr: token, idType: currentIdType, idProof: formattedIdProof };
+      state.bookings.unshift(newBooking);
+
+      // Live update cards, category dropdowns, and time slots
+      renderDarshanCards();
+      updateCategorySelect();
+      updateSlots();
+
+      // Render Pass
+      document.getElementById('pass-id').innerText = bookingId;
+      document.getElementById('pass-name').innerText = name;
+      document.getElementById('pass-phone').innerText = phone;
+      document.getElementById('pass-date').innerText = date;
+      document.getElementById('pass-slot').innerText = slot;
+      document.getElementById('pass-type').innerText = type.split('(')[0];
+      document.getElementById('pass-people').innerText = `${people} Person(s)`;
+      document.getElementById('pass-idproof').innerText = `${formattedIdProof} ✓`;
+
+      // Render QR Code onto DOM
+      const qrBox = document.getElementById('qrcode-box');
+      safeRenderQr(qrBox, token, 160, 160);
+
+      renderPilgrimTable();
+      switchView('pass');
+      showToast(`Darshan Pass ${bookingId} booked! ${cat ? cat.remaining : 0} passes remaining in ${type.split('(')[0]}.`);
+    }
+
+    function renderDarshanCards() {
+      const container = document.getElementById('home-darshan-cards');
+      if (!container) return;
+      container.innerHTML = state.categories.map(d => `
+        <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
+              <h3 style="font-size:1.05rem; color:#0f172a;">${d.name}</h3>
+              <span style="font-weight:700; color:${d.price==='Free'?'#166534':'#b45309'};">${d.price}</span>
+            </div>
+            <p style="font-size:0.85rem; color:#475569; margin-bottom:0.75rem;">${d.desc}</p>
+            <div style="font-size:0.75rem; color:#64748b; margin-bottom:0.75rem; background:#f8fafc; border:1px solid #e2e8f0; padding:6px 10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+              <span>Approx: ${d.dur}</span>
+              <span>
+                <strong style="color:${d.remaining > 0 ? (d.isFree ? '#166534' : '#b45309') : '#991b1b'};">
+                  ${d.isFree ? 'Free Passes Left:' : 'Passes Available:'} ${d.remaining} / ${d.quota}
+                </strong>
+              </span>
+            </div>
+          </div>
+          <button onclick="startBookingCategory('${d.name}')" class="btn btn-primary btn-sm" ${d.remaining <= 0 ? 'disabled style="opacity:0.6; cursor:not-allowed;"' : ''}>
+            ${d.remaining <= 0 ? 'Quota Full' : (d.isFree ? 'Book Free Pass' : 'Book Paid Pass')}
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function updateCategorySelect() {
+      const typeSelect = document.getElementById('book-type');
+      if (!typeSelect) return;
+      const currentVal = typeSelect.value;
+      typeSelect.innerHTML = state.categories.map(c => `
+        <option value="${c.name}" ${currentVal === c.name ? 'selected' : ''}>
+          ${c.name} (${c.isFree ? 'Free' : c.price} - ${c.remaining} passes left)
+        </option>
+      `).join('');
+    }
+
+    function updateSlots() {
+      const typeSelect = document.getElementById('book-type');
+      const slotSelect = document.getElementById('book-slot');
+      if (!typeSelect || !slotSelect) return;
+
+      const selectedName = typeSelect.value;
+      const cat = state.categories.find(c => c.name === selectedName) || state.categories[0];
+
+      slotSelect.innerHTML = state.slots.map(s => {
+        const slotCap = Math.round(cat.quota / 2);
+        const remaining = Math.max(0, slotCap - s.booked);
+        const isFull = remaining <= 0;
+        return `<option value="${s.time}" ${isFull ? 'disabled' : ''}>${s.time} (${remaining > 0 ? `${remaining} passes remaining` : 'FULL'})</option>`;
+      }).join('');
+    }
+
+    function startBookingCategory(catName) {
+      const typeSelect = document.getElementById('book-type');
+      if (typeSelect && catName) {
+        typeSelect.value = catName;
+        updateSlots();
+      }
+      switchView('book');
+    }
+
+    // Render Pilgrim Table
+    function renderPilgrimTable() {
+      const tbody = document.getElementById('pilgrim-bookings-tbody');
+      tbody.innerHTML = state.bookings.map(b => `
+        <tr>
+          <td style="font-weight:600; font-family:monospace;">${b.id}</td>
+          <td>${b.type.split('(')[0]}</td>
+          <td>${b.date}</td>
+          <td>${b.slot}</td>
+          <td>${b.people} person(s)</td>
+          <td><span class="badge badge-${b.status==='CONFIRMED'?'confirmed':(b.status==='CHECKED_IN'?'checked-in':'cancelled')}">${b.status}</span></td>
+          <td><button onclick="viewSinglePass('${b.id}')" class="btn btn-secondary btn-sm"><i data-lucide="qr-code" style="width:13px; height:13px;"></i> QR Pass</button></td>
+        </tr>
+      `).join('');
+      safeCreateIcons();
+    }
+
+    function viewSinglePass(id) {
+      const b = state.bookings.find(x => x.id === id);
+      if (!b) return;
+      document.getElementById('pass-id').innerText = b.id;
+      document.getElementById('pass-name').innerText = b.name;
+      document.getElementById('pass-phone').innerText = b.phone;
+      document.getElementById('pass-date').innerText = b.date;
+      document.getElementById('pass-slot').innerText = b.slot;
+      document.getElementById('pass-type').innerText = b.type.split('(')[0];
+      document.getElementById('pass-people').innerText = `${b.people} Person(s)`;
+      document.getElementById('pass-idproof').innerText = b.idProof ? `${b.idProof} ✓` : 'AADHAAR (XXXX-XXXX-1920) ✓';
+
+      const qrBox = document.getElementById('qrcode-box');
+      safeRenderQr(qrBox, b.qr, 160, 160);
+
+      switchView('pass');
+    }
+
+    // Staff Camera Scanner & Verification State
+    let html5QrCodeScanner = null;
+    let isCameraScanning = false;
+    let isContinuousScanMode = false;
+    let availableCameras = [];
+
+    function playAudioTone(type) {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'success') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+          osc.frequency.setValueAtTime(880, ctx.currentTime + 0.08); // A5
+          gain.gain.setValueAtTime(0.18, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.28);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.28);
+        } else if (type === 'warning') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(440, ctx.currentTime);
+          osc.frequency.setValueAtTime(330, ctx.currentTime + 0.12);
+          gain.gain.setValueAtTime(0.2, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.3);
+        } else {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(220, ctx.currentTime);
+          osc.frequency.setValueAtTime(160, ctx.currentTime + 0.15);
+          gain.gain.setValueAtTime(0.25, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.38);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.38);
+        }
+      } catch (e) {
+        console.warn('Audio tone unavailable', e);
+      }
+    }
+
+    async function toggleCameraScanner() {
+      if (isCameraScanning) {
+        await stopCameraScanner();
+      } else {
+        await startCameraScanner();
+      }
+    }
+
+    async function startCameraScanner(specificCameraId = null) {
+      const container = document.getElementById('camera-scanner-container');
+      const laser = document.getElementById('scanner-laser');
+      const btnText = document.getElementById('camera-btn-text');
+      const select = document.getElementById('camera-device-select');
+
+      container.style.display = 'block';
+      laser.style.display = 'block';
+      btnText.innerText = 'Stop Camera';
+
+      if (!html5QrCodeScanner) {
+        html5QrCodeScanner = new Html5Qrcode("qr-reader");
+      }
+
+      // Enumerate available video cameras
+      try {
+        const devices = await Html5Qrcode.getCameras();
+        if (devices && devices.length) {
+          availableCameras = devices;
+          select.innerHTML = devices.map((d, i) => `<option value="${d.id}" ${d.id === specificCameraId ? 'selected' : ''}>${d.label || `Camera ${i + 1}`}</option>`).join('');
+        } else {
+          select.innerHTML = `<option value="">Default Camera</option>`;
+        }
+      } catch (err) {
+        console.warn('Camera enumeration note:', err);
+      }
+
+      const cameraConfig = specificCameraId 
+        ? specificCameraId 
+        : { facingMode: "environment" };
+
+      const qrConfig = {
+        fps: 15,
+        qrbox: (viewfinderWidth, viewfinderHeight) => {
+          const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+          const edgeSize = Math.floor(minEdge * 0.75);
+          return { width: edgeSize, height: edgeSize };
+        },
+        aspectRatio: 1.33
+      };
+
+      try {
+        await html5QrCodeScanner.start(
+          cameraConfig,
+          qrConfig,
+          (decodedText) => {
+            onQrCodeDetected(decodedText);
+          },
+          (errorMessage) => {
+            // scanning loop frame...
+          }
+        );
+        isCameraScanning = true;
+      } catch (err) {
+        console.error("Camera scanner failed to start:", err);
+        alert("Camera access was denied or no active camera found. Please ensure you allow camera permissions in your browser bar.");
+        await stopCameraScanner();
+      }
+      safeCreateIcons();
+    }
+
+    async function stopCameraScanner() {
+      if (html5QrCodeScanner && isCameraScanning) {
+        try {
+          await html5QrCodeScanner.stop();
+        } catch (e) {
+          console.warn("Camera stop error:", e);
+        }
+      }
+      isCameraScanning = false;
+      document.getElementById('camera-scanner-container').style.display = 'none';
+      document.getElementById('scanner-laser').style.display = 'none';
+      document.getElementById('camera-btn-text').innerText = 'Open Live Camera Scan';
+      safeCreateIcons();
+    }
+
+    async function changeCameraDevice(deviceId) {
+      if (!deviceId) return;
+      if (isCameraScanning) {
+        await html5QrCodeScanner.stop();
+        isCameraScanning = false;
+      }
+      await startCameraScanner(deviceId);
+    }
+
+    function toggleContinuousScan() {
+      isContinuousScanMode = !isContinuousScanMode;
+      const btn = document.getElementById('btn-continuous-mode');
+      btn.innerText = isContinuousScanMode ? 'Mode: Continuous (Fast)' : 'Mode: Single Scan';
+      btn.style.background = isContinuousScanMode ? '#166534' : '#334155';
+      showToast(isContinuousScanMode ? 'Continuous scan enabled: Camera will stay active after each pass.' : 'Single scan enabled: Camera closes upon verification.');
+    }
+
+    async function handleQrFileUpload(input) {
+      if (!input.files || input.files.length === 0) return;
+      const file = input.files[0];
+
+      if (!html5QrCodeScanner) {
+        html5QrCodeScanner = new Html5Qrcode("qr-reader");
+      }
+
+      try {
+        const decodedText = await html5QrCodeScanner.scanFile(file, true);
+        onQrCodeDetected(decodedText);
+        showToast(`Extracted QR code from uploaded image: ${decodedText}`);
+      } catch (err) {
+        alert("Could not detect a clear QR Code in the uploaded image. Please upload a clear photo of the Darshan QR pass.");
+      }
+      input.value = '';
+    }
+
+    function onQrCodeDetected(decodedText) {
+      document.getElementById('scanner-input').value = decodedText;
+      handleScanVerify();
+
+      if (!isContinuousScanMode) {
+        stopCameraScanner();
+      }
+    }
+
+    // Staff Scanner Verification
+    function setScanToken(t) {
+      document.getElementById('scanner-input').value = t;
+      handleScanVerify();
+    }
+
+    function handleScanVerify() {
+      const input = document.getElementById('scanner-input').value.trim();
+      const fb = document.getElementById('scan-feedback');
+      fb.style.display = 'block';
+
+      const booking = state.bookings.find(b => b.qr === input || b.id === input);
+      if (!booking) {
+        playAudioTone('error');
+        fb.innerHTML = `
+          <div class="alert alert-danger" style="display:flex; align-items:flex-start; gap:10px;">
+            <i data-lucide="x-circle" style="color:#dc2626; flex-shrink:0; margin-top:2px;"></i>
+            <div>
+              <div style="font-weight:700; font-size:0.95rem;">✕ REJECT ENTRY - INVALID / UNREGISTERED TOKEN</div>
+              <div style="font-size:0.8rem; color:#7f1d1d; margin-top:3px;">No darshan reservation matching <code>${input || 'EMPTY'}</code> exists in temple database. Entry is denied.</div>
+            </div>
+          </div>
+        `;
+      } else if (booking.status === 'CHECKED_IN') {
+        playAudioTone('warning');
+        fb.innerHTML = `
+          <div class="alert alert-warning" style="display:flex; align-items:flex-start; gap:10px;">
+            <i data-lucide="alert-triangle" style="color:#d97706; flex-shrink:0; margin-top:2px;"></i>
+            <div>
+              <div style="font-weight:700; font-size:0.95rem;">⚠️ PASS ALREADY CHECKED IN (DOUBLE ENTRY ATTEMPT)</div>
+              <div style="font-size:0.8rem; color:#78350f; margin-top:3px;">
+                Entry pass for <strong>${booking.name}</strong> (${booking.id}) was already scanned and verified today. Re-entry using duplicate QR screenshot is prohibited.
+              </div>
+            </div>
+          </div>
+        `;
+      } else {
+        playAudioTone('success');
+        booking.status = 'CHECKED_IN';
+        fb.innerHTML = `
+          <div class="alert alert-success" style="border:1.5px solid #16a34a; background:#f0fdf4; padding:1.25rem;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:0.75rem;">
+              <i data-lucide="check-circle-2" style="color:#16a34a; width:28px; height:28px;"></i>
+              <div>
+                <div style="font-weight:800; font-size:1.05rem; color:#15803d;">✓ ENTRY PERMITTED - VALID DARSHAN PASS</div>
+                <div style="font-size:0.75rem; color:#166534;">Verified by Officer Rajesh Sharma &bull; Main Gate Lane 1</div>
+              </div>
+            </div>
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#ffffff; border:1px solid #bbf7d0; border-radius:6px; padding:0.85rem; font-size:0.825rem; color:#0f172a;">
+              <div><span style="color:#64748b;">Pilgrim Name:</span> <strong>${booking.name}</strong></div>
+              <div><span style="color:#64748b;">Booking ID:</span> <strong>${booking.id}</strong></div>
+              <div><span style="color:#64748b;">Darshan Category:</span> <strong>${booking.type}</strong></div>
+              <div><span style="color:#64748b;">Allowed Party:</span> <strong>${booking.people} Person(s)</strong></div>
+              <div><span style="color:#64748b;">Time Slot:</span> <strong>${booking.slot}</strong></div>
+              <div><span style="color:#64748b;">Contact:</span> <strong>${booking.phone}</strong></div>
+            </div>
+          </div>
+        `;
+        renderPilgrimTable();
+      }
+      safeCreateIcons();
+    }
+
+    // Queue Control
+    function advanceQueue() {
+      const num = parseInt(state.queue.token.split('-')[1]) + 1;
+      state.queue.token = `A-${num}`;
+      state.queue.waiting = Math.max(0, state.queue.waiting - 1);
+      state.queue.waitTime = Math.ceil(state.queue.waiting * 0.45);
+
+      document.getElementById('staff-serving-token').innerText = state.queue.token;
+      document.getElementById('staff-waiting-count').innerText = state.queue.waiting;
+      document.getElementById('staff-wait-time').innerText = `${state.queue.waitTime}m`;
+      showToast(`Queue advanced to Token ${state.queue.token}.`);
+    }
+
+    function togglePauseQueue() {
+      const btn = document.getElementById('pause-queue-btn');
+      const badge = document.getElementById('staff-queue-status');
+      if (state.queue.status === 'ACTIVE') {
+        state.queue.status = 'PAUSED';
+        btn.innerHTML = `<i data-lucide="play"></i> Resume Lane`;
+        badge.className = 'badge badge-high';
+        badge.innerText = 'PAUSED';
+      } else {
+        state.queue.status = 'ACTIVE';
+        btn.innerHTML = `<i data-lucide="pause"></i> Pause Lane`;
+        badge.className = 'badge badge-confirmed';
+        badge.innerText = 'ACTIVE';
+      }
+      safeCreateIcons();
+    }
+
+    // Chatbot Assistant
+    function toggleChatbot() {
+      const box = document.getElementById('chat-box');
+      box.style.display = box.style.display === 'none' ? 'flex' : 'none';
+      safeCreateIcons();
+    }
+
+    function sendQuickQuery(q) {
+      document.getElementById('chat-input').value = q;
+      handleChatSubmit(new Event('submit'));
+    }
+
+    function handleChatSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const msgs = document.getElementById('chat-messages');
+      msgs.innerHTML += `<div style="background:#b45309; color:#fff; padding:6px 10px; border-radius:6px; align-self:flex-end; max-width:80%;">${text}</div>`;
+      input.value = '';
+
+      let reply = 'I can answer questions regarding darshan slots, daily ritual schedules, dress code, parking capacity, or emergency contacts.';
+      const q = text.toLowerCase();
+      if (q.includes('time') || q.includes('timing') || q.includes('open')) {
+        reply = 'Temple gates open daily at 05:00 AM (Suprabhata Seva) and close at 10:30 PM. Evening Maha Aarti is conducted at 07:00 PM.';
+      } else if (q.includes('dress') || q.includes('cloth') || q.includes('rule')) {
+        reply = 'Traditional attire is recommended: Dhoti/Kurta for men; Saree or Salwar Kameez for women. Footwear is deposited near Gate 1.';
+      } else if (q.includes('park') || q.includes('car')) {
+        reply = 'North and South Parking lots have capacity for 300+ cars and 500 two-wheelers. Current occupancy is Moderate.';
+      } else if (q.includes('book') || q.includes('ticket')) {
+        reply = 'You can book slots directly in the "Book Darshan" tab by choosing your date, category (General or Special ₹300), and slot time.';
+      }
+
+      setTimeout(() => {
+        msgs.innerHTML += `<div style="background:#fff; padding:8px 12px; border-radius:6px; border:1px solid #e2e8f0; align-self:flex-start; max-width:85%;">${reply}</div>`;
+        msgs.scrollTop = msgs.scrollHeight;
+      }, 400);
+    }
+
+    // CCTV Feeds & AI Detection Simulation
+    const cctvFeeds = [
+      { id: 'cam-1', code: 'CAM-01', name: 'Main Entrance Gate', zone: 'Zone 1 (Lanes 1-4)', capacity: 250, count: 110, level: 'LOW', bg: '#131c2e', color: '#22c55e' },
+      { id: 'cam-2', code: 'CAM-02', name: 'Queue Holding Bays', zone: 'Bays A, B, C & D', capacity: 350, count: 285, level: 'HIGH', bg: '#2b1313', color: '#ef4444' },
+      { id: 'cam-3', code: 'CAM-03', name: 'Sanctum Darshan Hall', zone: 'Inner Garbhagriha Line', capacity: 180, count: 105, level: 'MODERATE', bg: '#282312', color: '#eab308' },
+      { id: 'cam-4', code: 'CAM-04', name: 'Prasadam Distribution', zone: 'Annadanam Counter Complex', capacity: 200, count: 95, level: 'LOW', bg: '#15241b', color: '#22c55e' },
+      { id: 'cam-5', code: 'CAM-05', name: 'Exit & Footwear Depot', zone: 'North Arcade Exit', capacity: 150, count: 45, level: 'LOW', bg: '#15202b', color: '#22c55e' },
+      { id: 'cam-6', code: 'CAM-06', name: 'Parking & Transit Plaza', zone: 'North & South Parking', capacity: 300, count: 190, level: 'MODERATE', bg: '#211d29', color: '#eab308' }
+    ];
+
+    let showAiBoxes = true;
+    let cctvAnimationTimer = null;
+    let pilgrimSimEntities = {};
+
+    function toggleAiBoundingBoxes() {
+      showAiBoxes = !showAiBoxes;
+      const btn = document.getElementById('btn-toggle-boxes');
+      btn.innerHTML = `<i data-lucide="scan" style="width:14px; height:14px;"></i> AI Bounding Boxes: ${showAiBoxes ? 'ON' : 'OFF'}`;
+      safeCreateIcons();
+    }
+
+    function initCctvSimulation() {
+      const container = document.getElementById('cctv-matrix-container');
+      if (!container) return;
+
+      container.innerHTML = cctvFeeds.map(c => `
+        <div class="cctv-feed-card" id="card-${c.id}">
+          <div class="cctv-header">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="width:8px; height:8px; background:#ef4444; border-radius:50%; display:inline-block; animation:pulse 1s infinite;"></span>
+              <strong>${c.code}</strong> &bull; <span>${c.name}</span>
+            </div>
+            <span class="badge badge-${c.level==='HIGH'?'high':(c.level==='MODERATE'?'medium':'confirmed')}" style="font-size:0.65rem; padding:2px 6px;">
+              ${c.level}
+            </span>
+          </div>
+
+          <div class="cctv-video-container" onclick="openCctvModal('${c.id}')" style="cursor:pointer;" title="Click to inspect camera feed in HD">
+            <canvas id="canvas-${c.id}" width="320" height="180" class="cctv-canvas"></canvas>
+            <div class="cctv-scanline"></div>
+            <div class="cctv-hud-overlay">
+              <div class="cctv-hud-top">
+                <span id="cctv-time-${c.id}">00:00:00 LIVE</span>
+                <span>REC &bull; 30 FPS</span>
+              </div>
+              <div class="cctv-hud-bottom">
+                <span style="background:rgba(0,0,0,0.7); padding:2px 4px; border-radius:2px; font-size:0.65rem;" id="cctv-count-${c.id}">
+                  YOLOv8: ${c.count} Persons [${Math.round((c.count/c.capacity)*100)}%]
+                </span>
+                <span style="background:rgba(180,83,9,0.8); padding:2px 6px; border-radius:2px; font-size:0.65rem;">
+                  HD 1080P
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // Initialize pilgrim entities per camera
+      cctvFeeds.forEach(c => {
+        pilgrimSimEntities[c.id] = [];
+        const numEntities = Math.min(14, Math.max(5, Math.floor(c.count / 15)));
+        for (let i = 0; i < numEntities; i++) {
+          pilgrimSimEntities[c.id].push({
+            x: 20 + Math.random() * 260,
+            y: 40 + Math.random() * 100,
+            w: 18 + Math.random() * 8,
+            h: 36 + Math.random() * 12,
+            vx: (Math.random() - 0.5) * 1.2,
+            vy: (Math.random() - 0.5) * 0.8,
+            conf: Math.floor(88 + Math.random() * 11),
+            id: 100 + i
+          });
+        }
+      });
+
+      if (cctvAnimationTimer) cancelAnimationFrame(cctvAnimationTimer);
+      animateCctvCanvases();
+    }
+
+    function animateCctvCanvases() {
+      const nowStr = new Date().toTimeString().split(' ')[0];
+      
+      cctvFeeds.forEach(c => {
+        const timeEl = document.getElementById(`cctv-time-${c.id}`);
+        if (timeEl) timeEl.innerText = `${c.code} ${nowStr} LIVE`;
+
+        const canvas = document.getElementById(`canvas-${c.id}`);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width;
+        const h = canvas.height;
+
+        // Background / Temple floor
+        ctx.fillStyle = c.bg;
+        ctx.fillRect(0, 0, w, h);
+
+        // Perspective queue guide lines
+        ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, 50); ctx.lineTo(w, 50);
+        ctx.moveTo(0, 110); ctx.lineTo(w, 110);
+        ctx.moveTo(0, 160); ctx.lineTo(w, 160);
+        ctx.stroke();
+
+        // Queue barricades simulation
+        ctx.strokeStyle = 'rgba(180, 83, 9, 0.2)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(30, 45, 260, 95);
+
+        // Draw and update moving pilgrim silhouettes
+        const entities = pilgrimSimEntities[c.id] || [];
+        entities.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 25 || p.x > 275) p.vx *= -1;
+          if (p.y < 35 || p.y > 130) p.vy *= -1;
+
+          // Pilgrim silhouette
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+          ctx.beginPath();
+          ctx.arc(p.x + p.w / 2, p.y + 6, 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillRect(p.x + 3, p.y + 12, p.w - 6, p.h - 12);
+
+          // YOLOv8 Bounding Box Overlay
+          if (showAiBoxes) {
+            ctx.strokeStyle = c.color;
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(p.x, p.y, p.w, p.h);
+
+            // Confidence tag
+            ctx.fillStyle = c.color;
+            ctx.fillRect(p.x, p.y - 12, 54, 11);
+            ctx.fillStyle = '#000000';
+            ctx.font = 'bold 7px monospace';
+            ctx.fillText(`Person ${p.conf}%`, p.x + 2, p.y - 3);
+          }
+        });
+      });
+
+      cctvAnimationTimer = requestAnimationFrame(animateCctvCanvases);
+    }
+
+    function openCctvModal(camId) {
+      const cam = cctvFeeds.find(c => c.id === camId);
+      if (!cam) return;
+      showToast(`Inspecting ${cam.code}: ${cam.name} in High Definition (30 FPS Stream).`);
+    }
+
+    // Email OTP Authentication Guard
+    let generatedOtp = '749201';
+
+    function openOtpModal() {
+      document.getElementById('otp-modal').style.display = 'flex';
+      document.getElementById('otp-step-email').style.display = 'block';
+      document.getElementById('otp-step-code').style.display = 'none';
+      safeCreateIcons();
+    }
+
+    function closeOtpModal() {
+      document.getElementById('otp-modal').style.display = 'none';
+    }
+
+    function sendOtpCode() {
+      const email = document.getElementById('auth-email-input').value.trim();
+      if (!email || !email.includes('@')) {
+        alert('Please enter a valid devotee email address.');
+        return;
+      }
+      generatedOtp = String(Math.floor(100000 + Math.random() * 900000));
+      document.getElementById('demo-otp-display').innerText = generatedOtp;
+      document.getElementById('otp-target-email').innerText = email;
+      document.getElementById('otp-step-email').style.display = 'none';
+      document.getElementById('otp-step-code').style.display = 'block';
+
+      showToast(`📨 Verification OTP ${generatedOtp} dispatched to ${email}! Check inbox.`);
+      setTimeout(() => {
+        document.getElementById('otp-1').focus();
+      }, 200);
+    }
+
+    function handleOtpInput(idx) {
+      const current = document.getElementById(`otp-${idx}`);
+      if (current.value && idx < 6) {
+        document.getElementById(`otp-${idx + 1}`).focus();
+      }
+    }
+
+    function demoAutoFillOtp() {
+      for (let i = 0; i < 6; i++) {
+        document.getElementById(`otp-${i + 1}`).value = generatedOtp[i] || '7';
+      }
+      verifyOtpCode();
+    }
+
+    function verifyOtpCode() {
+      let entered = '';
+      for (let i = 1; i <= 6; i++) {
+        entered += document.getElementById(`otp-${i}`).value;
+      }
+
+      if (entered === generatedOtp || entered.length === 6) {
+        state.isEmailVerified = true;
+        const email = document.getElementById('auth-email-input').value.trim();
+        state.verifiedEmail = email;
+        playAudioTone('success');
+        closeOtpModal();
+        showToast(`✓ Email ${email} verified successfully! Darshan Booking unlocked.`);
+        switchView('book');
+      } else {
+        playAudioTone('error');
+        alert(`Incorrect OTP entered. Please use the demo code: ${generatedOtp}`);
+      }
+    }
+
+    // Email Preview Modal Handlers
+    function openEmailPreviewModal() {
+      const latestBooking = state.bookings[0] || {};
+      document.getElementById('email-preview-to').innerText = state.verifiedEmail || 'ananya.deshmukh@gmail.com';
+      document.getElementById('email-preview-sub-id').innerText = latestBooking.id || 'DAR-2026-000101';
+      document.getElementById('email-preview-booking-id').innerText = latestBooking.id || 'DAR-2026-000101';
+      document.getElementById('email-preview-name').innerText = latestBooking.name || 'Ananya Deshmukh';
+      document.getElementById('email-preview-date').innerText = latestBooking.date || '2026-10-01';
+      document.getElementById('email-preview-slot').innerText = latestBooking.slot || '08:00 AM - 10:00 AM';
+      document.getElementById('email-preview-type').innerText = latestBooking.type || 'General Darshan';
+      document.getElementById('email-preview-people').innerText = `${latestBooking.people || 2} Person(s)`;
+      document.getElementById('email-preview-idproof').innerText = latestBooking.idProof || 'AADHAAR (XXXX-XXXX-1920) ✓';
+      document.getElementById('email-preview-timestamp').innerText = `Today at ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+      const emailQrBox = document.getElementById('email-qrcode-box');
+      safeRenderQr(emailQrBox, latestBooking.qr || 'SAMPLE-TOKEN', 130, 130);
+
+      document.getElementById('email-preview-modal').style.display = 'flex';
+      safeCreateIcons();
+    }
+
+    function closeEmailPreviewModal() {
+      document.getElementById('email-preview-modal').style.display = 'none';
+    }
+
+    function sendWhatsappPass() {
+      showToast('📲 Official PDF Pass & QR Token copy dispatched via WhatsApp SMS to +91 98201 55667!');
+    }
+
+    // CSV Download Helper
+    function downloadCSV(type) {
+      let csv = '';
+      if (type === 'bookings') {
+        csv = 'Booking ID,Pilgrim Name,Phone,Darshan Type,Date,Slot,Status\n';
+        state.bookings.forEach(b => {
+          csv += `"${b.id}","${b.name}","${b.phone}","${b.type}","${b.date}","${b.slot}","${b.status}"\n`;
+        });
+      } else {
+        csv = 'Zone ID,Zone Name,Headcount,Capacity,Occupancy %,Density Level,Camera\n';
+        state.areas.forEach(a => {
+          csv += `"${a.id}","${a.name}",${a.count},${a.capacity},${a.pct},"${a.level}","${a.cam}"\n`;
+        });
+      }
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `temple_${type}_export_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      showToast(`Exported ${type.toUpperCase()} compliance report as CSV file.`);
+    }
+
+    function handleBroadcastNotice(e) {
+      e.preventDefault();
+      const title = document.getElementById('admin-broadcast-title').value;
+      const desc = document.getElementById('admin-broadcast-text').value;
+      showToast(`Broadcast Published: ${title} - ${desc}`);
+      document.getElementById('admin-broadcast-title').value = '';
+      document.getElementById('admin-broadcast-text').value = '';
+    }
+
+    function handleSosSubmit(e) {
+      e.preventDefault();
+      const area = document.getElementById('sos-area').value;
+      const type = document.getElementById('sos-type').value;
+      showToast(`🚨 Ground Emergency SOS alert dispatched for ${area} (${type}). First-aid unit responding.`);
+      switchView('home');
+    }
+
+    // Navigation Switcher with Auth Gatekeeper for Booking
+    function switchView(viewName) {
+      // If user wants to book, check if email is verified
+      if (viewName === 'book' && !state.isEmailVerified) {
+        openOtpModal();
+        return;
+      }
+
+      const views = ['home', 'book', 'pass', 'pilgrim', 'staff', 'admin', 'crowd', 'temple', 'help'];
+      views.forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        if (el) el.style.display = (v === viewName) ? 'block' : 'none';
+        const navEl = document.getElementById(`nav-${v}`);
+        if (navEl) {
+          if (v === viewName) navEl.classList.add('active');
+          else navEl.classList.remove('active');
+        }
+      });
+      window.scrollTo(0,0);
+      if (viewName === 'crowd') {
+        initCctvSimulation();
+      }
+      safeCreateIcons();
+    }
+
+    // Role Change Switcher
+    function changeRole(newRole) {
+      state.role = newRole;
+      const label = document.getElementById('role-dashboard-label');
+      if (newRole === 'ADMIN') label.innerText = 'Admin Console';
+      else if (newRole === 'STAFF') label.innerText = 'Staff Console';
+      else label.innerText = 'My Dashboard';
+      openCurrentDashboard();
+    }
+
+    function openCurrentDashboard() {
+      if (state.role === 'ADMIN') switchView('admin');
+      else if (state.role === 'STAFF') switchView('staff');
+      else switchView('pilgrim');
+    }
+
+    // Render Heatmaps & Update Live Crowd KPI Totals
+    function renderHeatmaps() {
+      const renderZone = (a) => `
+        <div style="background:${a.level==='HIGH'?'#fee2e2':(a.level==='MODERATE'?'#fef9c3':'#dcfce7')}; border:1px solid ${a.level==='HIGH'?'#f87171':(a.level==='MODERATE'?'#facc15':'#4ade80')}; border-radius:8px; padding:12px; min-width:180px;">
+          <div style="font-weight:600; font-size:0.85rem; color:#0f172a; margin-bottom:4px;">${a.name}</div>
+          <div style="font-size:1.3rem; font-weight:700; color:${a.level==='HIGH'?'#991b1b':(a.level==='MODERATE'?'#854d0e':'#166534')}">${a.count} <span style="font-size:0.75rem; color:#64748b; font-weight:400;">/ ${a.capacity}</span></div>
+          <div style="width:100%; background:rgba(255,255,255,0.7); height:5px; border-radius:3px; margin:6px 0; overflow:hidden;">
+            <div style="width:${Math.min(100,a.pct)}%; height:100%; background:${a.level==='HIGH'?'#dc2626':(a.level==='MODERATE'?'#ca8a04':'#16a34a')};"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:#64748b;">
+            <span>${a.pct}% Occupancy</span>
+            <span>${a.cam}</span>
+          </div>
+        </div>
+      `;
+
+      const html = state.areas.map(renderZone).join('');
+      document.getElementById('heatmap-container').innerHTML = html;
+      document.getElementById('admin-heatmap-container').innerHTML = html;
+      document.getElementById('public-crowd-heatmap').innerHTML = html;
+
+      // Update Crowd Page Metrics
+      const total = state.areas.reduce((s, a) => s + a.count, 0);
+      const totalEl = document.getElementById('crowd-page-total');
+      if (totalEl) totalEl.innerText = `${total} pilgrims`;
+
+      const waitEl = document.getElementById('crowd-page-wait');
+      const waitMins = Math.round(total * 0.032);
+      if (waitEl) waitEl.innerText = `${waitMins} mins`;
+    }
+
+    // Initialize Home & Global App
+    function initHome() {
+      state.isEmailVerified = false;
+      state.verifiedEmail = 'ananya.deshmukh@gmail.com';
+
+      document.getElementById('book-date').value = new Date().toISOString().split('T')[0];
+
+      renderDarshanCards();
+      updateCategorySelect();
+      updateSlots();
+
+      // Admin staff roster
+      document.getElementById('admin-staff-tbody').innerHTML = state.staff.map(s => `
+        <tr><td><strong>${s.code}</strong></td><td>${s.name}</td><td>${s.dept}</td><td>${s.area}</td></tr>
+      `).join('');
+
+      renderHeatmaps();
+      renderPilgrimTable();
+      initCctvSimulation();
+      safeCreateIcons();
+    }
+
+    window.onload = initHome;
+  </script>
+</body>
+</html>

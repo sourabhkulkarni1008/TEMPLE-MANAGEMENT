@@ -1,0 +1,263 @@
+// Prisma Schema for Smart Temple Management & Pilgrim Flow System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // or "sqlite" for lightweight local evaluation
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PILGRIM
+  STAFF
+  ADMIN
+}
+
+enum CrowdLevel {
+  LOW
+  MODERATE
+  HIGH
+}
+
+enum DarshanStatus {
+  OPEN
+  FULL
+  CANCELLED
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CHECKED_IN
+  CANCELLED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESSFUL
+  FAILED
+}
+
+enum StaffStatus {
+  ON_DUTY
+  OFF_DUTY
+  ON_LEAVE
+}
+
+enum QueueStatus {
+  ACTIVE
+  PAUSED
+  STOPPED
+}
+
+enum EmergencyStatus {
+  PENDING
+  RESPONDING
+  RESOLVED
+}
+
+enum LostFoundStatus {
+  REPORTED
+  FOUND_IN_CUSTODY
+  CLAIMED
+  CLOSED
+}
+
+enum FestivalStatus {
+  ACTIVE
+  UPCOMING
+  COMPLETED
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  passwordHash  String    @map("password_hash")
+  phone         String
+  role          Role      @default(PILGRIM)
+  isVerified    Boolean   @default(true) @map("is_verified")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  bookings      Booking[]
+  staffProfile  Staff?
+  emergencies   EmergencyReport[]
+  lostItems     LostFound[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model TempleArea {
+  id           String      @id @default(uuid())
+  name         String      @unique
+  code         String      @unique
+  capacity     Int         @default(200)
+  currentCount Int         @default(0) @map("current_count")
+  crowdLevel   CrowdLevel  @default(LOW) @map("crowd_level")
+  occupancyPct Float       @default(0.0) @map("occupancy_pct")
+  cameraId     String?     @default("CAM-01") @map("camera_id")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  queues       Queue[]
+
+  @@map("temple_areas")
+}
+
+model DarshanSlot {
+  id          String         @id @default(uuid())
+  darshanType String         @map("darshan_type")
+  slotDate    DateTime       @map("slot_date")
+  startTime   String         @map("start_time")
+  endTime     String         @map("end_time")
+  price       Float          @default(0.0)
+  capacity    Int            @default(150)
+  bookedCount Int            @default(0) @map("booked_count")
+  status      DarshanStatus  @default(OPEN)
+  createdAt   DateTime       @default(now()) @map("created_at")
+
+  bookings    Booking[]
+
+  @@map("darshan_slots")
+}
+
+model Booking {
+  id                   String        @id // Format: DAR-2026-000125
+  userId               String        @map("user_id")
+  slotId               String?       @map("slot_id")
+  darshanType          String        @map("darshan_type")
+  bookingDate          DateTime      @map("booking_date")
+  slotTime             String        @map("slot_time")
+  numberOfPeople       Int           @default(1) @map("number_of_people")
+  primaryPilgrimName   String        @map("primary_pilgrim_name")
+  primaryPilgrimPhone  String        @map("primary_pilgrim_phone")
+  primaryPilgrimIdProof String?      @map("primary_pilgrim_id_proof")
+  totalAmount          Float         @default(0.0) @map("total_amount")
+  paymentStatus        PaymentStatus @default(SUCCESSFUL) @map("payment_status")
+  bookingStatus        BookingStatus @default(CONFIRMED) @map("booking_status")
+  qrToken              String        @unique @map("qr_token")
+  checkedInAt          DateTime?     @map("checked_in_at")
+  checkedInBy          String?       @map("checked_in_by")
+  createdAt            DateTime      @default(now()) @map("created_at")
+
+  user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slot                 DarshanSlot?  @relation(fields: [slotId], references: [id])
+
+  @@map("bookings")
+}
+
+model Staff {
+  id           String      @id @default(uuid())
+  userId       String      @unique @map("user_id")
+  employeeCode String      @unique @map("employee_code")
+  department   String
+  assignedArea String      @map("assigned_area")
+  shift        String
+  status       StaffStatus @default(ON_DUTY)
+  createdAt    DateTime    @default(now()) @map("created_at")
+
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("staff")
+}
+
+model Queue {
+  id                    String      @id @default(uuid())
+  areaId                String?     @map("area_id")
+  areaName              String      @map("area_name")
+  currentServingToken   String      @default("A-101") @map("current_serving_token")
+  waitingCount          Int         @default(0) @map("waiting_count")
+  estimatedWaitTimeMins Int         @default(15) @map("estimated_wait_time_mins")
+  status                QueueStatus @default(ACTIVE)
+  highCrowdWarning      Boolean     @default(false) @map("high_crowd_warning")
+  updatedAt             DateTime    @updatedAt @map("updated_at")
+
+  area                  TempleArea? @relation(fields: [areaId], references: [id])
+
+  @@map("queues")
+}
+
+model EmergencyReport {
+  id              String          @id @default(uuid())
+  userId          String?         @map("user_id")
+  reporterName    String          @map("reporter_name")
+  reporterPhone   String          @map("reporter_phone")
+  emergencyType   String          @map("emergency_type")
+  area            String
+  description     String
+  status          EmergencyStatus @default(PENDING)
+  assignedStaffId String?         @map("assigned_staff_id")
+  resolutionNotes String?         @map("resolution_notes")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  resolvedAt      DateTime?       @map("resolved_at")
+
+  user            User?           @relation(fields: [userId], references: [id])
+
+  @@map("emergency_reports")
+}
+
+model LostFound {
+  id            String          @id @default(uuid())
+  userId        String?         @map("user_id")
+  itemName      String          @map("item_name")
+  category      String
+  description   String
+  area          String
+  contactPhone  String          @map("contact_phone")
+  status        LostFoundStatus @default(REPORTED)
+  reportedDate  DateTime        @map("reported_date")
+  imageUrl      String?         @map("image_url")
+  createdAt     DateTime        @default(now()) @map("created_at")
+
+  user          User?           @relation(fields: [userId], references: [id])
+
+  @@map("lost_found")
+}
+
+model Festival {
+  id                   String         @id @default(uuid())
+  name                 String
+  startDate            DateTime       @map("start_date")
+  endDate              DateTime       @map("end_date")
+  description          String
+  specialAnnouncement  String?        @map("special_announcement")
+  extraStaffAllocated  Int            @default(25) @map("extra_staff_allocated")
+  extendedDarshanHours String?        @default("04:00 AM - 11:30 PM") @map("extended_darshan_hours")
+  status               FestivalStatus @default(ACTIVE)
+  createdAt            DateTime       @default(now()) @map("created_at")
+
+  @@map("festivals")
+}
+
+model Notification {
+  id         String   @id @default(uuid())
+  userId     String?  @map("user_id")
+  title      String
+  message    String
+  type       String   @default("INFO")
+  readStatus Boolean  @default(false) @map("read_status")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user       User?    @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
+}
+
+model CrowdDataLog {
+  id           String      @id @default(uuid())
+  areaId       String      @map("area_id")
+  areaName     String      @map("area_name")
+  peopleCount  Int         @map("people_count")
+  capacity     Int
+  occupancyPct Float       @map("occupancy_pct")
+  crowdLevel   CrowdLevel  @map("crowd_level")
+  source       String      @default("YOLO_AI_SERVICE")
+  deviceId     String?     @default("CAM-ENTRY-01") @map("device_id")
+  timestamp    DateTime    @default(now())
+
+  @@map("crowd_data_logs")
+}
