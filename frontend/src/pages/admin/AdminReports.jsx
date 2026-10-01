@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import api from '../../api/client';
+import api, { API_BASE_URL } from '../../api/client';
 import { FileText, Download, Calendar, TrendingUp, Users, Shield, RefreshCw } from 'lucide-react';
 
 const AdminReports = () => {
@@ -30,7 +29,7 @@ const AdminReports = () => {
   }, []);
 
   const handleExportCsv = (type = 'bookings') => {
-    window.open(`http://localhost:5000/api/reports/export-csv?type=${type}`, '_blank');
+    window.open(`${API_BASE_URL}/reports/export-csv?type=${type}`, '_blank');
   };
 
   return (
