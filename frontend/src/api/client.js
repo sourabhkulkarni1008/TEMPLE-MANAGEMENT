@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const rawBaseUrl = isLocalhost 
   ? 'http://localhost:5000/api'
-  : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api');
+  : (import.meta.env.VITE_API_BASE_URL || 'https://temple-management-backend-ex80.onrender.com/api');
 
 // Automatically append /api if omitted in VITE_API_BASE_URL configuration
 const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, '');
