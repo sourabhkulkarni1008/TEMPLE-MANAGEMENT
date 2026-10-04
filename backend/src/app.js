@@ -81,20 +81,33 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// REST API Route Mounts
+// REST API Route Mounts (Supports both /api/* and /* for maximum client compatibility)
 app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/bookings', bookingRoutes);
 app.use('/api/darshan', darshanRoutes);
+app.use('/darshan', darshanRoutes);
 app.use('/api/crowd', crowdRoutes);
+app.use('/crowd', crowdRoutes);
 app.use('/api/queue', queueRoutes);
+app.use('/queue', queueRoutes);
 app.use('/api/staff', staffRoutes);
+app.use('/staff', staffRoutes);
 app.use('/api/emergency', emergencyRoutes);
+app.use('/emergency', emergencyRoutes);
 app.use('/api/festivals', festivalRoutes);
+app.use('/festivals', festivalRoutes);
 app.use('/api/lost-found', lostFoundRoutes);
+app.use('/lost-found', lostFoundRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/notifications', notificationRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/reports', reportRoutes);
 app.use('/api/iot', iotRoutes);
+app.use('/iot', iotRoutes);
 app.use('/api/chatbot', chatbotRoutes);
+app.use('/chatbot', chatbotRoutes);
 
 // Direct Real-Time Email Endpoints (Resend API)
 app.post('/api/email/send-pass', async (req, res) => {

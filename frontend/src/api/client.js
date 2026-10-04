@@ -1,10 +1,12 @@
 import axios from 'axios';
 
-const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-
-export const API_BASE_URL = isLocalhost 
+const rawBaseUrl = isLocalhost 
   ? 'http://localhost:5000/api'
   : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api');
+
+// Automatically append /api if omitted in VITE_API_BASE_URL configuration
+const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, '');
+export const API_BASE_URL = cleanBaseUrl.endsWith('/api') ? cleanBaseUrl : `${cleanBaseUrl}/api`;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
