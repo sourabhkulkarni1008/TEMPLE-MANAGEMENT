@@ -1,17 +1,46 @@
-import React from 'react';
-import { Clock, ShieldCheck, Car, Utensils, Info, Phone, MapPin } from 'lucide-react';
+import React, { useState } from 'react';
+import { Clock, ShieldCheck, Car, Utensils, Info, Phone, MapPin, Box, Compass, Sparkles, Bell } from 'lucide-react';
+import Temple3DViewer from '../../components/Temple3DViewer';
 
 const TempleInfo = () => {
+  const [selectedZone, setSelectedZone] = useState(null);
+
   return (
     <div className="main-content">
-      <div className="container" style={{ maxWidth: '900px' }}>
+      <div className="container" style={{ maxWidth: '1000px' }}>
         <div style={{ marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>Temple Information &amp; Guidelines</h1>
-          <p style={{ fontSize: '0.95rem' }}>Official schedule, dress protocol, amenities, and visitor assistance guidelines</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+            <span style={{ background: '#fef3c7', color: '#b45309', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700 }}>
+              IMMERSIVE 3D EXPLORER
+            </span>
+          </div>
+          <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem' }}>
+            Shree Siddhivinayak Temple &amp; Sanctum Guide
+          </h1>
+          <p style={{ fontSize: '0.95rem', color: '#475569' }}>
+            Interactive 3D diorama, sanctum schedule, dress protocol, amenities, and visitor assistance guidelines.
+          </p>
+        </div>
+
+        {/* 3D Living Temple Interactive Complex Diorama */}
+        <div style={{ marginBottom: '2.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Box size={20} color="#b45309" />
+              <h2 style={{ fontSize: '1.3rem', fontWeight: 700, margin: 0 }}>Interactive 3D Temple Complex Tour</h2>
+            </div>
+            <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
+              Click on buildings &amp; gates to inspect real-time flow
+            </span>
+          </div>
+          <Temple3DViewer
+            height="480px"
+            onSelectZone={zone => setSelectedZone(zone)}
+          />
         </div>
 
         {/* 1. Daily Timings */}
-        <div className="card">
+        <div className="card" style={{ marginBottom: '1.5rem' }}>
           <div className="card-header">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Clock size={20} color="#b45309" />
@@ -64,7 +93,7 @@ const TempleInfo = () => {
         </div>
 
         {/* 2. Dress Code & Prohibited Items */}
-        <div className="card">
+        <div className="card" style={{ marginBottom: '1.5rem' }}>
           <div className="card-header">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <ShieldCheck size={20} color="#b45309" />
@@ -92,7 +121,7 @@ const TempleInfo = () => {
         </div>
 
         {/* 3. Prasadam & Annadanam */}
-        <div className="card">
+        <div className="card" style={{ marginBottom: '1.5rem' }}>
           <div className="card-header">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Utensils size={20} color="#b45309" />
@@ -103,7 +132,7 @@ const TempleInfo = () => {
             Free blessed Annadanam meals are served continuously in the <strong>Annapurna Dining Hall</strong> from <strong>11:30 AM to 03:00 PM</strong> and <strong>07:30 PM to 09:30 PM</strong>.
           </p>
           <p style={{ fontSize: '0.9rem', lineHeight: 1.6 }}>
-            Special traditional Laddus and Pulihora prasad counters are operational adjacent to the Exit Corridor (Day 4).
+            Special traditional Modak, Ladoo and Pulihora prasad counters are operational adjacent to the Exit Corridor (Day 4).
           </p>
         </div>
 

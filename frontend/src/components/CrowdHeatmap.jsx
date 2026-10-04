@@ -2,7 +2,18 @@ import React from 'react';
 import StatusBadge from './StatusBadge';
 import { Users, Video, ArrowRight } from 'lucide-react';
 
+const DEFAULT_AREAS = [
+  { id: 'area-1', name: 'Main Entrance & Security Gate', code: 'MAIN_ENTRANCE', currentCount: 110, capacity: 250, crowdLevel: 'LOW', occupancyPct: 44.0, cameraId: 'CAM-01' },
+  { id: 'area-2', name: 'Queue Complex & Holding Bays', code: 'QUEUE_AREA', currentCount: 285, capacity: 350, crowdLevel: 'HIGH', occupancyPct: 81.4, cameraId: 'CAM-02' },
+  { id: 'area-3', name: 'Main Sanctum / Darshan Hall', code: 'DARSHAN_HALL', currentCount: 105, capacity: 180, crowdLevel: 'MODERATE', occupancyPct: 58.3, cameraId: 'CAM-03' },
+  { id: 'area-4', name: 'Prasadam Distribution Counter', code: 'PRASADAM_AREA', currentCount: 95, capacity: 200, crowdLevel: 'LOW', occupancyPct: 47.5, cameraId: 'CAM-04' },
+  { id: 'area-5', name: 'Exit Corridor & Shoe Stand', code: 'EXIT_AREA', currentCount: 45, capacity: 150, crowdLevel: 'LOW', occupancyPct: 30.0, cameraId: 'CAM-05' },
+  { id: 'area-6', name: 'North & South Parking Lot', code: 'PARKING_AREA', currentCount: 190, capacity: 300, crowdLevel: 'MODERATE', occupancyPct: 63.3, cameraId: 'CAM-06' }
+];
+
 const CrowdHeatmap = ({ areas = [], onAreaClick, selectedAreaId }) => {
+  const effectiveAreas = (areas && areas.length > 0) ? areas : DEFAULT_AREAS;
+
   const getLevelColor = (level) => {
     switch (level) {
       case 'HIGH':
@@ -15,12 +26,12 @@ const CrowdHeatmap = ({ areas = [], onAreaClick, selectedAreaId }) => {
   };
 
   // Find areas by key roles in the flow
-  const entryArea = areas.find(a => a.code === 'MAIN_ENTRANCE') || areas[0];
-  const queueArea = areas.find(a => a.code === 'QUEUE_AREA') || areas[1];
-  const sanctumArea = areas.find(a => a.code === 'DARSHAN_HALL') || areas[2];
-  const exitArea = areas.find(a => a.code === 'EXIT_AREA') || areas[4];
-  const prasadArea = areas.find(a => a.code === 'PRASADAM_AREA') || areas[3];
-  const parkArea = areas.find(a => a.code === 'PARKING_AREA') || areas[5];
+  const entryArea = effectiveAreas.find(a => a.code === 'MAIN_ENTRANCE' || a.name?.toLowerCase().includes('entrance')) || effectiveAreas[0];
+  const queueArea = effectiveAreas.find(a => a.code === 'QUEUE_AREA' || a.name?.toLowerCase().includes('queue') || a.name?.toLowerCase().includes('mandap')) || effectiveAreas[1];
+  const sanctumArea = effectiveAreas.find(a => a.code === 'DARSHAN_HALL' || a.name?.toLowerCase().includes('sanctum') || a.name?.toLowerCase().includes('garbhagriha')) || effectiveAreas[2];
+  const exitArea = effectiveAreas.find(a => a.code === 'EXIT_AREA' || a.name?.toLowerCase().includes('exit')) || effectiveAreas[4] || effectiveAreas[3];
+  const prasadArea = effectiveAreas.find(a => a.code === 'PRASADAM_AREA' || a.name?.toLowerCase().includes('prasad')) || effectiveAreas[3];
+  const parkArea = effectiveAreas.find(a => a.code === 'PARKING_AREA' || a.name?.toLowerCase().includes('park') || a.name?.toLowerCase().includes('parikrama')) || effectiveAreas[5];
 
   const renderZoneCard = (area) => {
     if (!area) return null;

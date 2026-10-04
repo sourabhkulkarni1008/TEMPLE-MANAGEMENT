@@ -8,7 +8,8 @@
     "start": "node src/server.js",
     "dev": "node src/server.js",
     "watch": "node --watch-path=src/routes --watch-path=src/controllers --watch-path=src/middleware src/server.js",
-    "seed": "node src/data/seedRunner.js"
+    "seed": "node src/data/seedRunner.js",
+    "migrate": "node src/database/migrate.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -19,6 +20,7 @@
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
+    "mysql2": "^3.24.5",
     "nodemailer": "^6.9.14",
     "qrcode": "^1.5.3"
   },

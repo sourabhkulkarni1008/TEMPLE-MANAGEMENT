@@ -27,7 +27,8 @@ export const requireAuth = (req, res, next) => {
       name: user.name,
       email: user.email,
       phone: user.phone,
-      role: user.role
+      role: user.role,
+      isVerified: Boolean(user.isVerified)
     };
 
     next();
@@ -38,3 +39,28 @@ export const requireAuth = (req, res, next) => {
     });
   }
 };
+
+export const optionalAuth = (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      const decoded = verifyToken(token);
+      const user = db.findById('users', decoded.id);
+      if (user) {
+        req.user = {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+          isVerified: Boolean(user.isVerified)
+        };
+      }
+    }
+  } catch (e) {
+    // Ignore invalid token for optional auth
+  }
+  next();
+};
+

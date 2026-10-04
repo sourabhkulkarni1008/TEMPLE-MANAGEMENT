@@ -13,11 +13,11 @@ const StatusBadge = ({ status }) => {
     case 'HIGH':
       return <span className="badge badge-high">High Crowd</span>;
     case 'CONFIRMED':
-      return <span className="badge badge-confirmed">&check; Confirmed</span>;
+      return <span className="badge badge-confirmed">✓ Confirmed</span>;
     case 'CHECKED_IN':
-      return <span className="badge badge-checked-in">&bull; Checked In</span>;
+      return <span className="badge badge-checked-in">• Checked In</span>;
     case 'CANCELLED':
-      return <span className="badge badge-cancelled">&times; Cancelled</span>;
+      return <span className="badge badge-cancelled">✕ Cancelled</span>;
     case 'EXPIRED':
       return <span className="badge badge-cancelled">Expired</span>;
     case 'ON_DUTY':

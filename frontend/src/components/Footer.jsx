@@ -8,9 +8,11 @@ const Footer = () => {
       <div className="container">
         <div className="grid-4" style={{ marginBottom: '2rem' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-              <Landmark color="#b45309" size={22} />
-              <h4 style={{ margin: 0, color: '#0f172a' }}>Sri Siddhivinayak Temple</h4>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
+                <img src="/assets/images/siddhivinayak_logo.svg" alt="Siddhivinayak Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              </div>
+              <h4 style={{ margin: 0, color: '#0f172a', fontWeight: 800, fontFamily: 'Outfit, sans-serif' }}>Shree Siddhivinayak Temple</h4>
             </div>
             <p style={{ fontSize: '0.875rem', lineHeight: 1.6 }}>
               Smart pilgrim flow, verified QR entry passes, automated queue regulation, and real-time CCTV crowd monitoring.

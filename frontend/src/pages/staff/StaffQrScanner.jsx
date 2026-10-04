@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import api from '../../api/client';
 import StatusBadge from '../../components/StatusBadge';
-import { QrCode, CheckCircle2, XCircle, AlertTriangle, Search, Camera, ShieldCheck, Image, Volume2, VideoOff, Sparkles, Keyboard, ScanLine, Check } from 'lucide-react';
+import { QrCode, CheckCircle2, XCircle, AlertTriangle, Search, Camera, ShieldCheck, Image, Volume2, VideoOff, Sparkles, Keyboard, ScanLine, Check, Clock, Timer, ShieldAlert, KeyRound, X, RefreshCw, Settings } from 'lucide-react';
 
 const StaffQrScanner = () => {
   const [tokenInput, setTokenInput] = useState('');
@@ -43,6 +43,14 @@ const StaffQrScanner = () => {
         gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.28);
         osc.start(ctx.currentTime);
         osc.stop(ctx.currentTime + 0.28);
+      } else if (type === 'TOO_EARLY') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440, ctx.currentTime);
+        osc.frequency.setValueAtTime(554.37, ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.18, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.3);
       } else {
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(320, ctx.currentTime);
@@ -57,17 +65,22 @@ const StaffQrScanner = () => {
     }
   };
 
-  const handleVerify = async (tokenToVerify = null) => {
+  const handleVerify = async (tokenToVerify = null, allowOverride = false) => {
     const rawToken = (tokenToVerify || tokenInput).trim();
     if (!rawToken) return;
 
     setLoading(true);
     setResult(null);
 
-    setStats(prev => ({ ...prev, scanned: prev.scanned + 1 }));
+    if (!allowOverride) {
+      setStats(prev => ({ ...prev, scanned: prev.scanned + 1 }));
+    }
 
     try {
-      const res = await api.post('/bookings/verify-qr', { qrToken: rawToken });
+      const res = await api.post('/bookings/verify-qr', {
+        qrToken: rawToken,
+        override: allowOverride
+      });
       setResult(res);
       playAudioFeedback(res.status);
 
@@ -79,7 +92,8 @@ const StaffQrScanner = () => {
               id: res.booking.id,
               name: res.booking.primaryPilgrimName,
               time: new Date().toLocaleTimeString(),
-              status: 'VALID',
+              status: allowOverride ? 'OVERRIDE_ADMITTED' : 'VALID',
+              slot: res.booking.slotTime || res.booking.slot || 'General Slot',
               people: res.booking.numberOfPeople
             },
             ...prev.slice(0, 7)
@@ -102,15 +116,62 @@ const StaffQrScanner = () => {
 
   const startCamera = async (cameraId = selectedCamera) => {
     setCameraError(null);
+    setIsScanning(false);
+
     try {
-      if (!scannerRef.current) {
-        scannerRef.current = new Html5Qrcode('staff-qr-reader');
+      // 1. Check if browser supports mediaDevices
+      if (navigator?.mediaDevices?.getUserMedia) {
+        try {
+          const testStream = await navigator.mediaDevices.getUserMedia({ video: true });
+          // Release test stream tracks immediately
+          testStream.getTracks().forEach(track => track.stop());
+        } catch (permErr) {
+          if (permErr.name === 'NotAllowedError' || permErr.name === 'PermissionDeniedError') {
+            setCameraError({
+              type: 'PERMISSION_DENIED',
+              title: 'Camera Permission Blocked',
+              message: 'Chrome blocked camera access for this tab. Click the 🔒 or 📷 icon in your browser address bar, set Camera to "Allow", and click Retry.'
+            });
+            return;
+          }
+          if (permErr.name === 'NotFoundError' || permErr.name === 'DevicesNotFoundError') {
+            setCameraError({
+              type: 'NO_DEVICE',
+              title: 'No Webcam Detected',
+              message: 'No physical webcam hardware was found on this computer. You can upload a QR image or click "Test Camera Detect" for instant simulation.'
+            });
+            return;
+          }
+          if (permErr.name === 'NotReadableError' || permErr.name === 'TrackStartError') {
+            setCameraError({
+              type: 'DEVICE_BUSY',
+              title: 'Webcam In Use',
+              message: 'Your camera is currently in use by another application or browser tab. Please close other camera apps and retry.'
+            });
+            return;
+          }
+        }
       }
 
-      // Enumerate cameras
+      // 2. Clean up previous scanner instance safely
+      if (scannerRef.current) {
+        try {
+          await scannerRef.current.stop();
+        } catch (e) {}
+        try {
+          scannerRef.current.clear();
+        } catch (e) {}
+        scannerRef.current = null;
+      }
+
+      scannerRef.current = new Html5Qrcode('staff-qr-reader');
+
+      // 3. Enumerate cameras
+      let availableCameras = [];
       try {
         const devices = await Html5Qrcode.getCameras();
         if (devices && devices.length) {
+          availableCameras = devices;
           setCameras(devices);
           if (!selectedCamera) {
             setSelectedCamera(devices[0].id);
@@ -120,46 +181,37 @@ const StaffQrScanner = () => {
         console.warn('Camera enumeration note:', camErr);
       }
 
-      const cameraConfig = cameraId ? cameraId : (cameras.length > 0 ? cameras[0].id : { facingMode: { ideal: 'environment' } });
+      const cameraConfig = cameraId || (availableCameras.length > 0 ? availableCameras[0].id : { facingMode: 'user' });
       const config = {
         fps: 15,
         qrbox: { width: 220, height: 220 },
         aspectRatio: 1.33
       };
 
-      try {
-        await scannerRef.current.start(
-          cameraConfig,
-          config,
-          (decodedText) => {
-            setTokenInput(decodedText);
-            handleVerify(decodedText);
-            if (!continuousMode) {
-              stopCamera();
-            }
-          },
-          () => {}
-        );
-        setIsScanning(true);
-      } catch (startErr) {
-        // Fallback to user facing
-        await scannerRef.current.start(
-          { facingMode: 'user' },
-          { fps: 15, qrbox: { width: 200, height: 200 } },
-          (decodedText) => {
-            setTokenInput(decodedText);
-            handleVerify(decodedText);
-            if (!continuousMode) {
-              stopCamera();
-            }
-          },
-          () => {}
-        );
-        setIsScanning(true);
-      }
+      await scannerRef.current.start(
+        cameraConfig,
+        config,
+        (decodedText) => {
+          setTokenInput(decodedText);
+          handleVerify(decodedText);
+          if (!continuousMode) {
+            stopCamera();
+          }
+        },
+        () => {}
+      );
+      setIsScanning(true);
+      setCameraError(null);
     } catch (err) {
       console.error('Camera failed to start:', err);
-      setCameraError('Camera access denied or webcam not detected. You can use manual code typing or test simulation.');
+      const isPerm = err.name === 'NotAllowedError' || (typeof err?.message === 'string' && err.message.includes('Permission'));
+      setCameraError({
+        type: isPerm ? 'PERMISSION_DENIED' : 'START_ERROR',
+        title: isPerm ? 'Camera Permission Required' : 'Webcam Standby',
+        message: isPerm 
+          ? 'Browser camera permission was denied. Click the 🔒 or 📷 icon in the Chrome URL bar to Allow camera, then click Retry.'
+          : (err.message || 'Webcam could not be started. You can use manual code typing, sample 1-click test tokens, or image upload.')
+      });
       setIsScanning(false);
     }
   };
@@ -210,9 +262,11 @@ const StaffQrScanner = () => {
   }, [isScanning]);
 
   const sampleTokens = [
-    { label: 'Valid Pass (DAR-000101)', token: 'QR-DAR-2026-000101-SECURE-TOKEN-X79' },
-    { label: 'Already Scanned Token', token: 'QR-DAR-2026-000104-SECURE-TOKEN-T28' },
-    { label: 'Invalid Token', token: 'QR-INVALID-UNKNOWN-999' }
+    { label: '🟢 Current In-Slot Pass (Valid)', token: 'QR-DAR-2026-000101-SECURE-TOKEN-X79' },
+    { label: '⏳ Future Slot (Too Early)', token: 'QR-DAR-2026-000102-SECURE-TOKEN-M42' },
+    { label: '⏰ Past Slot (Expired)', token: 'QR-DAR-2026-000103-SECURE-TOKEN-P19' },
+    { label: '⚠️ Already Scanned (Duplicate)', token: 'QR-DAR-2026-000104-SECURE-TOKEN-T28' },
+    { label: '❌ Unregistered Code', token: 'QR-INVALID-UNKNOWN-999' }
   ];
 
   return (
@@ -304,10 +358,118 @@ const StaffQrScanner = () => {
               )}
 
               {cameraError && (
-                <div style={{ position: 'absolute', inset: '10px', background: 'rgba(127, 29, 29, 0.95)', color: '#fecaca', padding: '1rem', borderRadius: '6px', fontSize: '0.825rem', zIndex: 10, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                  <VideoOff size={32} color="#f87171" style={{ marginBottom: '6px' }} />
-                  <strong>Camera Permission Notice</strong>
-                  <div style={{ marginTop: '4px' }}>{cameraError}</div>
+                <div
+                  style={{
+                    position: 'absolute',
+                    inset: '8px',
+                    background: 'linear-gradient(145deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98))',
+                    border: '1.5px solid #d97706',
+                    color: '#f8fafc',
+                    padding: '1.25rem',
+                    borderRadius: '8px',
+                    fontSize: '0.85rem',
+                    zIndex: 20,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    boxShadow: '0 8px 30px rgba(0,0,0,0.6)'
+                  }}
+                >
+                  {/* Close / Dismiss button */}
+                  <button
+                    type="button"
+                    onClick={() => setCameraError(null)}
+                    title="Dismiss Notice"
+                    style={{
+                      position: 'absolute',
+                      top: '10px',
+                      right: '10px',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      border: 'none',
+                      color: '#94a3b8',
+                      cursor: 'pointer',
+                      borderRadius: '50%',
+                      padding: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <X size={16} />
+                  </button>
+
+                  <div
+                    style={{
+                      background: 'rgba(217, 119, 6, 0.2)',
+                      padding: '10px',
+                      borderRadius: '50%',
+                      marginBottom: '8px',
+                      color: '#fbbf24'
+                    }}
+                  >
+                    <Camera size={26} />
+                  </div>
+
+                  <strong style={{ fontSize: '0.95rem', color: '#fef08a', marginBottom: '4px' }}>
+                    {typeof cameraError === 'object' ? cameraError.title : 'Camera Access Notice'}
+                  </strong>
+
+                  <p style={{ margin: '4px 0 12px', fontSize: '0.8rem', color: '#cbd5e1', maxWidth: '340px', lineHeight: 1.4 }}>
+                    {typeof cameraError === 'object' ? cameraError.message : cameraError}
+                  </p>
+
+                  {/* Browser guidance pill */}
+                  <div
+                    style={{
+                      background: 'rgba(0,0,0,0.4)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '6px',
+                      padding: '6px 12px',
+                      fontSize: '0.75rem',
+                      color: '#94a3b8',
+                      marginBottom: '14px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <span>💡 <strong>Quick Fix:</strong> Click the <strong>📷 Camera / 🔒 Padlock</strong> icon in your Chrome URL bar &rarr; select <strong>Allow</strong></span>
+                  </div>
+
+                  {/* Quick Action Buttons */}
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                    <button
+                      type="button"
+                      onClick={() => startCamera()}
+                      className="btn btn-primary btn-sm"
+                      style={{ fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      <RefreshCw size={13} /> Retry Camera
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCameraError(null);
+                        simulateCameraDetection();
+                      }}
+                      className="btn btn-sm"
+                      style={{ background: '#fef3c7', color: '#b45309', border: '1px solid #fde68a', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      <Sparkles size={13} /> Test Camera Detect
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setCameraError(null)}
+                      className="btn btn-secondary btn-sm"
+                      style={{ fontSize: '0.8rem' }}
+                    >
+                      Dismiss
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -411,26 +573,53 @@ const StaffQrScanner = () => {
             {result ? (
               <div
                 style={{
-                  border: `1.5px solid ${result.status === 'VALID' ? '#16a34a' : result.status === 'ALREADY_USED' ? '#d97706' : '#dc2626'}`,
-                  background: result.status === 'VALID' ? '#f0fdf4' : result.status === 'ALREADY_USED' ? '#fffbeb' : '#fef2f2',
+                  border: `1.5px solid ${
+                    result.status === 'VALID' ? '#16a34a' :
+                    result.status === 'TOO_EARLY' ? '#d97706' :
+                    result.status === 'ALREADY_USED' ? '#f59e0b' :
+                    '#dc2626'
+                  }`,
+                  background:
+                    result.status === 'VALID' ? '#f0fdf4' :
+                    result.status === 'TOO_EARLY' ? '#fffbeb' :
+                    result.status === 'ALREADY_USED' ? '#fffdf5' :
+                    '#fef2f2',
                   padding: '1.25rem',
                   borderRadius: '10px',
                   marginBottom: '1rem',
                   flex: 1
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.75rem' }}>
-                  {result.status === 'VALID' && <CheckCircle2 size={30} color="#16a34a" />}
-                  {result.status === 'ALREADY_USED' && <AlertTriangle size={30} color="#d97706" />}
-                  {result.status !== 'VALID' && result.status !== 'ALREADY_USED' && <XCircle size={30} color="#dc2626" />}
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '0.75rem' }}>
+                  {result.status === 'VALID' && <CheckCircle2 size={32} color="#16a34a" style={{ flexShrink: 0, marginTop: '2px' }} />}
+                  {result.status === 'TOO_EARLY' && <Timer size={32} color="#d97706" style={{ flexShrink: 0, marginTop: '2px' }} />}
+                  {result.status === 'ALREADY_USED' && <AlertTriangle size={32} color="#f59e0b" style={{ flexShrink: 0, marginTop: '2px' }} />}
+                  {result.status === 'EXPIRED' && <Clock size={32} color="#dc2626" style={{ flexShrink: 0, marginTop: '2px' }} />}
+                  {result.status !== 'VALID' && result.status !== 'TOO_EARLY' && result.status !== 'ALREADY_USED' && result.status !== 'EXPIRED' && (
+                    <XCircle size={32} color="#dc2626" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  )}
                   
-                  <div>
-                    <div style={{ fontWeight: 800, fontSize: '1.05rem', color: result.status === 'VALID' ? '#15803d' : result.status === 'ALREADY_USED' ? '#92400e' : '#991b1b' }}>
-                      {result.status === 'VALID' && '✓ ENTRY PERMITTED - VALID PASS'}
-                      {result.status === 'ALREADY_USED' && '⚠️ TOKEN ALREADY CHECKED IN'}
-                      {result.status !== 'VALID' && result.status !== 'ALREADY_USED' && '✕ REJECT ENTRY - INVALID TOKEN'}
+                  <div style={{ flex: 1 }}>
+                    <div style={{
+                      fontWeight: 800,
+                      fontSize: '1.05rem',
+                      color:
+                        result.status === 'VALID' ? '#15803d' :
+                        result.status === 'TOO_EARLY' ? '#92400e' :
+                        result.status === 'ALREADY_USED' ? '#b45309' :
+                        '#991b1b'
+                    }}>
+                      {result.status === 'VALID' && '✓ ENTRY PERMITTED - VALID IN-SLOT PASS'}
+                      {result.status === 'TOO_EARLY' && '⏳ ENTRY DENIED - SCANNED TOO EARLY (OUT OF SLOT)'}
+                      {result.status === 'EXPIRED' && '✕ ENTRY DENIED - BOOKED SLOT HAS EXPIRED'}
+                      {result.status === 'ALREADY_USED' && '⚠️ TOKEN ALREADY CHECKED IN (DUPLICATE)'}
+                      {result.status === 'CANCELLED' && '✕ BOOKING CANCELLED'}
+                      {result.status === 'INVALID' && '✕ REJECT ENTRY - INVALID / UNREGISTERED TOKEN'}
+                      {result.status === 'ERROR' && '✕ GATE VERIFICATION ERROR'}
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: '#475569' }}>Verified at Main Gate Security Lane 1</div>
+                    <div style={{ fontSize: '0.825rem', color: '#475569', marginTop: '3px', lineHeight: 1.4 }}>
+                      {result.message}
+                    </div>
                   </div>
                 </div>
 
@@ -441,20 +630,56 @@ const StaffQrScanner = () => {
                       <div><span style={{ color: '#64748b' }}>Booking ID:</span> <strong style={{ fontFamily: 'monospace' }}>{result.booking.id}</strong></div>
                       <div><span style={{ color: '#64748b' }}>Category:</span> <strong>{result.booking.darshanType}</strong></div>
                       <div><span style={{ color: '#64748b' }}>Party:</span> <strong>{result.booking.numberOfPeople} Devotee(s)</strong></div>
-                      <div><span style={{ color: '#64748b' }}>Slot:</span> <strong>{result.booking.slotTime}</strong></div>
-                      <div><span style={{ color: '#64748b' }}>Govt ID:</span> <strong>{result.booking.primaryPilgrimIdProof || 'Verified'}</strong></div>
+                      <div>
+                        <span style={{ color: '#64748b' }}>Booked Date:</span>{' '}
+                        <strong>{result.booking.bookingDate || result.booking.date}</strong>
+                      </div>
+                      <div>
+                        <span style={{ color: '#64748b' }}>Booked Slot:</span>{' '}
+                        <strong style={{
+                          color: result.status === 'VALID' ? '#15803d' : result.status === 'TOO_EARLY' ? '#b45309' : '#dc2626',
+                          background: result.status === 'VALID' ? '#dcfce7' : result.status === 'TOO_EARLY' ? '#fef3c7' : '#fee2e2',
+                          padding: '2px 6px',
+                          borderRadius: '4px'
+                        }}>
+                          {result.booking.slotTime || result.booking.slot}
+                        </strong>
+                      </div>
                     </div>
                   </div>
                 )}
 
-                <button
-                  type="button"
-                  onClick={() => setResult(null)}
-                  className="btn btn-secondary btn-sm"
-                  style={{ fontSize: '0.75rem' }}
-                >
-                  Clear &amp; Next Devotee
-                </button>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={() => setResult(null)}
+                    className="btn btn-secondary btn-sm"
+                    style={{ fontSize: '0.75rem' }}
+                  >
+                    Clear &amp; Next Devotee
+                  </button>
+
+                  {(result.status === 'TOO_EARLY' || result.status === 'EXPIRED') && (
+                    <button
+                      type="button"
+                      onClick={() => handleVerify(result.booking?.qrToken || result.booking?.id || tokenInput, true)}
+                      className="btn btn-sm"
+                      style={{
+                        background: '#fef3c7',
+                        color: '#92400e',
+                        border: '1px solid #fcd34d',
+                        fontSize: '0.75rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        fontWeight: 700
+                      }}
+                      title="Authorize entry in special circumstances with supervisor audit log"
+                    >
+                      <ShieldAlert size={14} /> Staff VIP / Emergency Override
+                    </button>
+                  )}
+                </div>
               </div>
             ) : (
               <div style={{ background: '#f8fafc', border: '1.5px dashed #cbd5e1', borderRadius: '8px', padding: '1.25rem', textAlign: 'center', color: '#64748b', fontSize: '0.825rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>

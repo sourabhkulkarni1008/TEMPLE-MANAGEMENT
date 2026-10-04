@@ -452,14 +452,30 @@ export const initialNotifications = [
 
 // Seed Bookings
 export const generateInitialBookings = () => {
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  
+  const currentHour = now.getHours();
+  const startH = currentHour % 2 === 0 ? currentHour : currentHour - 1;
+  const endH = (startH + 2) % 24;
+  const fmtH = (h) => {
+    const norm = (h + 24) % 24;
+    const ampm = norm >= 12 ? 'PM' : 'AM';
+    const dh = norm % 12 === 0 ? 12 : norm % 12;
+    return `${String(dh).padStart(2, '0')}:00 ${ampm}`;
+  };
+  const activeCurrentSlot = `${fmtH(startH)} - ${fmtH(endH)}`;
+  const futureSlotToday = `${fmtH(startH + 4)} - ${fmtH(startH + 6)}`;
+  const expiredPastSlot = `${fmtH(startH - 4)} - ${fmtH(startH - 2)}`;
+
   const bookings = [
     {
       id: 'DAR-2026-000101',
       userId: 'usr-pilgrim-01',
-      slotId: 'slot-2026-10-01-1-2',
+      slotId: 'slot-today-active',
       darshanType: 'General Darshan (Sarva Darshanam)',
-      bookingDate: new Date().toISOString().split('T')[0],
-      slotTime: '08:00 AM - 10:00 AM',
+      bookingDate: todayStr,
+      slotTime: activeCurrentSlot,
       numberOfPeople: 2,
       primaryPilgrimName: 'Ananya Deshmukh',
       primaryPilgrimPhone: '+91 98201 55667',
@@ -470,19 +486,19 @@ export const generateInitialBookings = () => {
       qrToken: 'QR-DAR-2026-000101-SECURE-TOKEN-X79',
       checkedInAt: null,
       checkedInBy: null,
-      createdAt: new Date(Date.now() - 86400000).toISOString()
+      createdAt: new Date(Date.now() - 3600000).toISOString()
     },
     {
       id: 'DAR-2026-000102',
       userId: 'usr-pilgrim-01',
-      slotId: 'slot-2026-10-02-2-3',
+      slotId: 'slot-future-early',
       darshanType: 'Special Quick Darshan (Sheegra Darshanam)',
-      bookingDate: new Date(Date.now() + 86400000).toISOString().split('T')[0],
-      slotTime: '10:00 AM - 12:00 PM',
+      bookingDate: todayStr,
+      slotTime: futureSlotToday,
       numberOfPeople: 3,
-      primaryPilgrimName: 'Ananya Deshmukh',
-      primaryPilgrimPhone: '+91 98201 55667',
-      primaryPilgrimIdProof: 'AADHAAR-8839-XXXX-1920',
+      primaryPilgrimName: 'Rahul Verma',
+      primaryPilgrimPhone: '+91 98201 99887',
+      primaryPilgrimIdProof: 'PAN-BCDPV-1928-K',
       totalAmount: 900,
       paymentStatus: 'SUCCESSFUL',
       bookingStatus: 'CONFIRMED',
@@ -490,6 +506,44 @@ export const generateInitialBookings = () => {
       checkedInAt: null,
       checkedInBy: null,
       createdAt: new Date().toISOString()
+    },
+    {
+      id: 'DAR-2026-000103',
+      userId: 'usr-pilgrim-02',
+      slotId: 'slot-past-expired',
+      darshanType: 'Senior Citizen & Specially-Abled Darshan',
+      bookingDate: todayStr,
+      slotTime: expiredPastSlot,
+      numberOfPeople: 1,
+      primaryPilgrimName: 'Gopalrao Joshi',
+      primaryPilgrimPhone: '+91 98450 11223',
+      primaryPilgrimIdProof: 'SENIOR-CARD-5541',
+      totalAmount: 0,
+      paymentStatus: 'SUCCESSFUL',
+      bookingStatus: 'CONFIRMED',
+      qrToken: 'QR-DAR-2026-000103-SECURE-TOKEN-P19',
+      checkedInAt: null,
+      checkedInBy: null,
+      createdAt: new Date(Date.now() - 28800000).toISOString()
+    },
+    {
+      id: 'DAR-2026-000104',
+      userId: 'usr-pilgrim-03',
+      slotId: 'slot-already-used',
+      darshanType: 'Suprabhata & Abhishekam Special Entry',
+      bookingDate: todayStr,
+      slotTime: activeCurrentSlot,
+      numberOfPeople: 4,
+      primaryPilgrimName: 'Ramesh Kulkarni',
+      primaryPilgrimPhone: '+91 98451 22334',
+      primaryPilgrimIdProof: 'PASSPORT-Z9928172',
+      totalAmount: 2000,
+      paymentStatus: 'SUCCESSFUL',
+      bookingStatus: 'CHECKED_IN',
+      qrToken: 'QR-DAR-2026-000104-SECURE-TOKEN-T28',
+      checkedInAt: new Date(Date.now() - 1800000).toISOString(),
+      checkedInBy: 'EMP-SEC-101',
+      createdAt: new Date(Date.now() - 86400000).toISOString()
     }
   ];
 

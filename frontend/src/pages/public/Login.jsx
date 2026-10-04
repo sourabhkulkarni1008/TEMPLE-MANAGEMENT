@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Landmark, Lock, Mail, UserCheck, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Landmark, Lock, Mail, UserCheck, ShieldCheck, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import OtpVerificationModal from '../../components/OtpVerificationModal';
 
 const Login = ({ defaultRole = 'PILGRIM' }) => {
   const [role, setRole] = useState(defaultRole);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState(null);
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -27,10 +31,18 @@ const Login = ({ defaultRole = 'PILGRIM' }) => {
     setLoading(true);
 
     try {
-      const user = await login(email, password, role);
-      if (user.role === 'ADMIN') navigate('/admin/dashboard');
-      else if (user.role === 'STAFF') navigate('/staff/dashboard');
-      else navigate('/user/dashboard');
+      const result = await login(email, password, role);
+      const user = result.user || result;
+
+      if (user.role === 'ADMIN') {
+        navigate('/admin/dashboard');
+      } else if (user.role === 'STAFF') {
+        navigate('/staff/dashboard');
+      } else {
+        // Pilgrim users MUST enter the 6-digit email verification code sent to their email
+        setLoggedInUser(user);
+        setShowOtpModal(true);
+      }
     } catch (err) {
       setError(err.message || 'Login failed. Please check your credentials.');
     } finally {
@@ -38,20 +50,8 @@ const Login = ({ defaultRole = 'PILGRIM' }) => {
     }
   };
 
-  // Quick Demo Auto-fill Helper
-  const handleQuickFill = (roleType) => {
-    setRole(roleType);
-    if (roleType === 'ADMIN') {
-      setEmail('admin@templedemo.com');
-      setPassword('TemplePass@123');
-    } else if (roleType === 'STAFF') {
-      setEmail('staff@templedemo.com');
-      setPassword('TemplePass@123');
-    } else {
-      setEmail('pilgrim@templedemo.com');
-      setPassword('TemplePass@123');
-    }
-    setError('');
+  const handleVerificationSuccess = () => {
+    navigate('/user/book-darshan');
   };
 
   return (
@@ -152,14 +152,38 @@ const Login = ({ defaultRole = 'PILGRIM' }) => {
                 <label className="form-label" style={{ margin: 0 }}>Password</label>
                 <Link to="/forgot-password" style={{ fontSize: '0.775rem', color: '#b45309' }}>Forgot password?</Link>
               </div>
-              <input
-                type="password"
-                className="form-input"
-                required
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  className="form-input"
+                  required
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  style={{ paddingRight: '42px', width: '100%' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                  style={{
+                    position: 'absolute',
+                    right: '10px',
+                    background: 'none',
+                    border: 'none',
+                    color: '#64748b',
+                    cursor: 'pointer',
+                    padding: '6px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '4px'
+                  }}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1.25rem' }} disabled={loading}>
@@ -167,29 +191,20 @@ const Login = ({ defaultRole = 'PILGRIM' }) => {
             </button>
           </form>
 
-          {/* 1-Click Evaluation Credentials for Evaluators */}
-          <div style={{ background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '6px', padding: '0.75rem', marginBottom: '1.25rem' }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569', marginBottom: '6px', textAlign: 'center' }}>
-              QUICK DEMO LOGINS (Click to Auto-fill):
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px' }}>
-              <button type="button" onClick={() => handleQuickFill('PILGRIM')} className="btn btn-secondary btn-sm" style={{ fontSize: '0.725rem', padding: '4px' }}>
-                Pilgrim Demo
-              </button>
-              <button type="button" onClick={() => handleQuickFill('STAFF')} className="btn btn-secondary btn-sm" style={{ fontSize: '0.725rem', padding: '4px' }}>
-                Staff Demo
-              </button>
-              <button type="button" onClick={() => handleQuickFill('ADMIN')} className="btn btn-secondary btn-sm" style={{ fontSize: '0.725rem', padding: '4px' }}>
-                Admin Demo
-              </button>
-            </div>
-          </div>
-
           <div style={{ textAlign: 'center', fontSize: '0.85rem', color: '#64748b' }}>
             Don't have a pilgrim account? <Link to="/register" style={{ fontWeight: 600 }}>Register here</Link>
           </div>
         </div>
       </div>
+
+      <OtpVerificationModal
+        isOpen={showOtpModal}
+        targetEmail={loggedInUser?.email || email}
+        title="Email Verification Code"
+        subtitle="Please enter the 6-digit code sent to your email to unlock Darshan ticket booking"
+        onClose={() => setShowOtpModal(false)}
+        onSuccess={handleVerificationSuccess}
+      />
     </div>
   );
 };

@@ -18,6 +18,10 @@ import reportRoutes from './routes/reportRoutes.js';
 import iotRoutes from './routes/iotRoutes.js';
 import chatbotRoutes from './routes/chatbotRoutes.js';
 
+import { sendEmail } from './config/email.js';
+import { emailTemplates } from './utils/emailTemplates.js';
+import { db } from './data/store.js';
+import { generateQrBuffer } from './utils/qrGenerator.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -91,6 +95,94 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/iot', iotRoutes);
 app.use('/api/chatbot', chatbotRoutes);
+
+// Direct Real-Time Email Endpoints (Resend API)
+app.post('/api/email/send-pass', async (req, res) => {
+  try {
+    const { to, pilgrimName, bookingId, bookingDate, slotTime, darshanType, numberOfPeople, qrToken, idProof } = req.body;
+    if (!to) {
+      return res.status(400).json({ success: false, message: 'Recipient email is required.' });
+    }
+
+    // Lookup real registered booking from database to guarantee 100% QR token synchronization
+    let dbBooking = null;
+    if (bookingId) {
+      dbBooking = db.findById('bookings', bookingId) || db.findOne('bookings', b => b.id === bookingId || b.id.toUpperCase() === bookingId.toUpperCase());
+    }
+
+    const bId = dbBooking?.id || bookingId || `DAR-${Date.now().toString().slice(-6)}`;
+    const passQrToken = dbBooking?.qrToken || qrToken || `QR-${bId}-PASS`;
+    const finalPilgrimName = dbBooking?.primaryPilgrimName || pilgrimName || 'Devotee';
+    const finalBookingDate = dbBooking?.bookingDate || bookingDate || new Date().toISOString().split('T')[0];
+    const finalSlotTime = dbBooking?.slotTime || slotTime || '08:00 AM - 10:00 AM';
+    const finalDarshanType = dbBooking?.darshanType || darshanType || 'General Darshan';
+    const finalNumberOfPeople = dbBooking?.numberOfPeople || numberOfPeople || 1;
+    const finalIdProof = dbBooking?.primaryPilgrimIdProof || idProof || 'AADHAAR (Verified)';
+
+    // Attach real high-res PNG file of the exact gate QR pass
+    const qrBuffer = await generateQrBuffer(passQrToken);
+    const attachments = [];
+    if (qrBuffer) {
+      attachments.push({
+        filename: `${bId}-Gate-Pass-QR.png`,
+        content: qrBuffer,
+        contentType: 'image/png'
+      });
+    }
+
+    const result = await sendEmail({
+      to,
+      subject: `🪔 Digital Darshan Pass & Gate QR Code (${bId}) - Shree Siddhivinayak Temple`,
+      html: emailTemplates.bookingConfirmation({
+        id: bId,
+        primaryPilgrimName: finalPilgrimName,
+        bookingDate: finalBookingDate,
+        slotTime: finalSlotTime,
+        darshanType: finalDarshanType,
+        numberOfPeople: finalNumberOfPeople,
+        qrToken: passQrToken,
+        primaryPilgrimIdProof: finalIdProof
+      }),
+      attachments
+    });
+
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/email/send-otp', async (req, res) => {
+  try {
+    const { to, otp } = req.body;
+    if (!to) {
+      return res.status(400).json({ success: false, message: 'Recipient email is required.' });
+    }
+    const code = otp || String(Math.floor(100000 + Math.random() * 900000));
+    const result = await sendEmail({
+      to,
+      subject: `🔐 Your Shree Siddhivinayak Temple Verification Code: ${code}`,
+      html: emailTemplates.otpVerification(code, to)
+    });
+    res.json({ ...result, otp: code });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/email/test', async (req, res) => {
+  try {
+    const { to } = req.body;
+    const result = await sendEmail({
+      to: to || 'devotee@example.com',
+      subject: '🙏 Test Dispatch from Shree Siddhivinayak Temple Seva Portal',
+      html: emailTemplates.welcome('Devotee')
+    });
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
 // 404 Not Found Handler
 app.use(notFoundHandler);

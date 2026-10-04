@@ -20,7 +20,15 @@ export const askAssistant = async (req, res, next) => {
     let answer = '';
     let category = 'GENERAL';
 
-    if (q.includes('time') || q.includes('timing') || q.includes('open') || q.includes('close') || q.includes('hour')) {
+    if (q.includes('otp') || q.includes('code') || q.includes('verification') || q.includes('verify') || (q.includes('email') && (q.includes('login') || q.includes('register') || q.includes('received')))) {
+      category = 'VERIFICATION';
+      answer = `To keep devotee accounts and Darshan passes authentic and secure, our portal uses a simple 6-digit Email Verification system:
+1. When you register or log in, a random 6-digit OTP is automatically generated and sent to your registered email address.
+2. Check your email inbox (and Spam/Promotions folder) for the verification code from Sri Siddhivinayak Temple.
+3. Enter the 6 digits in the verification window on your screen and click "Verify Code".
+4. Each code is valid for 5 minutes. If needed, click "Resend Code" to receive a fresh 6-digit code.
+5. Once verified, your account is unlocked to book Darshan slots and receive digital QR entry passes.`;
+    } else if (q.includes('time') || q.includes('timing') || q.includes('open') || q.includes('close') || q.includes('hour')) {
       category = 'TIMINGS';
       answer = `Temple gates open daily at ${settings.darshanOpenTime || '05:00 AM'} and close at ${settings.darshanCloseTime || '10:30 PM'}. Morning Suprabhata ritual commences at 05:30 AM, and evening Maha Aarti is conducted at 07:00 PM.`;
     } else if (q.includes('book') || q.includes('reserve') || q.includes('ticket') || q.includes('slot')) {

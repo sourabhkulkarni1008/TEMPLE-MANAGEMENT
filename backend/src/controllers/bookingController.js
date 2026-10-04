@@ -1,6 +1,6 @@
 import { db } from '../data/store.js';
 import { generateBookingId, generateQrSecureToken } from '../utils/tokenHelper.js';
-import { generateQrDataUrl } from '../utils/qrGenerator.js';
+import { generateQrDataUrl, generateQrBuffer } from '../utils/qrGenerator.js';
 import { sendEmail } from '../config/email.js';
 import { emailTemplates } from '../utils/emailTemplates.js';
 
@@ -25,6 +25,18 @@ export const createBooking = async (req, res, next) => {
     const userId = req.user ? req.user.id : 'usr-guest';
     const pilgrimName = primaryPilgrimName || (req.user ? req.user.name : 'Pilgrim');
     const pilgrimPhone = primaryPilgrimPhone || (req.user ? req.user.phone : '');
+
+    // Check user verification status if logged in user
+    if (req.user && req.user.role === 'PILGRIM') {
+      const userRecord = db.findById('users', req.user.id);
+      if (userRecord && userRecord.isVerified === false) {
+        return res.status(403).json({
+          success: false,
+          message: 'Email verification required. Please enter the 6-digit verification code sent to your email to complete booking.',
+          requiresVerification: true
+        });
+      }
+    }
 
     // Check slot availability and decrement free/paid quota
     let slot = null;
@@ -57,15 +69,15 @@ export const createBooking = async (req, res, next) => {
         status: updatedBooked >= slot.capacity ? 'FULL' : 'OPEN'
       });
     }
-
-    const bookingCount = db.data.bookings.length + 126;
+    const bookingCount = db.data.bookings.length + 135;
     const bookingId = generateBookingId(bookingCount);
-    const qrToken = generateQrSecureToken(bookingId, userId);
+    const finalUserId = (req.user && db.findById('users', req.user.id)) ? req.user.id : (db.data.users[0]?.id || 'usr-pilgrim-01');
+    const qrToken = generateQrSecureToken(bookingId, finalUserId);
 
     const newBooking = db.insert('bookings', {
       id: bookingId,
-      userId,
-      slotId: slotId || null,
+      userId: finalUserId,
+      slotId: slot ? slot.id : null,
       darshanType,
       bookingDate,
       slotTime,
@@ -82,16 +94,27 @@ export const createBooking = async (req, res, next) => {
       createdAt: new Date().toISOString()
     });
 
-    // Generate QR Data URL for instant rendering on client
+    // Generate QR Data URL for instant rendering on client & PNG Buffer for email
     const qrDataUrl = await generateQrDataUrl(newBooking.qrToken);
+    const qrBuffer = await generateQrBuffer(newBooking.qrToken);
 
-    // Dispatch Confirmation Email
+    // Dispatch Confirmation Email (prioritize devotee form email or account email)
     const userEmail = req.user ? req.user.email : null;
-    if (userEmail) {
+    const recipientEmail = req.body.primaryPilgrimEmail || userEmail;
+    if (recipientEmail) {
+      const attachments = [];
+      if (qrBuffer) {
+        attachments.push({
+          filename: `${bookingId}-Gate-Pass-QR.png`,
+          content: qrBuffer,
+          contentType: 'image/png'
+        });
+      }
       sendEmail({
-        to: userEmail,
+        to: recipientEmail,
         subject: `Darshan Booking Confirmed: ${bookingId} - Sri Siddhivinayak Temple`,
-        html: emailTemplates.bookingConfirmation(newBooking)
+        html: emailTemplates.bookingConfirmation(newBooking),
+        attachments
       });
     }
 
@@ -269,7 +292,7 @@ export const cancelBooking = async (req, res, next) => {
  */
 export const verifyQr = async (req, res, next) => {
   try {
-    const { qrToken } = req.body;
+    const { qrToken, override } = req.body;
     if (!qrToken) {
       return res.status(400).json({
         success: false,
@@ -278,7 +301,7 @@ export const verifyQr = async (req, res, next) => {
     }
 
     const staffEmpCode = req.user ? (req.user.role === 'STAFF' ? (req.user.staffProfile?.employeeCode || req.user.name) : req.user.name) : 'GATE-SCANNER';
-    const result = db.verifyAndCheckInQr(qrToken.trim(), staffEmpCode);
+    const result = db.verifyAndCheckInQr(qrToken.trim(), staffEmpCode, Boolean(override));
 
     res.json({
       success: result.status === 'VALID',

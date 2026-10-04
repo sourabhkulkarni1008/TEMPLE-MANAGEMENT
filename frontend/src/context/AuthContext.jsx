@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
     if (res.success && res.token) {
       localStorage.setItem('temple_token', res.token);
       setUser(res.user);
-      return res.user;
+      return { user: res.user, requiresVerification: res.requiresVerification };
     }
     throw new Error(res.message || 'Login failed.');
   };
@@ -51,9 +51,25 @@ export const AuthProvider = ({ children }) => {
     if (res.success && res.token) {
       localStorage.setItem('temple_token', res.token);
       setUser(res.user);
-      return res.user;
+      return { user: res.user, requiresVerification: true };
     }
     throw new Error(res.message || 'Registration failed.');
+  };
+
+  const sendOtp = async (email) => {
+    const targetEmail = email || user?.email;
+    const res = await api.post('/auth/send-otp', { email: targetEmail });
+    return res;
+  };
+
+  const verifyOtp = async (code, email) => {
+    const targetEmail = email || user?.email;
+    const res = await api.post('/auth/verify-otp', { code, email: targetEmail });
+    if (res.success) {
+      setUser(prev => prev ? { ...prev, isVerified: true } : res.user);
+      return res;
+    }
+    throw new Error(res.message || 'Verification failed.');
   };
 
   const logout = () => {
@@ -62,7 +78,19 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        register,
+        logout,
+        sendOtp,
+        verifyOtp,
+        isAuthenticated: !!user,
+        isEmailVerified: Boolean(user?.isVerified)
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

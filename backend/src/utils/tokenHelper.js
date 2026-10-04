@@ -32,10 +32,10 @@ export const generateBookingId = (counter = Math.floor(1000 + Math.random() * 90
 };
 
 /**
- * Generate Secure QR Token (non-sensitive hash / token)
+ * Generate Secure QR Token (clean, high-contrast, human-readable)
+ * Format: QR-DAR-2026-000130-A8F2
  */
-export const generateQrSecureToken = (bookingId, userId) => {
-  const randomSalt = Math.random().toString(36).substring(2, 10);
-  const raw = `${bookingId}_${userId}_${Date.now()}_${randomSalt}`;
-  return Buffer.from(raw).toString('base64url');
+export const generateQrSecureToken = (bookingId, userId = '') => {
+  const randomSalt = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `QR-${bookingId}-${randomSalt}`;
 };

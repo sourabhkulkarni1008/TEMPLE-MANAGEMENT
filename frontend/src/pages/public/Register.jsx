@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Landmark, UserPlus, AlertCircle } from 'lucide-react';
+import { Landmark, UserPlus, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import OtpVerificationModal from '../../components/OtpVerificationModal';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -11,8 +12,11 @@ const Register = () => {
     password: '',
     confirmPassword: ''
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
 
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -43,12 +47,17 @@ const Register = () => {
         phone: formData.phone,
         password: formData.password
       });
-      navigate('/user/dashboard');
+      // Show OTP verification modal immediately
+      setShowOtpModal(true);
     } catch (err) {
       setError(err.message || 'Registration failed.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleVerificationSuccess = () => {
+    navigate('/user/book-darshan');
   };
 
   return (
@@ -113,28 +122,70 @@ const Register = () => {
             <div className="grid-2">
               <div className="form-group">
                 <label className="form-label">Password</label>
-                <input
-                  type="password"
-                  name="password"
-                  className="form-input"
-                  required
-                  placeholder="Min 6 chars"
-                  value={formData.password}
-                  onChange={handleChange}
-                />
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    className="form-input"
+                    required
+                    placeholder="Min 6 chars"
+                    value={formData.password}
+                    onChange={handleChange}
+                    style={{ paddingRight: '40px', width: '100%' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    style={{
+                      position: 'absolute',
+                      right: '8px',
+                      background: 'none',
+                      border: 'none',
+                      color: '#64748b',
+                      cursor: 'pointer',
+                      padding: '4px',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
 
               <div className="form-group">
                 <label className="form-label">Confirm Password</label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  className="form-input"
-                  required
-                  placeholder="Re-type password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                />
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    name="confirmPassword"
+                    className="form-input"
+                    required
+                    placeholder="Re-type password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    style={{ paddingRight: '40px', width: '100%' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                    style={{
+                      position: 'absolute',
+                      right: '8px',
+                      background: 'none',
+                      border: 'none',
+                      color: '#64748b',
+                      cursor: 'pointer',
+                      padding: '4px',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}
+                  >
+                    {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -148,6 +199,15 @@ const Register = () => {
           </div>
         </div>
       </div>
+
+      <OtpVerificationModal
+        isOpen={showOtpModal}
+        targetEmail={formData.email}
+        title="Verify Email to Activate Account"
+        subtitle="Enter the 6-digit code sent to your email to unlock Darshan booking"
+        onClose={() => setShowOtpModal(false)}
+        onSuccess={handleVerificationSuccess}
+      />
     </div>
   );
 };

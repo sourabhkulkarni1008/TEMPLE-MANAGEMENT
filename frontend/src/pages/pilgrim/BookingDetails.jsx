@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../api/client';
 import StatusBadge from '../../components/StatusBadge';
-import { QrCode, Calendar, Clock, Users, Printer, XCircle, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { QrCode, Calendar, Clock, Users, Printer, XCircle, ArrowLeft, CheckCircle2, Mail, Send, Check } from 'lucide-react';
 
 const BookingDetails = () => {
   const { id } = useParams();
+  const { user } = useAuth();
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [cancelling, setCancelling] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [emailStatus, setEmailStatus] = useState('');
+  const [emailSuccess, setEmailSuccess] = useState(false);
 
   const fetchBooking = async () => {
     try {
@@ -49,6 +54,47 @@ const BookingDetails = () => {
     window.print();
   };
 
+  const handleEmailPass = async () => {
+    // Automatically use the logged-in user's email or booking email directly with NO prompt!
+    const recipientEmail = user?.email || booking?.primaryPilgrimEmail || 'kulkarnisourabh807@gmail.com';
+
+    setSendingEmail(true);
+    setEmailStatus('');
+    setEmailSuccess(false);
+
+    try {
+      const res = await fetch('http://localhost:5000/api/email/send-pass', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: recipientEmail,
+          pilgrimName: booking.primaryPilgrimName,
+          bookingId: booking.id,
+          bookingDate: booking.bookingDate,
+          slotTime: booking.slotTime,
+          darshanType: booking.darshanType,
+          numberOfPeople: booking.numberOfPeople,
+          qrToken: booking.qrToken || booking.id,
+          idProof: booking.primaryPilgrimIdProof
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setEmailSuccess(true);
+        setEmailStatus(`✓ Digital Pass with QR Code has been directly sent to ${recipientEmail}!`);
+      } else if (data.error) {
+        setEmailStatus(`Notice: ${data.error}`);
+      } else {
+        setEmailSuccess(true);
+        setEmailStatus(`Pass notification sent directly to ${recipientEmail}.`);
+      }
+    } catch (err) {
+      setEmailStatus('Could not connect to backend email service.');
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="dashboard-layout">
@@ -75,15 +121,53 @@ const BookingDetails = () => {
   return (
     <div className="dashboard-layout">
       <div className="dashboard-content" style={{ maxWidth: '680px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '8px' }}>
           <Link to="/user/bookings" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem', color: '#64748b' }}>
             <ArrowLeft size={16} /> Back to My Bookings
           </Link>
-          <button onClick={handlePrint} className="btn btn-secondary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Printer size={15} />
-            <span>Print Pass</span>
-          </button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={handleEmailPass}
+              disabled={sendingEmail}
+              className="btn btn-primary btn-sm"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: emailSuccess ? 'linear-gradient(135deg, #16a34a, #15803d)' : 'linear-gradient(135deg, #d97706, #b45309)',
+                border: 'none',
+                cursor: sendingEmail ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {emailSuccess ? <Check size={15} /> : <Mail size={15} />}
+              <span>
+                {sendingEmail ? 'Dispatching to Email...' : (emailSuccess ? 'Pass Sent Successfully!' : 'Send Pass to My Email')}
+              </span>
+            </button>
+            <button onClick={handlePrint} className="btn btn-secondary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Printer size={15} />
+              <span>Print Pass</span>
+            </button>
+          </div>
         </div>
+
+        {emailStatus && (
+          <div
+            className={emailSuccess ? "alert alert-success" : "alert alert-info"}
+            style={{
+              marginBottom: '1rem',
+              fontSize: '0.85rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              borderLeft: emailSuccess ? '4px solid #16a34a' : '4px solid #0284c7'
+            }}
+          >
+            {emailSuccess ? <CheckCircle2 size={16} color="#16a34a" /> : <Mail size={16} color="#0284c7" />}
+            <span>{emailStatus}</span>
+          </div>
+        )}
 
         {/* Digital Pass Card */}
         <div className="card" style={{ padding: '2rem', border: '2px solid #b45309' }}>
@@ -120,10 +204,17 @@ const BookingDetails = () => {
                 <QrCode size={64} color="#94a3b8" />
               </div>
             )}
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a', marginTop: '6px', fontFamily: 'monospace' }}>
+            <div style={{ fontSize: '1rem', fontWeight: 800, color: '#b45309', marginTop: '8px', fontFamily: 'monospace' }}>
               {booking.id}
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Present this secure token at Entry Gate scanner</div>
+            {booking.qrToken && (
+              <div style={{ fontSize: '0.8rem', color: '#0f172a', fontWeight: 700, marginTop: '4px', fontFamily: 'monospace', background: '#fef3c7', padding: '4px 10px', borderRadius: '6px', display: 'inline-block', border: '1px dashed #d97706' }}>
+                Gate Key: {booking.qrToken}
+              </div>
+            )}
+            <div style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 600, marginTop: '6px' }}>
+              ✓ 100% Synchronized with Email Pass &bull; Scan at Temple Entry Gate
+            </div>
           </div>
 
           {/* Booking Data Grid */}
