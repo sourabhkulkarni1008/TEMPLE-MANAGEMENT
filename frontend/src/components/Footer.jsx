@@ -32,7 +32,7 @@ const Footer = () => {
               <h4 style={{ margin: 0, color: '#0f172a', fontWeight: 800, fontFamily: 'Outfit, sans-serif' }}>Shree Siddhivinayak Temple</h4>
             </div>
             <p style={{ fontSize: '0.875rem', lineHeight: 1.6 }}>
-              Smart pilgrim flow, verified QR entry passes, automated queue regulation, and real-time CCTV crowd monitoring.
+              Smart pilgrim flow, verified QR entry passes, automated queue regulation, and real-time crowd safety management.
             </p>
           </div>
 

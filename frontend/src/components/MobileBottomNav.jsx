@@ -20,13 +20,13 @@ const MobileBottomNav = () => {
     },
     {
       to: isAuthenticated ? '/user/book-darshan' : '/darshan',
-      label: 'Book Slot',
+      label: 'Darshan',
       icon: CalendarCheck,
       isActive: location.pathname === '/darshan' || location.pathname === '/user/book-darshan'
     },
     {
       to: isAuthenticated ? '/user/bookings' : '/login',
-      label: 'My Passes',
+      label: 'Bookings',
       icon: QrCode,
       isActive: location.pathname.startsWith('/user/booking')
     },
@@ -46,14 +46,14 @@ const MobileBottomNav = () => {
         bottom: 0,
         left: 0,
         right: 0,
-        height: '62px',
+        height: '64px',
         background: '#ffffff',
-        borderTop: '1px solid #e2e8f0',
+        borderTop: '1px solid #f1e5d1',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-around',
         zIndex: 90,
-        boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.05)',
+        boxShadow: '0 -3px 14px rgba(112, 26, 40, 0.05)',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)'
       }}
     >
@@ -71,9 +71,10 @@ const MobileBottomNav = () => {
               justifyContent: 'center',
               flex: 1,
               height: '100%',
+              minHeight: '48px',
               textDecoration: 'none',
-              color: active ? '#b45309' : '#64748b',
-              fontWeight: active ? 600 : 500,
+              color: active ? '#b45309' : '#78716c',
+              fontWeight: active ? 700 : 500,
               fontSize: '0.725rem',
               gap: '3px',
               transition: 'color 0.15s ease'
@@ -84,14 +85,14 @@ const MobileBottomNav = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '32px',
-                height: '24px',
-                borderRadius: '12px',
+                width: '36px',
+                height: '26px',
+                borderRadius: '13px',
                 background: active ? '#fef3c7' : 'transparent',
                 transition: 'background-color 0.15s ease'
               }}
             >
-              <Icon size={18} strokeWidth={active ? 2.5 : 2} />
+              <Icon size={19} strokeWidth={active ? 2.5 : 1.9} />
             </div>
             <span>{item.label}</span>
           </NavLink>

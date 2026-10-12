@@ -8,11 +8,10 @@ import {
 
 const HOTSPOTS = [
   { id: 'sanctum', name: 'Garbhagriha (Sanctum Sanctorum)', pos: [0, 1.5, 0], wait: '12 mins', status: 'Optimal', desc: 'Inner sanctum housing the divine idol with continuous Vedic chanting.' },
-  { id: 'gate1', name: 'Gate 1 (East Entry & Metal Detectors)', pos: [0, 0.5, 9.5], wait: '4 mins', status: 'Smooth', desc: 'Primary pilgrim ingress point with dual automated barcode turnstiles.' },
+  { id: 'gate1', name: 'Gate 1 (East Entry & Turnstiles)', pos: [0, 0.5, 9.5], wait: '4 mins', status: 'Smooth', desc: 'Primary pilgrim ingress point with automated barcode turnstiles.' },
   { id: 'vip', name: 'Special Darshan / VIP Corridor', pos: [-5.5, 0.5, 2], wait: '2 mins', status: 'Priority', desc: 'Fast-track holding lounge for senior citizens and pre-booked VIP passes.' },
   { id: 'prasad', name: 'Maha Prasad Counter & Hall', pos: [5.5, 0.5, -2], wait: '3 mins', status: 'Active', desc: 'Automated distribution of consecrated Modak prasad packets.' },
-  { id: 'queue', name: 'Sabha Mandap Queue Zig-Zag', pos: [0, 0.5, 4.5], wait: '9 mins', status: 'Regulated', desc: 'Covered queue holding maze with cooling mist fans and live wait-time displays.' },
-  { id: 'cctv', name: 'Live AI Multi-Camera Surveillance Mast', pos: [7.5, 4.5, 7.5], wait: '60 FPS 4K', status: 'Active 360° AI Scan', desc: 'Motorized robotic PTZ dome with internal dual optics + dual long-range AI bullet cameras & volumetric vision scan cone.' }
+  { id: 'queue', name: 'Sabha Mandap Queue Zig-Zag', pos: [0, 0.5, 4.5], wait: '9 mins', status: 'Regulated', desc: 'Covered queue holding maze with cooling mist fans and live wait-time displays.' }
 ];
 
 export default function Temple3DViewer({ 
@@ -39,12 +38,6 @@ export default function Temple3DViewer({
   const sanctumLightRef = useRef(null);
   const starsParticlesRef = useRef(null);
   const interactiveObjectsRef = useRef([]);
-
-  // Live Camera 3D Refs
-  const cctvHeadRef = useRef(null);
-  const cctvRadarRef = useRef(null);
-  const cctvRecLightRef = useRef(null);
-  const gateCamLaserRef = useRef(null);
 
   // UI state
   const [timeOfDay, setTimeOfDay] = useState('day'); // 'day', 'sunset', 'night'
@@ -232,20 +225,6 @@ export default function Temple3DViewer({
       // Sanctum Light divine pulsation
       if (sanctumLightRef.current) {
         sanctumLightRef.current.intensity = 2.4 + Math.sin(elapsed * 5) * 0.45 + Math.sin(elapsed * 12) * 0.15;
-      }
-
-      // Live AI CCTV Camera Panning & Scanning Animations
-      if (cctvHeadRef.current) {
-        cctvHeadRef.current.rotation.y = Math.sin(elapsed * 0.7) * 0.5;
-      }
-      if (cctvRadarRef.current) {
-        cctvRadarRef.current.rotation.z = elapsed * 1.8;
-      }
-      if (cctvRecLightRef.current) {
-        cctvRecLightRef.current.intensity = Math.sin(elapsed * 5) > 0 ? 2.0 : 0.2;
-      }
-      if (gateCamLaserRef.current) {
-        gateCamLaserRef.current.position.z = 10.5 + Math.sin(elapsed * 2.5) * 0.55;
       }
 
       // Animate Pilgrims walking along queue paths
@@ -578,216 +557,40 @@ export default function Temple3DViewer({
     scene.add(prasadGroup);
     interactiveObjectsRef.current.push(prasadGroup);
 
-    // 8. HIGH-PRECISION CENTRAL CCTV & AI VISION MAST
-    const cctvGroup = new THREE.Group();
-    cctvGroup.userData = { hotspotId: 'cctv' };
+    // 8. SACRED TEMPLE DEEPASTAMBHA (Traditional Pillar of Lights)
+    const deepastambhaGroup = new THREE.Group();
+    const deepaStoneMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.7 });
+    
+    // Base Octagonal Plinth
+    const deepaBase = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 1.0, 0.6, 8), deepaStoneMat);
+    deepaBase.position.set(7.5, 0.3, 7.5);
+    deepaBase.castShadow = true;
+    deepastambhaGroup.add(deepaBase);
 
-    // Camera materials
-    const camSteelMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.35, metalness: 0.85 });
-    const camWhiteMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.2, metalness: 0.25 });
-    const camDarkMat = new THREE.MeshStandardMaterial({ color: 0x090d16, roughness: 0.2, metalness: 0.9 });
-    const camGlassLensMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.05, metalness: 0.95, transparent: true, opacity: 0.9 });
-    const camDomeMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1, metalness: 0.2, transparent: true, opacity: 0.45, depthWrite: false });
-    const camBeamMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.13, side: THREE.DoubleSide, depthWrite: false });
-    const radarRingMat = new THREE.MeshBasicMaterial({ color: 0x0284c7, transparent: true, opacity: 0.45, side: THREE.DoubleSide });
-    const recLedMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
-    const okLedMat = new THREE.MeshBasicMaterial({ color: 0x22c55e });
+    // Carved Column Shaft
+    const deepaShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.45, 5.2, 12), deepaStoneMat);
+    deepaShaft.position.set(7.5, 3.2, 7.5);
+    deepaShaft.castShadow = true;
+    deepastambhaGroup.add(deepaShaft);
 
-    // 8A. Concrete & Steel Anchor Foundation
-    const basePlate = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.85, 0.25, 16), camSteelMat);
-    basePlate.position.set(7.5, 0.12, 7.5);
-    basePlate.receiveShadow = true;
-    cctvGroup.add(basePlate);
+    // 4 Tiered Diya Lamp Brackets
+    for (let tier = 0; tier < 4; tier++) {
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.65 - tier * 0.08, 0.06, 8, 16), brassMat);
+      ring.position.set(7.5, 1.8 + tier * 1.0, 7.5);
+      ring.rotation.x = Math.PI / 2;
+      deepastambhaGroup.add(ring);
 
-    // 4 Foundation Anchor Hex Bolts
-    for (let b = 0; b < 4; b++) {
-      const angle = (b * Math.PI) / 2;
-      const bolt = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.32, 6), camSteelMat);
-      bolt.position.set(7.5 + Math.cos(angle) * 0.55, 0.2, 7.5 + Math.sin(angle) * 0.55);
-      cctvGroup.add(bolt);
+      const lampFlame = new THREE.Mesh(new THREE.SphereGeometry(0.08, 6, 6), new THREE.MeshBasicMaterial({ color: 0xfacc15 }));
+      lampFlame.position.set(7.5 + (0.6 - tier * 0.08), 1.9 + tier * 1.0, 7.5);
+      deepastambhaGroup.add(lampFlame);
     }
 
-    // Weatherproof Ground Telemetry & AI Processing Cabinet
-    const telemetryCabinet = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.95, 0.42), camSteelMat);
-    telemetryCabinet.position.set(7.5, 0.72, 7.5 + 0.45);
-    telemetryCabinet.castShadow = true;
-    cctvGroup.add(telemetryCabinet);
+    // Golden Kalash Finial Top
+    const deepaTop = new THREE.Mesh(new THREE.ConeGeometry(0.4, 0.8, 8), goldMat);
+    deepaTop.position.set(7.5, 6.2, 7.5);
+    deepastambhaGroup.add(deepaTop);
 
-    // Blinking telemetry power LED
-    const telemetryLed = new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 8), okLedMat);
-    telemetryLed.position.set(7.5, 1.05, 7.5 + 0.67);
-    cctvGroup.add(telemetryLed);
-
-    // 8B. Telescopic Heavy Mast Pole
-    const lowerMast = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.28, 2.8, 16), camSteelMat);
-    lowerMast.position.set(7.5, 1.4, 7.5);
-    lowerMast.castShadow = true;
-    cctvGroup.add(lowerMast);
-
-    const mastCollar = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.04, 8, 16), camSteelMat);
-    mastCollar.position.set(7.5, 2.8, 7.5);
-    mastCollar.rotation.x = Math.PI / 2;
-    cctvGroup.add(mastCollar);
-
-    const upperMast = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.22, 3.8, 16), camSteelMat);
-    upperMast.position.set(7.5, 4.7, 7.5);
-    upperMast.castShadow = true;
-    cctvGroup.add(upperMast);
-
-    // Mast Top Equipment Mounting Platform
-    const topPlatform = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.85, 0.08, 20), camSteelMat);
-    topPlatform.position.set(7.5, 6.6, 7.5);
-    cctvGroup.add(topPlatform);
-
-    // Top Platform Safety Guard Rail
-    const safetyRail = new THREE.Mesh(new THREE.TorusGeometry(0.82, 0.025, 8, 20), camSteelMat);
-    safetyRail.position.set(7.5, 6.85, 7.5);
-    safetyRail.rotation.x = Math.PI / 2;
-    cctvGroup.add(safetyRail);
-
-    // Lightning Rod & Radio Comms Antenna
-    const antenna = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.03, 1.4, 8), camSteelMat);
-    antenna.position.set(7.5, 7.3, 7.5);
-    cctvGroup.add(antenna);
-
-    // Top Aircraft Warning Strobe Light
-    const strobeLight = new THREE.PointLight(0xef4444, 1.5, 5);
-    strobeLight.position.set(7.5, 7.95, 7.5);
-    cctvGroup.add(strobeLight);
-
-    // 8C. Dual Outrigger Arms (T-Bar for directional coverage)
-    const outriggerBar = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.1, 0.14), camSteelMat);
-    outriggerBar.position.set(7.5, 6.55, 7.5);
-    cctvGroup.add(outriggerBar);
-
-    // Outrigger Bullet Camera 1 (West: Queue Complex)
-    const bullet1Group = new THREE.Group();
-    bullet1Group.position.set(7.5 - 1.05, 6.4, 7.5);
-    const bulletBody1 = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.13, 0.42, 16), camWhiteMat);
-    bulletBody1.rotation.z = Math.PI / 2;
-    bulletBody1.rotation.y = -Math.PI / 4;
-    bullet1Group.add(bulletBody1);
-    const visor1 = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.03, 0.28), camDarkMat);
-    visor1.position.set(0, 0.14, 0);
-    visor1.rotation.y = -Math.PI / 4;
-    bullet1Group.add(visor1);
-    const lens1 = new THREE.Mesh(new THREE.CircleGeometry(0.11, 16), camGlassLensMat);
-    lens1.position.set(-0.21, 0, 0.05);
-    lens1.rotation.y = -Math.PI / 2 - Math.PI / 4;
-    bullet1Group.add(lens1);
-    cctvGroup.add(bullet1Group);
-
-    // Outrigger Bullet Camera 2 (South: Gate 1 Approach)
-    const bullet2Group = new THREE.Group();
-    bullet2Group.position.set(7.5 + 1.05, 6.4, 7.5);
-    const bulletBody2 = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.13, 0.42, 16), camWhiteMat);
-    bulletBody2.rotation.z = -Math.PI / 2;
-    bulletBody2.rotation.y = Math.PI / 4;
-    bullet2Group.add(bulletBody2);
-    const visor2 = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.03, 0.28), camDarkMat);
-    visor2.position.set(0, 0.14, 0);
-    visor2.rotation.y = Math.PI / 4;
-    bullet2Group.add(visor2);
-    const lens2 = new THREE.Mesh(new THREE.CircleGeometry(0.11, 16), camGlassLensMat);
-    lens2.position.set(0.21, 0, 0.05);
-    lens2.rotation.y = Math.PI / 2 + Math.PI / 4;
-    bullet2Group.add(lens2);
-    cctvGroup.add(bullet2Group);
-
-    // 8D. CENTRAL HIGH-SPEED 360° PTZ DOME CAMERA (ANIMATED PAN/TILT)
-    const ptzHead = new THREE.Group();
-    ptzHead.position.set(7.5, 6.45, 7.5);
-    cctvHeadRef.current = ptzHead;
-
-    const ptzMount = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.26, 0.18, 20), camWhiteMat);
-    ptzMount.position.y = 0.08;
-    ptzHead.add(ptzMount);
-
-    const ptzDome = new THREE.Mesh(
-      new THREE.SphereGeometry(0.38, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.75),
-      camDomeMat
-    );
-    ptzDome.position.y = 0;
-    ptzDome.rotation.x = Math.PI;
-    ptzHead.add(ptzDome);
-
-    const internalOptic = new THREE.Group();
-    internalOptic.position.set(0, -0.15, 0);
-    internalOptic.rotation.x = 0.55;
-    const opticBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 0.26, 16), camDarkMat);
-    internalOptic.add(opticBarrel);
-    const opticLens = new THREE.Mesh(new THREE.CircleGeometry(0.11, 16), camGlassLensMat);
-    opticLens.position.y = -0.135;
-    opticLens.rotation.x = Math.PI / 2;
-    internalOptic.add(opticLens);
-    ptzHead.add(internalOptic);
-
-    const recLed = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), recLedMat);
-    recLed.position.set(0, 0.16, 0.26);
-    ptzHead.add(recLed);
-
-    const recPointLight = new THREE.PointLight(0xef4444, 1.8, 5);
-    recPointLight.position.set(0, 0.16, 0.28);
-    cctvRecLightRef.current = recPointLight;
-    ptzHead.add(recPointLight);
-
-    cctvGroup.add(ptzHead);
-
-    // 8E. VOLUMETRIC HOLOGRAPHIC AI SCANNING VISION CONE
-    const visionBeam = new THREE.Mesh(
-      new THREE.ConeGeometry(4.4, 6.4, 24, 1, true),
-      camBeamMat
-    );
-    visionBeam.position.set(7.5, 3.2, 7.5);
-    visionBeam.rotation.x = Math.PI;
-    cctvGroup.add(visionBeam);
-
-    // 8F. GROUND HOLOGRAPHIC SCANNING RADAR RETICLE
-    const groundRadarGroup = new THREE.Group();
-    groundRadarGroup.position.set(7.5, 0.06, 7.5);
-    groundRadarGroup.rotation.x = -Math.PI / 2;
-
-    const outerRadarRing = new THREE.Mesh(new THREE.RingGeometry(4.1, 4.25, 32), radarRingMat);
-    groundRadarGroup.add(outerRadarRing);
-
-    const midRadarRing = new THREE.Mesh(new THREE.RingGeometry(2.1, 2.22, 32), radarRingMat);
-    groundRadarGroup.add(midRadarRing);
-
-    const innerRadarRing = new THREE.Mesh(new THREE.RingGeometry(0.4, 0.5, 16), radarRingMat);
-    groundRadarGroup.add(innerRadarRing);
-
-    const radarArm = new THREE.Mesh(new THREE.PlaneGeometry(4.1, 0.06), new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.85 }));
-    radarArm.position.x = 2.05;
-    const radarPivot = new THREE.Group();
-    radarPivot.add(radarArm);
-    cctvRadarRef.current = radarPivot;
-    groundRadarGroup.add(radarPivot);
-
-    cctvGroup.add(groundRadarGroup);
-
-    // 8G. GATE 1 ENTRANCE OVERHEAD AI SCANNER (CAM-02)
-    const gateCamGroup = new THREE.Group();
-    gateCamGroup.position.set(0, 6.2, 10.5);
-    const gateCamBody = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.22, 0.45), camSteelMat);
-    gateCamGroup.add(gateCamBody);
-    const gateCamLens = new THREE.Mesh(new THREE.CircleGeometry(0.08, 16), camGlassLensMat);
-    gateCamLens.position.set(0, -0.115, 0.05);
-    gateCamLens.rotation.x = Math.PI / 2;
-    gateCamGroup.add(gateCamLens);
-
-    const laserBeam = new THREE.Mesh(
-      new THREE.PlaneGeometry(4.2, 0.08),
-      new THREE.MeshBasicMaterial({ color: 0x22c55e, transparent: true, opacity: 0.8, side: THREE.DoubleSide })
-    );
-    laserBeam.position.set(0, 0.08, 10.5);
-    laserBeam.rotation.x = -Math.PI / 2;
-    gateCamLaserRef.current = laserBeam;
-    scene.add(laserBeam);
-
-    cctvGroup.add(gateCamGroup);
-
-    scene.add(cctvGroup);
-    interactiveObjectsRef.current.push(cctvGroup);
+    scene.add(deepastambhaGroup);
 
     // 9. HOTSPOT FLOATING 3D MARKER PINS
     HOTSPOTS.forEach(spot => {
@@ -892,9 +695,6 @@ export default function Temple3DViewer({
     if (presetName === 'overview') {
       camera.position.set(16, 14, 22);
       controls.target.set(0, 2, 0);
-    } else if (presetName === 'camera') {
-      camera.position.set(10.5, 8.8, 10.5);
-      controls.target.set(1.5, 1.2, 4.0);
     } else if (presetName === 'sanctum') {
       camera.position.set(0, 3.8, 6.5);
       controls.target.set(0, 2.4, -2);
@@ -1208,7 +1008,6 @@ export default function Temple3DViewer({
         }}>
           {[
             { id: 'overview', label: 'Panoramic' },
-            { id: 'camera', label: '📹 Live AI Cam' },
             { id: 'sanctum', label: 'Garbhagriha' },
             { id: 'queue', label: 'Queue Line' },
             { id: 'topdown', label: '2D Map' }
@@ -1232,41 +1031,6 @@ export default function Temple3DViewer({
             </button>
           ))}
         </div>
-
-        {/* Live AI CCTV Surveillance Overlay when in Camera Mode */}
-        {(activePreset === 'camera' || selectedHotspot?.id === 'cctv') && (
-          <div style={{
-            position: 'absolute',
-            top: '74px',
-            left: '16px',
-            background: 'rgba(9, 13, 22, 0.92)',
-            backdropFilter: 'blur(10px)',
-            border: '1.5px solid rgba(56, 189, 248, 0.4)',
-            borderRadius: '10px',
-            padding: '10px 14px',
-            color: '#f8fafc',
-            zIndex: 15,
-            pointerEvents: 'none',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-            maxWidth: '320px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '6px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 800, color: '#38bdf8' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', display: 'inline-block', boxShadow: '0 0 8px #ef4444' }} />
-                LIVE CCTV • CAM-06 (CENTRAL MAST)
-              </div>
-              <span style={{ fontSize: '0.65rem', background: '#0369a1', color: '#e0f2fe', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
-                60 FPS 4K
-              </span>
-            </div>
-            <div style={{ fontSize: '0.72rem', color: '#94a3b8', lineHeight: 1.45 }}>
-              <div>FOV: <strong>360° Motorized PTZ + Dual Outrigger Bullets</strong></div>
-              <div>AI Vision Pipeline: <strong style={{ color: '#4ade80' }}>ACTIVE (YOLO-v8n)</strong></div>
-              <div>Ground Optical Beam: <strong style={{ color: '#38bdf8' }}>Holographic Frustum</strong></div>
-              <div>Queue Density: <strong style={{ color: '#facc15' }}>{realtimeDensity}% Regulated</strong></div>
-            </div>
-          </div>
-        )}
 
         {/* Live Devotee Interactive Offerings Buttons */}
         <div style={{

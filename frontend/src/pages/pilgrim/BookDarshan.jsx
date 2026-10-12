@@ -54,8 +54,8 @@ const BookDarshan = () => {
   useEffect(() => {
     const fetchTypes = async () => {
       try {
-        const res = await api.get('/bookings/darshan-types');
-        const data = Array.isArray(res) ? res : (res.types || []);
+        const res = await api.get('/darshan/types');
+        const data = res.types || (Array.isArray(res) ? res : []);
         setTypes(data);
         const paramType = searchParams.get('type');
         if (paramType) {

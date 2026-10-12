@@ -50,8 +50,8 @@ const Home = () => {
       image: '/assets/images/siddhivinayak_temple_night.jpg',
       tag: 'Grand Evening Aarti & Illumination',
       title: 'Maha Aarti & Night Devotion in Sacred Peace',
-      desc: 'Real-time AI camera crowd counting, intelligent lane pacing, and 24/7 medical and emergency SOS assistance for all devotees.',
-      primaryAction: { text: 'Live 6-Camera Vision', link: '/crowd', icon: <Eye size={18} /> },
+      desc: 'Real-time sanctum crowd monitoring, intelligent queue pacing, and 24/7 devotee helpline assistance.',
+      primaryAction: { text: 'Check Live Crowd', link: '/crowd', icon: <Eye size={18} /> },
       secondaryAction: { text: 'Devotee Guidelines', link: '/temple', icon: <Moon size={18} /> }
     }
   ];
@@ -61,11 +61,12 @@ const Home = () => {
       try {
         const [crowdRes, darshanRes, festRes] = await Promise.all([
           api.get('/crowd'),
-          api.get('/bookings/darshan-types'),
+          api.get('/darshan/types'),
           api.get('/crowd/festival-mode')
         ]);
         if (crowdRes && crowdRes.areas) setCrowdData(crowdRes);
-        if (darshanRes) setDarshanTypes(darshanRes);
+        if (darshanRes && darshanRes.types) setDarshanTypes(darshanRes.types);
+        else if (Array.isArray(darshanRes)) setDarshanTypes(darshanRes);
         if (festRes) setFestivalMode(festRes.festivalMode);
       } catch (err) {
         // Fallback default sample darshan types if backend not running
@@ -267,7 +268,7 @@ const Home = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
             <div>
               <h2 style={{ fontSize: '1.35rem' }}>Real-Time Temple Area Crowd Density</h2>
-              <p style={{ fontSize: '0.875rem' }}>AI camera vision analytics for bottleneck prevention and rapid lane regulation</p>
+              <p style={{ fontSize: '0.875rem' }}>Live area occupancy indicators for smooth darshan flow and queue regulation</p>
             </div>
             <Link to="/crowd" className="btn btn-secondary btn-sm">
               View Detailed Analytics &rarr;
