@@ -9,6 +9,7 @@ import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
 import ProtectedRoute from './components/ProtectedRoute';
 import ChatbotWidget from './components/ChatbotWidget';
+import MobileBottomNav from './components/MobileBottomNav';
 
 // Public Pages
 import Home from './pages/public/Home';
@@ -19,6 +20,7 @@ import TempleInfo from './pages/public/TempleInfo';
 import DarshanOverview from './pages/public/DarshanOverview';
 import LiveCrowdPublic from './pages/public/LiveCrowdPublic';
 import HelpContact from './pages/public/HelpContact';
+import DesktopOnlyNotice from './pages/public/DesktopOnlyNotice';
 
 // Pilgrim Pages
 import PilgrimDashboard from './pages/pilgrim/PilgrimDashboard';
@@ -58,7 +60,7 @@ const AppLayout = ({ children, withSidebar = false }) => {
       {withSidebar ? (
         <div className="dashboard-layout">
           <Sidebar />
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
             {children}
             <Footer />
           </div>
@@ -70,6 +72,7 @@ const AppLayout = ({ children, withSidebar = false }) => {
         </>
       )}
       <ChatbotWidget />
+      <MobileBottomNav />
     </div>
   );
 };
@@ -91,6 +94,7 @@ function App() {
             <Route path="/darshan" element={<AppLayout><DarshanOverview /></AppLayout>} />
             <Route path="/crowd" element={<AppLayout><LiveCrowdPublic /></AppLayout>} />
             <Route path="/help" element={<AppLayout><HelpContact /></AppLayout>} />
+            <Route path="/desktop-required" element={<AppLayout><DesktopOnlyNotice /></AppLayout>} />
 
             {/* PILGRIM PROTECTED ROUTES */}
             <Route element={<ProtectedRoute allowedRoles={['PILGRIM', 'STAFF', 'ADMIN']} />}>

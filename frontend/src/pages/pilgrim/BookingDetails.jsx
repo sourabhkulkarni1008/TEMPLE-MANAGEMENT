@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useDevice } from '../../utils/useDevice';
 import api from '../../api/client';
 import StatusBadge from '../../components/StatusBadge';
 import { QrCode, Calendar, Clock, Users, Printer, XCircle, ArrowLeft, CheckCircle2, Mail, Send, Check } from 'lucide-react';
@@ -8,6 +9,7 @@ import { QrCode, Calendar, Clock, Users, Printer, XCircle, ArrowLeft, CheckCircl
 const BookingDetails = () => {
   const { id } = useParams();
   const { user } = useAuth();
+  const { isMobile } = useDevice();
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -55,30 +57,29 @@ const BookingDetails = () => {
   };
 
   const handleEmailPass = async () => {
-    // Automatically use the logged-in user's email or booking email directly with NO prompt!
-    const recipientEmail = user?.email || booking?.primaryPilgrimEmail || 'kulkarnisourabh807@gmail.com';
+    const recipientEmail = user?.email || booking?.primaryPilgrimEmail;
+    if (!recipientEmail) {
+      setEmailStatus('No valid email address found to send the pass.');
+      return;
+    }
 
     setSendingEmail(true);
     setEmailStatus('');
     setEmailSuccess(false);
 
     try {
-      const res = await fetch('http://localhost:5000/api/email/send-pass', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: recipientEmail,
-          pilgrimName: booking.primaryPilgrimName,
-          bookingId: booking.id,
-          bookingDate: booking.bookingDate,
-          slotTime: booking.slotTime,
-          darshanType: booking.darshanType,
-          numberOfPeople: booking.numberOfPeople,
-          qrToken: booking.qrToken || booking.id,
-          idProof: booking.primaryPilgrimIdProof
-        })
+      const data = await api.post('/email/send-pass', {
+        to: recipientEmail,
+        pilgrimName: booking.primaryPilgrimName,
+        bookingId: booking.id,
+        bookingDate: booking.bookingDate,
+        slotTime: booking.slotTime,
+        darshanType: booking.darshanType,
+        numberOfPeople: booking.numberOfPeople,
+        qrToken: booking.qrToken || booking.id,
+        idProof: booking.primaryPilgrimIdProof
       });
-      const data = await res.json();
+
       if (data.success) {
         setEmailSuccess(true);
         setEmailStatus(`✓ Digital Pass with QR Code has been directly sent to ${recipientEmail}!`);
@@ -89,7 +90,7 @@ const BookingDetails = () => {
         setEmailStatus(`Pass notification sent directly to ${recipientEmail}.`);
       }
     } catch (err) {
-      setEmailStatus('Could not connect to backend email service.');
+      setEmailStatus(err.message || 'Could not connect to backend email service.');
     } finally {
       setSendingEmail(false);
     }
@@ -97,35 +98,31 @@ const BookingDetails = () => {
 
   if (loading) {
     return (
-      <div className="dashboard-layout">
-        <div className="dashboard-content" style={{ textAlign: 'center', padding: '4rem' }}>
-          <p>Retrieving booking token and security QR...</p>
-        </div>
+      <div className="dashboard-content" style={{ textAlign: 'center', padding: '4rem 1rem' }}>
+        <p>Loading digital pass details...</p>
       </div>
     );
   }
 
   if (error || !booking) {
     return (
-      <div className="dashboard-layout">
-        <div className="dashboard-content" style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
-          <div className="alert alert-danger">{error || 'Booking not found'}</div>
-          <Link to="/user/bookings" className="btn btn-secondary">
-            Back to My Bookings
-          </Link>
-        </div>
+      <div className="dashboard-content" style={{ maxWidth: '600px', margin: '2rem auto', padding: '1rem' }}>
+        <div className="alert alert-danger">{error || 'Booking not found.'}</div>
+        <Link to="/user/bookings" className="btn btn-secondary">Back to My Bookings</Link>
       </div>
     );
   }
 
   return (
-    <div className="dashboard-layout">
-      <div className="dashboard-content" style={{ maxWidth: '680px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '8px' }}>
-          <Link to="/user/bookings" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem', color: '#64748b' }}>
-            <ArrowLeft size={16} /> Back to My Bookings
+    <div className="dashboard-content" style={{ padding: isMobile ? '1rem' : '2rem' }}>
+      <div style={{ maxWidth: '640px', margin: '0 auto' }}>
+        {/* Top Action Bar */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.25rem' }}>
+          <Link to="/user/bookings" className="btn btn-secondary btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <ArrowLeft size={15} />
+            <span>All Bookings</span>
           </Link>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button
               onClick={handleEmailPass}
               disabled={sendingEmail}
@@ -136,13 +133,12 @@ const BookingDetails = () => {
                 gap: '6px',
                 background: emailSuccess ? 'linear-gradient(135deg, #16a34a, #15803d)' : 'linear-gradient(135deg, #d97706, #b45309)',
                 border: 'none',
-                cursor: sendingEmail ? 'not-allowed' : 'pointer',
-                transition: 'all 0.2s ease'
+                cursor: sendingEmail ? 'not-allowed' : 'pointer'
               }}
             >
               {emailSuccess ? <Check size={15} /> : <Mail size={15} />}
               <span>
-                {sendingEmail ? 'Dispatching to Email...' : (emailSuccess ? 'Pass Sent Successfully!' : 'Send Pass to My Email')}
+                {sendingEmail ? 'Dispatching...' : (emailSuccess ? 'Pass Sent!' : 'Email QR Pass')}
               </span>
             </button>
             <button onClick={handlePrint} className="btn btn-secondary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -170,14 +166,14 @@ const BookingDetails = () => {
         )}
 
         {/* Digital Pass Card */}
-        <div className="card" style={{ padding: '2rem', border: '2px solid #b45309' }}>
+        <div className="card" style={{ padding: isMobile ? '1.25rem' : '2rem', border: '2px solid #b45309', borderRadius: '12px' }}>
           {/* Header */}
           <div style={{ textAlign: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '1.25rem', marginBottom: '1.5rem' }}>
-            <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', color: '#b45309', fontWeight: 600, letterSpacing: '0.05em' }}>
+            <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#b45309', fontWeight: 700, letterSpacing: '0.05em' }}>
               Official Digital Darshan Entry Pass
             </div>
-            <h1 style={{ fontSize: '1.4rem', color: '#0f172a', margin: '4px 0' }}>
-              Sri Siddhivinayak &amp; Venkateswara Temple
+            <h1 style={{ fontSize: isMobile ? '1.2rem' : '1.4rem', color: '#0f172a', margin: '4px 0' }}>
+              Sri Siddhivinayak Temple
             </h1>
             <div style={{ display: 'inline-block', marginTop: '6px' }}>
               <StatusBadge status={booking.bookingStatus} />
@@ -191,8 +187,9 @@ const BookingDetails = () => {
                 src={booking.qrDataUrl}
                 alt="Darshan QR Entry Pass"
                 style={{
-                  width: '200px',
-                  height: '200px',
+                  width: '180px',
+                  height: '180px',
+                  maxWidth: '100%',
                   border: '1px solid #e2e8f0',
                   borderRadius: '8px',
                   padding: '8px',
@@ -200,8 +197,8 @@ const BookingDetails = () => {
                 }}
               />
             ) : (
-              <div style={{ width: '180px', height: '180px', background: '#f1f5f9', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <QrCode size={64} color="#94a3b8" />
+              <div style={{ width: '160px', height: '160px', background: '#f1f5f9', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px' }}>
+                <QrCode size={56} color="#94a3b8" />
               </div>
             )}
             <div style={{ fontSize: '1rem', fontWeight: 800, color: '#b45309', marginTop: '8px', fontFamily: 'monospace' }}>
@@ -213,13 +210,13 @@ const BookingDetails = () => {
               </div>
             )}
             <div style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 600, marginTop: '6px' }}>
-              ✓ 100% Synchronized with Email Pass &bull; Scan at Temple Entry Gate
+              ✓ Scan at Temple Entry Gate (Main Entrance)
             </div>
           </div>
 
           {/* Booking Data Grid */}
           <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1rem', marginBottom: '1.5rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', fontSize: '0.875rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '0.85rem', fontSize: '0.875rem' }}>
               <div>
                 <span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>PRIMARY PILGRIM</span>
                 <strong>{booking.primaryPilgrimName}</strong>
@@ -249,8 +246,8 @@ const BookingDetails = () => {
 
           {/* Check-in Timestamp Note if Checked In */}
           {booking.bookingStatus === 'CHECKED_IN' && (
-            <div className="alert alert-success" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
-              <CheckCircle2 size={18} />
+            <div className="alert alert-success" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem', fontSize: '0.85rem' }}>
+              <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
               <span>
                 <strong>Entry Completed:</strong> Verified on {new Date(booking.checkedInAt).toLocaleString()} by {booking.checkedInBy || 'Gate Staff'}.
               </span>

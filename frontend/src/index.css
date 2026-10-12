@@ -460,3 +460,139 @@ p {
   box-shadow: 0 0 25px rgba(245, 158, 11, 0.35);
 }
 
+/* ==========================================================
+   MOBILE & TABLET RESPONSIVE SYSTEM (PILGRIM OPTIMIZED)
+   ========================================================== */
+
+/* Prevent horizontal overflow globally */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.page-wrapper {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Fix nested dashboard layouts */
+.dashboard-layout .dashboard-layout {
+  display: block;
+  min-height: auto;
+  width: 100%;
+}
+
+/* Touch target optimizations */
+.btn, button, input, select, textarea {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Mobile & Tablet Breakpoint (< 1024px) */
+@media (max-width: 1023px) {
+  .sidebar { 
+    display: none !important; 
+  }
+  .desktop-nav { 
+    display: none !important; 
+  }
+  .dashboard-layout { 
+    flex-direction: column; 
+    min-height: auto;
+  }
+  .dashboard-content {
+    padding: 1.25rem 1rem 5rem;
+  }
+  .page-wrapper {
+    padding-bottom: 65px; /* Space for MobileBottomNav */
+  }
+  .grid-4 { 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 1rem;
+  }
+  .grid-3 { 
+    grid-template-columns: 1fr; 
+    gap: 1rem;
+  }
+}
+
+/* Mobile Phone Breakpoint (<= 640px) */
+@media (max-width: 640px) {
+  .grid-2, .grid-4 { 
+    grid-template-columns: 1fr; 
+    gap: 0.85rem;
+  }
+  .dashboard-content { 
+    padding: 1rem 0.75rem 5rem; 
+  }
+  .container {
+    padding: 0 0.85rem;
+  }
+  .card {
+    padding: 1.15rem;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+  }
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.3rem; }
+  h3 { font-size: 1.15rem; }
+
+  /* Ensure inputs don't trigger iOS auto-zoom */
+  .form-input, .form-select, .form-textarea {
+    font-size: 16px;
+    padding: 0.6rem 0.75rem;
+  }
+
+  .btn {
+    min-height: 42px;
+  }
+
+  .modal-content {
+    padding: 1.2rem;
+    margin: 0.5rem;
+  }
+
+  .table th, .table td {
+    padding: 0.6rem 0.65rem;
+    font-size: 0.825rem;
+  }
+
+  .stepper-label {
+    display: none !important;
+  }
+
+  .mobile-step-indicator {
+    display: block !important;
+  }
+
+  .hero-slider-section {
+    height: 400px !important;
+  }
+
+  .hero-slide-content {
+    padding: 1.5rem 1rem !important;
+  }
+
+  .hero-slide-title {
+    font-size: 1.45rem !important;
+  }
+
+  .hero-slide-desc {
+    font-size: 0.85rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+}
+
+/* Ultra-compact screen adaptation (<= 360px, e.g. iPhone SE / Galaxy Fold) */
+@media (max-width: 360px) {
+  .container {
+    padding: 0 0.5rem;
+  }
+  .card {
+    padding: 0.9rem;
+  }
+  h1 { font-size: 1.35rem; }
+  h2 { font-size: 1.2rem; }
+}
+
+

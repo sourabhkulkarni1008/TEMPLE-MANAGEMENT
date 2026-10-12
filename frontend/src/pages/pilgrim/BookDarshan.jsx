@@ -304,60 +304,67 @@ const BookDarshan = () => {
 
         {/* Upgraded Progress Stepper */}
         <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
           background: '#ffffff',
           border: '1px solid #e2e8f0',
           borderRadius: '12px',
-          padding: '1rem 1.5rem',
-          marginBottom: '2rem',
+          padding: '0.85rem 1rem',
+          marginBottom: '1.5rem',
           boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
         }}>
-          {[
-            { num: 1, title: 'Visit Date', icon: <Calendar size={15} /> },
-            { num: 2, title: 'Darshan Category', icon: <Ticket size={15} /> },
-            { num: 3, title: 'Time Slot', icon: <Clock size={15} /> },
-            { num: 4, title: 'Devotee Info', icon: <User size={15} /> },
-            { num: 5, title: 'Confirm & QR', icon: <QrCode size={15} /> }
-          ].map((s, idx) => {
-            const isDone = step > s.num;
-            const isCurrent = step === s.num;
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            {[
+              { num: 1, title: 'Visit Date', icon: <Calendar size={15} /> },
+              { num: 2, title: 'Darshan Category', icon: <Ticket size={15} /> },
+              { num: 3, title: 'Time Slot', icon: <Clock size={15} /> },
+              { num: 4, title: 'Devotee Info', icon: <User size={15} /> },
+              { num: 5, title: 'Confirm & QR', icon: <QrCode size={15} /> }
+            ].map((s, idx) => {
+              const isDone = step > s.num;
+              const isCurrent = step === s.num;
 
-            return (
-              <React.Fragment key={s.num}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div
-                    style={{
-                      width: '36px',
-                      height: '36px',
-                      borderRadius: '50%',
-                      background: isCurrent ? 'linear-gradient(135deg, #b45309, #78350f)' : (isDone ? '#16a34a' : '#f1f5f9'),
-                      color: isCurrent || isDone ? '#ffffff' : '#64748b',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontWeight: 700,
-                      fontSize: '0.85rem',
-                      boxShadow: isCurrent ? '0 0 0 3px rgba(245, 158, 11, 0.25)' : 'none',
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
-                    {isDone ? <Check size={18} /> : s.num}
+              return (
+                <React.Fragment key={s.num}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div
+                      style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '50%',
+                        background: isCurrent ? 'linear-gradient(135deg, #b45309, #78350f)' : (isDone ? '#16a34a' : '#f1f5f9'),
+                        color: isCurrent || isDone ? '#ffffff' : '#64748b',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 700,
+                        fontSize: '0.8rem',
+                        boxShadow: isCurrent ? '0 0 0 3px rgba(245, 158, 11, 0.25)' : 'none',
+                        transition: 'all 0.2s ease',
+                        flexShrink: 0
+                      }}
+                    >
+                      {isDone ? <Check size={16} /> : s.num}
+                    </div>
+                    <div className="stepper-label" style={{ display: 'flex', flexDirection: 'column' }}>
+                      <span style={{ fontSize: '0.65rem', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase' }}>Step {s.num}</span>
+                      <span style={{ fontSize: '0.825rem', fontWeight: isCurrent ? 700 : 500, color: isCurrent ? '#b45309' : (isDone ? '#0f172a' : '#64748b'), whiteSpace: 'nowrap' }}>
+                        {s.title}
+                      </span>
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase' }}>Step {s.num}</span>
-                    <span style={{ fontSize: '0.85rem', fontWeight: isCurrent ? 700 : 500, color: isCurrent ? '#b45309' : (isDone ? '#0f172a' : '#64748b') }}>
-                      {s.title}
-                    </span>
-                  </div>
-                </div>
-                {idx < 4 && (
-                  <div style={{ flex: 1, height: '2px', background: isDone ? '#16a34a' : '#e2e8f0', margin: '0 12px' }} />
-                )}
-              </React.Fragment>
-            );
-          })}
+                  {idx < 4 && (
+                    <div style={{ flex: 1, height: '2px', background: isDone ? '#16a34a' : '#e2e8f0', margin: '0 8px', minWidth: '6px' }} />
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </div>
+          <div className="mobile-step-indicator" style={{ display: 'none', textAlign: 'center', fontSize: '0.8rem', fontWeight: 600, color: '#b45309', marginTop: '8px' }}>
+            Step {step} of 5: {[ 'Choose Visit Date', 'Select Darshan Category', 'Choose 2-Hour Time Slot', 'Enter Devotee Details', 'Booking Confirmation & QR Pass' ][step - 1]}
+          </div>
         </div>
 
         {error && (

@@ -114,7 +114,7 @@ const Home = () => {
         )}
 
         {/* HERO SECTION: SACRED SIDDHIVINAYAK PHOTO SLIDER CAROUSEL */}
-        <section style={{ position: 'relative', width: '100%', height: '460px', borderRadius: '16px', overflow: 'hidden', marginBottom: '2rem', boxShadow: '0 10px 25px -3px rgba(0,0,0,0.1), 0 8px 25px -4px rgba(217, 119, 6, 0.25)', background: '#0f172a' }}>
+        <section className="hero-slider-section" style={{ position: 'relative', width: '100%', height: '460px', borderRadius: '16px', overflow: 'hidden', marginBottom: '2rem', boxShadow: '0 10px 25px -3px rgba(0,0,0,0.1), 0 8px 25px -4px rgba(217, 119, 6, 0.25)', background: '#0f172a' }}>
           {heroSlides.map((slide, index) => (
             <div
               key={index}
@@ -149,14 +149,14 @@ const Home = () => {
                   zIndex: 1
                 }}
               />
-              <div style={{ position: 'relative', zIndex: 2, maxWidth: '680px', padding: '2.5rem 3rem', color: '#ffffff' }}>
+              <div className="hero-slide-content" style={{ position: 'relative', zIndex: 2, maxWidth: '680px', padding: '2.5rem 3rem', color: '#ffffff' }}>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(245, 158, 11, 0.2)', border: '1px solid rgba(245, 158, 11, 0.5)', color: '#fbbf24', padding: '6px 14px', borderRadius: '9999px', fontSize: '0.8rem', fontWeight: 700, marginBottom: '1rem', backdropFilter: 'blur(4px)' }}>
                   <Sparkles size={14} /> {slide.tag}
                 </span>
-                <h1 style={{ fontSize: '2.25rem', fontWeight: 800, lineHeight: 1.2, color: '#ffffff', marginBottom: '0.85rem' }}>
+                <h1 className="hero-slide-title" style={{ fontSize: '2.25rem', fontWeight: 800, lineHeight: 1.2, color: '#ffffff', marginBottom: '0.85rem' }}>
                   {slide.title}
                 </h1>
-                <p style={{ fontSize: '1.05rem', color: '#e2e8f0', lineHeight: 1.6, marginBottom: '1.75rem' }}>
+                <p className="hero-slide-desc" style={{ fontSize: '1.05rem', color: '#e2e8f0', lineHeight: 1.6, marginBottom: '1.75rem' }}>
                   {slide.desc}
                 </p>
                 <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>

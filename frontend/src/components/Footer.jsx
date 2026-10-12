@@ -1,12 +1,29 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Landmark, Shield, Phone, Mail, MapPin } from 'lucide-react';
+import { MapPin, Phone, Mail } from 'lucide-react';
+import { useDevice } from '../utils/useDevice';
 
 const Footer = () => {
+  const { isMobile } = useDevice();
+
   return (
-    <footer style={{ background: '#ffffff', borderTop: '1px solid #e2e8f0', padding: '2.5rem 0 1.5rem', marginTop: 'auto' }}>
+    <footer 
+      style={{ 
+        background: '#ffffff', 
+        borderTop: '1px solid #e2e8f0', 
+        padding: isMobile ? '2rem 0 5.5rem' : '2.5rem 0 1.5rem', 
+        marginTop: 'auto' 
+      }}
+    >
       <div className="container">
-        <div className="grid-4" style={{ marginBottom: '2rem' }}>
+        <div 
+          style={{ 
+            display: 'grid', 
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)', 
+            gap: isMobile ? '1.5rem' : '2rem', 
+            marginBottom: '2rem' 
+          }}
+        >
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
               <div style={{ width: '36px', height: '36px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
@@ -24,19 +41,22 @@ const Footer = () => {
             <ul style={{ listStyle: 'none', fontSize: '0.875rem', lineHeight: 1.8 }}>
               <li><Link to="/darshan">Online Darshan Booking</Link></li>
               <li><Link to="/crowd">Live Crowd Density Map</Link></li>
-              <li><Link to="/temple">Daily Pooja & Aarti Timings</Link></li>
-              <li><Link to="/help">Lost & Found / Emergency Help</Link></li>
+              <li><Link to="/temple">Daily Pooja &amp; Aarti Timings</Link></li>
+              <li><Link to="/help">Lost &amp; Found / Emergency Help</Link></li>
             </ul>
           </div>
 
-          <div>
-            <h4 style={{ marginBottom: '0.75rem', fontSize: '0.95rem' }}>Staff & Administration</h4>
-            <ul style={{ listStyle: 'none', fontSize: '0.875rem', lineHeight: 1.8 }}>
-              <li><Link to="/staff/login">Staff Entry Portal & QR Scanner</Link></li>
-              <li><Link to="/admin/login">Temple Executive Admin Login</Link></li>
-              <li><Link to="/help">Incident Reporting Desk</Link></li>
-            </ul>
-          </div>
+          {/* Staff & Administration: Exclusively rendered on Desktop */}
+          {!isMobile && (
+            <div>
+              <h4 style={{ marginBottom: '0.75rem', fontSize: '0.95rem' }}>Staff &amp; Administration</h4>
+              <ul style={{ listStyle: 'none', fontSize: '0.875rem', lineHeight: 1.8 }}>
+                <li><Link to="/staff/login">Staff Entry Portal &amp; QR Scanner</Link></li>
+                <li><Link to="/admin/login">Temple Executive Admin Login</Link></li>
+                <li><Link to="/help">Incident Reporting Desk</Link></li>
+              </ul>
+            </div>
+          )}
 
           <div>
             <h4 style={{ marginBottom: '0.75rem', fontSize: '0.95rem' }}>Temple Administration</h4>
