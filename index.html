@@ -17,614 +17,19 @@
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <!-- Lucide Icons via CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <style>
-    :root {
-      --primary: #b45309;
-      --primary-hover: #92400e;
-      --primary-light: #fef3c7;
-      --primary-dark: #78350f;
-      --bg-main: #f8fafc;
-      --bg-card: #ffffff;
-      --bg-alt: #f1f5f9;
-      --text-main: #0f172a;
-      --text-muted: #475569;
-      --border: #e2e8f0;
-      --success-bg: #dcfce7;
-      --success-text: #166534;
-      --warning-bg: #fef9c3;
-      --warning-text: #854d0e;
-      --danger-bg: #fee2e2;
-      --danger-text: #991b1b;
-      --info-bg: #e0f2fe;
-      --info-text: #075985;
-      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background-color: var(--bg-main);
-      color: var(--text-main);
-      line-height: 1.5;
-    }
-
-    a {
-      color: var(--primary);
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1rem;
-    }
-
-    /* Top Bar */
-    .top-nav {
-      background: #ffffff;
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      height: 64px;
-      display: flex;
-      align-items: center;
-    }
-
-    .brand-logo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 700;
-      color: #0f172a;
-      font-size: 1.05rem;
-    }
-
-    .brand-icon {
-      background: var(--primary);
-      color: #fff;
-      padding: 6px;
-      border-radius: 6px;
-      display: flex;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-
-    .nav-link {
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: color 0.15s;
-    }
-
-    .nav-link:hover,
-    .nav-link.active {
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      font-family: inherit;
-      font-size: 0.875rem;
-      font-weight: 500;
-      padding: 0.55rem 1rem;
-      border-radius: 6px;
-      border: 1px solid transparent;
-      cursor: pointer;
-      text-decoration: none;
-      transition: all 0.15s;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: #fff;
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-hover);
-      text-decoration: none;
-    }
-
-    .btn-secondary {
-      background: #fff;
-      color: var(--text-main);
-      border-color: var(--border);
-    }
-
-    .btn-secondary:hover {
-      background: var(--bg-alt);
-      text-decoration: none;
-    }
-
-    .btn-danger {
-      background: #dc2626;
-      color: #fff;
-    }
-
-    .btn-danger:hover {
-      background: #b91c1c;
-    }
-
-    .btn-success {
-      background: #16a34a;
-      color: #fff;
-    }
-
-    .btn-success:hover {
-      background: #15803d;
-    }
-
-    .btn-sm {
-      padding: 0.35rem 0.75rem;
-      font-size: 0.8rem;
-    }
-
-    .btn-lg {
-      padding: 0.75rem 1.4rem;
-      font-size: 0.95rem;
-    }
-
-    /* Cards & Grids */
-    .card {
-      background: #ffffff;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.25rem;
-      box-shadow: var(--shadow-sm);
-      margin-bottom: 1.25rem;
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.75rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .card-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #0f172a;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.25rem;
-    }
-
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.25rem;
-    }
-
-    .grid-4 {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.25rem;
-    }
-
-    /* Forms */
-    .form-group {
-      margin-bottom: 1rem;
-    }
-
-    .form-label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 500;
-      margin-bottom: 0.3rem;
-      color: var(--text-main);
-    }
-
-    .form-input,
-    .form-select,
-    .form-textarea {
-      width: 100%;
-      padding: 0.6rem 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-family: inherit;
-      font-size: 0.9rem;
-      background: #fff;
-    }
-
-    .form-input:focus,
-    .form-select:focus,
-    .form-textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px rgba(180, 83, 9, 0.15);
-    }
-
-    .form-textarea {
-      min-height: 80px;
-    }
-
-    /* Badges */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 8px;
-      border-radius: 9999px;
-      font-size: 0.725rem;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-
-    .badge-low {
-      background: var(--success-bg);
-      color: var(--success-text);
-    }
-
-    .badge-moderate {
-      background: var(--warning-bg);
-      color: var(--warning-text);
-    }
-
-    .badge-high {
-      background: var(--danger-bg);
-      color: var(--danger-text);
-    }
-
-    .badge-confirmed {
-      background: var(--success-bg);
-      color: var(--success-text);
-    }
-
-    .badge-checked-in {
-      background: #dbeafe;
-      color: #1e40af;
-    }
-
-    .badge-cancelled {
-      background: #f1f5f9;
-      color: #64748b;
-    }
-
-    /* Tables */
-    .table-container {
-      width: 100%;
-      overflow-x: auto;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: #fff;
-    }
-
-    .table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      font-size: 0.875rem;
-    }
-
-    .table th {
-      background: var(--bg-alt);
-      padding: 0.65rem 0.85rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .table td {
-      padding: 0.65rem 0.85rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .table tbody tr:hover {
-      background: #fafafa;
-    }
-
-    /* Alerts */
-    .alert {
-      padding: 0.85rem 1rem;
-      border-radius: 6px;
-      margin-bottom: 1.25rem;
-      font-size: 0.875rem;
-      border: 1px solid transparent;
-    }
-
-    .alert-info {
-      background: var(--info-bg);
-      color: var(--info-text);
-      border-color: #bae6fd;
-    }
-
-    .alert-warning {
-      background: var(--warning-bg);
-      color: var(--warning-text);
-      border-color: #fef08a;
-    }
-
-    .alert-danger {
-      background: var(--danger-bg);
-      color: var(--danger-text);
-      border-color: #fecaca;
-    }
-
-    .alert-success {
-      background: var(--success-bg);
-      color: var(--success-text);
-      border-color: #bbf7d0;
-    }
-
-    /* Modals */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(15, 23, 42, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 1rem;
-    }
-
-    .modal-content {
-      background: #fff;
-      border-radius: 8px;
-      max-width: 520px;
-      width: 100%;
-      padding: 1.5rem;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: var(--shadow-md);
-    }
-
-    /* Scanner Animations */
-    .scanner-laser {
-      position: absolute;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: #22c55e;
-      box-shadow: 0 0 10px #22c55e, 0 0 20px #22c55e;
-      animation: scanAnimation 2s infinite ease-in-out;
-      pointer-events: none;
-      z-index: 10;
-    }
-
-    @keyframes scanAnimation {
-      0% {
-        top: 8%;
-        opacity: 0.8;
-      }
-
-      50% {
-        top: 88%;
-        opacity: 1;
-      }
-
-      100% {
-        top: 8%;
-        opacity: 0.8;
-      }
-    }
-
-    @keyframes pulse {
-
-      0%,
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-
-      50% {
-        opacity: 0.4;
-        transform: scale(0.9);
-      }
-    }
-
-    #qr-reader {
-      border: none !important;
-    }
-
-    #qr-reader video {
-      border-radius: 6px;
-      width: 100% !important;
-      object-fit: cover;
-    }
-
-    #qr-reader__scan_region {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    /* CCTV Feeds & Camera Matrix */
-    .cctv-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .cctv-feed-card {
-      background: #0b0f19;
-      border: 1px solid #1e293b;
-      border-radius: 8px;
-      overflow: hidden;
-      color: #fff;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-    }
-
-    .cctv-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 12px;
-      background: #0f172a;
-      border-bottom: 1px solid #1e293b;
-      font-size: 0.75rem;
-    }
-
-    .cctv-video-container {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16/9;
-      background: #000;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .cctv-canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .cctv-hud-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      pointer-events: none;
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .cctv-hud-top {
-      display: flex;
-      justify-content: space-between;
-      font-family: monospace;
-      font-size: 0.65rem;
-      color: #4ade80;
-      text-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
-    }
-
-    .cctv-hud-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      font-family: monospace;
-      font-size: 0.65rem;
-      color: #f8fafc;
-      text-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
-    }
-
-    .cctv-scanline {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-      background-size: 100% 3px, 6px 100%;
-      pointer-events: none;
-    }
-
-    /* Email Modal & OTP Input */
-    .otp-inputs {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      margin: 1.25rem 0;
-    }
-
-    .otp-input-digit {
-      width: 44px;
-      height: 50px;
-      text-align: center;
-      font-size: 1.4rem;
-      font-weight: 700;
-      font-family: monospace;
-      border: 1.5px solid #cbd5e1;
-      border-radius: 6px;
-    }
-
-    .otp-input-digit:focus {
-      border-color: var(--primary);
-      outline: none;
-      box-shadow: 0 0 0 3px var(--primary-light);
-    }
-
-    /* Responsive */
-    @media(max-width: 1024px) {
-      .cctv-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media(max-width: 900px) {
-      .grid-4 {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .grid-3 {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media(max-width: 860px) {
-      .booking-grid-layout {
-        grid-template-columns: 1fr !important;
-      }
-    }
-
-    @media(max-width: 640px) {
-      .cctv-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media(max-width: 600px) {
-
-      .grid-2,
-      .grid-4 {
-        grid-template-columns: 1fr;
-      }
-
-      .nav-links {
-        display: none;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
 
   <!-- Top Navigation -->
   <header class="top-nav">
-    <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-      <div class="brand-logo" onclick="switchView('home')" style="cursor:pointer;">
+    <div class="container u-s1">
+      <div class="brand-logo u-s2" onclick="switchView('home')">
         <div class="brand-icon"><i data-lucide="landmark"></i></div>
         <div>
           <div>Sri Siddhivinayak</div>
-          <div style="font-size:0.7rem; color:#64748b; font-weight:400;">Temple Management & Flow System</div>
+          <div class="u-s3">Temple Management & Flow System</div>
         </div>
       </div>
 
@@ -637,15 +42,14 @@
       </nav>
 
       <!-- Role Switcher & Profile -->
-      <div style="display:flex; align-items:center; gap:8px;">
-        <select id="role-select" name="role-select" title="Select User Role" aria-label="Select User Role" onchange="changeRole(this.value)" class="form-select"
-          style="padding:4px 8px; font-size:0.8rem; font-weight:600; width:auto; border-color:var(--primary);">
+      <div class="u-s4">
+        <select id="role-select" name="role-select" title="Select User Role" aria-label="Select User Role" onchange="changeRole(this.value)" class="form-select u-s5">
           <option value="PILGRIM">Pilgrim View (Ananya)</option>
           <option value="STAFF">Staff View (Rajesh - Gate Entry)</option>
           <option value="ADMIN">Admin View (Executive Officer)</option>
         </select>
         <button id="dashboard-btn" onclick="openCurrentDashboard()" class="btn btn-primary btn-sm">
-          <i data-lucide="user" style="width:14px; height:14px;"></i>
+          <i data-lucide="user" class="u-s6"></i>
           <span id="role-dashboard-label">Dashboard</span>
         </button>
       </div>
@@ -653,25 +57,22 @@
   </header>
 
   <!-- Notification Toast Banner (Dynamic) -->
-  <div id="toast-container" class="container" style="margin-top:1rem; display:none;">
-    <div id="toast-msg" class="alert alert-warning"
-      style="display:flex; justify-content:space-between; align-items:center;">
+  <div id="toast-container" class="container u-s7">
+    <div id="toast-msg" class="alert alert-warning u-s8">
       <span id="toast-text"></span>
-      <button onclick="document.getElementById('toast-container').style.display='none'"
-        style="background:none; border:none; cursor:pointer; font-weight:bold;">&times;</button>
+      <button onclick="document.getElementById('toast-container').style.display='none'" class="u-s9">&times;</button>
     </div>
   </div>
 
   <!-- Main Dynamic View Container -->
-  <main class="container" style="padding: 1.5rem 1rem 3rem;">
+  <main class="container u-s10">
 
     <!-- ==================== 1. HOME VIEW ==================== -->
     <div id="view-home">
       <!-- Festival Banner -->
-      <div class="alert alert-warning"
-        style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <i data-lucide="sparkles" style="color:#b45309;"></i>
+      <div class="alert alert-warning u-s11">
+        <div class="u-s4">
+          <i data-lucide="sparkles" class="u-s12"></i>
           <span><strong>Festival Mode Active: Maha Shivaratri Brahmotsavam</strong> &bull; Extended Darshan hours active
             till 11:45 PM.</span>
         </div>
@@ -679,17 +80,17 @@
       </div>
 
       <!-- Hero Banner -->
-      <div class="card" style="padding:2.25rem 2rem; margin-bottom:1.5rem;">
-        <div style="max-width:760px;">
-          <span class="badge" style="background:#fef3c7; color:#b45309; margin-bottom:0.75rem;">Official Pilgrim
+      <div class="card u-s13">
+        <div class="u-s14">
+          <span class="badge u-s15">Official Pilgrim
             Portal</span>
-          <h1 style="font-size:2rem; font-weight:700; color:#0f172a; margin-bottom:0.5rem;">Plan your temple visit with
+          <h1 class="u-s16">Plan your temple visit with
             ease.</h1>
-          <p style="color:#475569; font-size:1rem; margin-bottom:1.5rem; line-height:1.6;">
+          <p class="u-s17">
             Book darshan slots online, generate digital QR tokens, check live crowd density across holding bays, and
             reduce queue wait times.
           </p>
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <div class="u-s18">
             <button onclick="switchView('book')" class="btn btn-primary btn-lg"><i data-lucide="calendar-check"></i>
               Book Darshan Slot</button>
             <button onclick="switchView('crowd')" class="btn btn-secondary btn-lg"><i data-lucide="eye"></i> Check Live
@@ -699,26 +100,26 @@
       </div>
 
       <!-- Real-Time Metrics -->
-      <div class="grid-4" style="margin-bottom:1.5rem;">
+      <div class="grid-4 u-s19">
         <div class="card">
-          <div style="font-size:0.8rem; color:#64748b;">Current Inside Crowd</div>
-          <div style="font-size:1.6rem; font-weight:700; color:#0f172a;" id="home-crowd-count">730 pilgrims</div>
-          <div style="margin-top:4px;"><span class="badge badge-low" id="home-crowd-badge">LOW CROWD</span></div>
+          <div class="u-s20">Current Inside Crowd</div>
+          <div class="u-s21" id="home-crowd-count">730 pilgrims</div>
+          <div class="u-s22"><span class="badge badge-low" id="home-crowd-badge">LOW CROWD</span></div>
         </div>
         <div class="card">
-          <div style="font-size:0.8rem; color:#64748b;">Queue Waiting Time</div>
-          <div style="font-size:1.6rem; font-weight:700; color:#0f172a;" id="home-queue-wait">15 - 20 mins</div>
-          <div style="font-size:0.75rem; color:#166534; margin-top:4px;">&check; Steady queue pace</div>
+          <div class="u-s20">Queue Waiting Time</div>
+          <div class="u-s21" id="home-queue-wait">15 - 20 mins</div>
+          <div class="u-s23">&check; Steady queue pace</div>
         </div>
         <div class="card">
-          <div style="font-size:0.8rem; color:#64748b;">Temple Gate Timings</div>
-          <div style="font-size:1.3rem; font-weight:700; color:#0f172a;">05:00 AM - 10:30 PM</div>
-          <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">Maha Aarti at 07:00 PM</div>
+          <div class="u-s20">Temple Gate Timings</div>
+          <div class="u-s24">05:00 AM - 10:30 PM</div>
+          <div class="u-s25">Maha Aarti at 07:00 PM</div>
         </div>
         <div class="card">
-          <div style="font-size:0.8rem; color:#64748b;">24/7 Helpline</div>
-          <div style="font-size:1.3rem; font-weight:700; color:#0f172a;">+91 98765 43210</div>
-          <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">First-Aid & Help Desk Active</div>
+          <div class="u-s20">24/7 Helpline</div>
+          <div class="u-s24">+91 98765 43210</div>
+          <div class="u-s25">First-Aid & Help Desk Active</div>
         </div>
       </div>
 
@@ -727,40 +128,38 @@
         <div class="card-header">
           <div>
             <h2 class="card-title">Live Temple Zone Flow & Crowd Map</h2>
-            <p style="font-size:0.8rem; color:#64748b;">Sequential pilgrim transit from Main Gate to Sanctum & Exit</p>
+            <p class="u-s20">Sequential pilgrim transit from Main Gate to Sanctum & Exit</p>
           </div>
-          <button onclick="simulateCrowdShift()" class="btn btn-secondary btn-sm"><i data-lucide="sparkles"
-              style="width:14px; height:14px;"></i> Simulate Shift</button>
+          <button onclick="simulateCrowdShift()" class="btn btn-secondary btn-sm"><i data-lucide="sparkles" class="u-s6"></i> Simulate Shift</button>
         </div>
-        <div id="heatmap-container" style="display:flex; gap:12px; overflow-x:auto; padding:0.5rem 0 1rem;"></div>
+        <div id="heatmap-container" class="u-s26"></div>
       </div>
 
       <!-- Darshan Types Preview -->
-      <div style="margin-top:1.5rem;">
-        <h2 style="font-size:1.3rem; margin-bottom:0.75rem;">Available Darshan Categories</h2>
+      <div class="u-s27">
+        <h2 class="u-s28">Available Darshan Categories</h2>
         <div class="grid-2" id="home-darshan-cards"></div>
       </div>
     </div>
 
     <!-- ==================== 2. BOOK DARSHAN WIZARD ==================== -->
-    <div id="view-book" style="display:none; max-width:960px; margin:0 auto;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+    <div id="view-book" class="u-s29">
+      <div class="u-s30">
         <div>
-          <h1 style="font-size:1.5rem; color:#0f172a;">Reserve Online Darshan Entry Pass</h1>
-          <p style="font-size:0.85rem; color:#64748b;">Instant digital QR token generation with queue priority</p>
+          <h1 class="u-s31">Reserve Online Darshan Entry Pass</h1>
+          <p class="u-s32">Instant digital QR token generation with queue priority</p>
         </div>
         <button onclick="switchView('home')" class="btn btn-secondary btn-sm">Cancel</button>
       </div>
 
       <form id="booking-form" onsubmit="handleBookingSubmit(event)">
-        <div style="display:grid; grid-template-columns:1.35fr 1fr; gap:1.5rem; align-items:start;"
-          class="booking-grid-layout">
+        <div
+          class="booking-grid-layout u-s33">
 
           <!-- LEFT COLUMN: Visit Selection & Pilgrim Details -->
-          <div class="card" style="padding:1.5rem;">
-            <h2 class="card-title"
-              style="font-size:1.1rem; margin-bottom:1rem; display:flex; align-items:center; gap:8px;">
-              <i data-lucide="calendar" style="color:var(--primary);"></i> Step 1: Visit Schedule &amp; Devotee Details
+          <div class="card u-s34">
+            <h2 class="card-title u-s35">
+              <i data-lucide="calendar" class="u-s36"></i> Step 1: Visit Schedule &amp; Devotee Details
             </h2>
 
             <div class="form-group">
@@ -794,8 +193,8 @@
               </select>
             </div>
 
-            <div style="border-top:1px solid var(--border); padding-top:1rem; margin-top:1rem;">
-              <h3 style="font-size:0.95rem; font-weight:700; margin-bottom:0.75rem; color:#0f172a;">Primary Devotee
+            <div class="u-s37">
+              <h3 class="u-s38">Primary Devotee
                 Information</h3>
               <div class="form-group">
                 <label class="form-label">Full Name</label>
@@ -815,44 +214,41 @@
               </div>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-lg" style="width:100%; margin-top:1rem;">
+            <button type="submit" class="btn btn-primary btn-lg u-s39">
               <i data-lucide="check-circle-2"></i> Confirm Booking &amp; Generate QR Pass
             </button>
           </div>
 
           <!-- RIGHT COLUMN: BOOKING SUMMARY & PASS ADVANTAGES -->
-          <div class="card"
-            style="padding:1.5rem; background:#ffffff; border:1.5px solid #cbd5e1; position:sticky; top:80px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-              <h2 class="card-title"
-                style="font-size:1rem; margin-bottom:0; display:flex; align-items:center; gap:6px;">
-                <i data-lucide="ticket" style="color:var(--primary);"></i> Booking Summary
+          <div class="card u-s40">
+            <div class="u-s41">
+              <h2 class="card-title u-s42">
+                <i data-lucide="ticket" class="u-s36"></i> Booking Summary
               </h2>
-              <span class="badge badge-confirmed" style="font-size:0.7rem; letter-spacing:0.5px;">INSTANT PASS</span>
+              <span class="badge badge-confirmed u-s43">INSTANT PASS</span>
             </div>
 
-            <p style="font-size:0.775rem; color:#64748b; margin-bottom:1rem; line-height:1.4;">
+            <p class="u-s44">
               Digital QR token will be generated instantly and emailed with automated gate check-in validity.
             </p>
 
-            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:0.85rem; margin-bottom:1rem; font-size:0.8rem;">
-              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                <span style="color:#64748b;">Gate Verification:</span>
-                <strong style="color:#166534;">✓ Instant QR Scan</strong>
+            <div class="u-s45">
+              <div class="u-s46">
+                <span class="u-s47">Gate Verification:</span>
+                <strong class="u-s48">✓ Instant QR Scan</strong>
               </div>
-              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                <span style="color:#64748b;">Holding Bay Access:</span>
+              <div class="u-s46">
+                <span class="u-s47">Holding Bay Access:</span>
                 <strong>Direct Entry</strong>
               </div>
-              <div style="display:flex; justify-content:space-between;">
-                <span style="color:#64748b;">Confirmation SMS:</span>
+              <div class="u-s49">
+                <span class="u-s47">Confirmation SMS:</span>
                 <strong>Sent to Phone</strong>
               </div>
             </div>
 
-            <div
-              style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:0.6rem 0.75rem; font-size:0.75rem; color:#166534; display:flex; align-items:center; gap:6px;">
-              <i data-lucide="check-circle" style="width:14px; height:14px; color:#16a34a; flex-shrink:0;"></i>
+            <div class="u-s50">
+              <i data-lucide="check-circle" class="u-s51"></i>
               <span>No physical ID upload needed. Simply show the digital QR pass at turnstile gates.</span>
             </div>
           </div>
@@ -861,66 +257,61 @@
     </div>
 
     <!-- ==================== 3. BOOKING SUCCESS / DIGITAL PASS VIEW ==================== -->
-    <div id="view-pass" style="display:none; max-width:580px; margin:0 auto;">
-      <div class="card" style="border:2px solid var(--primary); padding:2rem; text-align:center;">
-        <span class="badge badge-confirmed" style="margin-bottom:0.5rem;">&check; BOOKING CONFIRMED</span>
-        <h2 style="font-size:1.35rem; margin-bottom:2px;">Official Digital Darshan Entry Pass</h2>
-        <div style="font-size:0.8rem; color:#64748b; margin-bottom:1.25rem;">Sri Siddhivinayak & Venkateswara Temple
+    <div id="view-pass" class="u-s52">
+      <div class="card u-s53">
+        <span class="badge badge-confirmed u-s54">&check; BOOKING CONFIRMED</span>
+        <h2 class="u-s55">Official Digital Darshan Entry Pass</h2>
+        <div class="u-s56">Sri Siddhivinayak & Venkateswara Temple
           Complex</div>
 
         <!-- Canvas for QR generation -->
-        <div id="qrcode-box"
-          style="margin:1rem auto; padding:10px; background:#fff; border:1px solid #e2e8f0; border-radius:8px; display:inline-block;">
+        <div id="qrcode-box" class="u-s57">
         </div>
 
-        <div style="font-weight:700; font-family:monospace; font-size:1.1rem; color:#0f172a; margin-top:6px;"
+        <div class="u-s58"
           id="pass-id">DAR-2026-000101</div>
-        <div style="font-size:0.75rem; color:#64748b; margin-bottom:1.5rem;">Show this QR Code at the Entry Gate Scanner
+        <div class="u-s59">Show this QR Code at the Entry Gate Scanner
         </div>
 
         <!-- Summary details -->
-        <div
-          style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:1rem; text-align:left; font-size:0.85rem; margin-bottom:1.5rem;">
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-            <div><span style="color:#64748b; font-size:0.75rem;">PRIMARY PILGRIM:</span> <strong id="pass-name">Ananya
+        <div class="u-s60">
+          <div class="u-s61">
+            <div><span class="u-s62">PRIMARY PILGRIM:</span> <strong id="pass-name">Ananya
                 Deshmukh</strong></div>
-            <div><span style="color:#64748b; font-size:0.75rem;">PHONE:</span> <strong id="pass-phone">+91 98201
+            <div><span class="u-s62">PHONE:</span> <strong id="pass-phone">+91 98201
                 55667</strong></div>
-            <div><span style="color:#64748b; font-size:0.75rem;">DATE:</span> <strong id="pass-date">2026-10-01</strong>
+            <div><span class="u-s62">DATE:</span> <strong id="pass-date">2026-10-01</strong>
             </div>
-            <div><span style="color:#64748b; font-size:0.75rem;">TIME SLOT:</span> <strong id="pass-slot">08:00 AM -
+            <div><span class="u-s62">TIME SLOT:</span> <strong id="pass-slot">08:00 AM -
                 10:00 AM</strong></div>
-            <div><span style="color:#64748b; font-size:0.75rem;">CATEGORY:</span> <strong id="pass-type">General
+            <div><span class="u-s62">CATEGORY:</span> <strong id="pass-type">General
                 Darshan</strong></div>
-            <div><span style="color:#64748b; font-size:0.75rem;">TOTAL PERSONS:</span> <strong id="pass-people">2
+            <div><span class="u-s62">TOTAL PERSONS:</span> <strong id="pass-people">2
                 Person(s)</strong></div>
-            <div style="grid-column:1 / -1; border-top:1px dashed #cbd5e1; padding-top:6px; margin-top:2px;">
-              <span style="color:#64748b; font-size:0.75rem;">GOVT ID VERIFICATION:</span> <strong id="pass-idproof"
-                style="font-family:monospace; color:#166534;">AADHAAR (XXXX-XXXX-1920) ✓</strong>
+            <div class="u-s63">
+              <span class="u-s62">GOVT ID VERIFICATION:</span> <strong id="pass-idproof" class="u-s64">AADHAAR (XXXX-XXXX-1920) ✓</strong>
             </div>
           </div>
         </div>
 
         <!-- Email Sent Confirmation Banner -->
-        <div class="alert alert-success"
-          style="margin-bottom:1.25rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; text-align:left;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <i data-lucide="mail-check" style="color:#16a34a; width:20px; height:20px; flex-shrink:0;"></i>
-            <span style="font-size:0.8rem;">Official PDF Ticket &amp; QR Entry Token emailed to <strong
+        <div class="alert alert-success u-s65">
+          <div class="u-s4">
+            <i data-lucide="mail-check" class="u-s66"></i>
+            <span class="u-s67">Official PDF Ticket &amp; QR Entry Token emailed to <strong
                 id="pass-sent-email">ananya.deshmukh@gmail.com</strong></span>
           </div>
-          <button type="button" onclick="openEmailPreviewModal()" class="btn btn-primary btn-sm"
-            style="font-size:0.75rem; padding:4px 10px;">
-            <i data-lucide="mail-open" style="width:13px; height:13px;"></i> View Email Preview
+          <button type="button" onclick="openEmailPreviewModal()" class="btn btn-primary btn-sm u-s68">
+            <i data-lucide="mail-open" class="u-s69"></i> View Email Preview
           </button>
         </div>
 
-        <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+        <div class="u-s70">
           <button onclick="window.print()" class="btn btn-secondary btn-sm"><i data-lucide="printer"></i> Print
             Pass</button>
           <button onclick="openEmailPreviewModal()" class="btn btn-secondary btn-sm"><i data-lucide="mail"></i> Email
             E-Ticket</button>
-          <button onclick="sendWhatsappPass()" class="btn btn-secondary btn-sm" style="color:#16a34a;"><i
+          <button onclick="sendWhatsappPass()" class="btn btn-secondary btn-sm u-s71"><i
               data-lucide="send"></i> Send WhatsApp Copy</button>
           <button onclick="switchView('pilgrim-dashboard')" class="btn btn-primary btn-sm">Go to My Bookings</button>
         </div>
@@ -928,12 +319,11 @@
     </div>
 
     <!-- ==================== 4. PILGRIM DASHBOARD ==================== -->
-    <div id="view-pilgrim" style="display:none;">
-      <div
-        style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
+    <div id="view-pilgrim" class="u-s72">
+      <div class="u-s73">
         <div>
-          <h1 style="font-size:1.6rem;">Pilgrim Dashboard</h1>
-          <p style="font-size:0.85rem; color:#64748b;">Welcome, Ananya Deshmukh &bull; Manage your visits and passes</p>
+          <h1 class="u-s74">Pilgrim Dashboard</h1>
+          <p class="u-s32">Welcome, Ananya Deshmukh &bull; Manage your visits and passes</p>
         </div>
         <button onclick="switchView('book')" class="btn btn-primary"><i data-lucide="plus-circle"></i> Book New
           Darshan</button>
@@ -963,93 +353,79 @@
     </div>
 
     <!-- ==================== 5. STAFF QR SCANNER & QUEUE CONSOLE ==================== -->
-    <div id="view-staff" style="display:none; max-width:840px; margin:0 auto;">
-      <div
-        style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
+    <div id="view-staff" class="u-s75">
+      <div class="u-s73">
         <div>
-          <h1 style="font-size:1.6rem; color:#0f172a;">Staff Gate & Queue Console</h1>
-          <p style="font-size:0.85rem; color:#64748b;">Officer: Rajesh Sharma (EMP-SEC-101) &bull; Main Gate Entry</p>
+          <h1 class="u-s76">Staff Gate & Queue Console</h1>
+          <p class="u-s32">Officer: Rajesh Sharma (EMP-SEC-101) &bull; Main Gate Entry</p>
         </div>
         <span class="badge badge-confirmed">Shift: Morning (06:00 - 14:00)</span>
       </div>
 
       <!-- QR Scanner Box with Live Camera Support -->
-      <div class="card" style="padding:1.5rem; margin-bottom:1.5rem;">
-        <div
-          style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:0.75rem;">
-          <h2 class="card-title" style="margin-bottom:0;"><i data-lucide="qr-code" style="color:var(--primary);"></i>
+      <div class="card u-s77">
+        <div class="u-s78">
+          <h2 class="card-title u-s79"><i data-lucide="qr-code" class="u-s36"></i>
             Gate Token Verification</h2>
-          <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <button id="btn-camera-toggle" onclick="toggleCameraScanner()" class="btn btn-primary btn-sm"
-              style="display:flex; align-items:center; gap:6px;">
-              <i data-lucide="camera" style="width:15px; height:15px;"></i> <span id="camera-btn-text">Open Live Camera
+          <div class="u-s80">
+            <button id="btn-camera-toggle" onclick="toggleCameraScanner()" class="btn btn-primary btn-sm u-s81">
+              <i data-lucide="camera" class="u-s82"></i> <span id="camera-btn-text">Open Live Camera
                 Scan</span>
             </button>
-            <label class="btn btn-secondary btn-sm"
-              style="display:flex; align-items:center; gap:6px; cursor:pointer; margin-bottom:0;">
-              <i data-lucide="image" style="width:15px; height:15px;"></i> Scan QR Image File
-              <input type="file" id="qr-file-input" accept="image/*" style="display:none;"
+            <label class="btn btn-secondary btn-sm u-s83">
+              <i data-lucide="image" class="u-s82"></i> Scan QR Image File
+              <input type="file" id="qr-file-input" accept="image/*" class="u-s72"
                 onchange="handleQrFileUpload(this)">
             </label>
           </div>
         </div>
 
         <!-- Live Camera Viewfinder Box -->
-        <div id="camera-scanner-container"
-          style="display:none; background:#0f172a; border-radius:8px; padding:1rem; margin-bottom:1rem; color:#fff; border:2px solid var(--primary);">
-          <div
-            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:8px;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span
-                style="display:inline-block; width:10px; height:10px; background:#22c55e; border-radius:50%; animation:pulse 1.5s infinite;"></span>
-              <span style="font-size:0.85rem; font-weight:600;">Live Camera Viewfinder Active</span>
+        <div id="camera-scanner-container" class="u-s84">
+          <div class="u-s85">
+            <div class="u-s4">
+              <span class="u-s86"></span>
+              <span class="u-s87">Live Camera Viewfinder Active</span>
             </div>
-            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-              <select id="camera-device-select" onchange="changeCameraDevice(this.value)"
-                style="background:#1e293b; color:#fff; border:1px solid #475569; padding:4px 8px; border-radius:4px; font-size:0.75rem;">
+            <div class="u-s88">
+              <select id="camera-device-select" onchange="changeCameraDevice(this.value)" class="u-s89">
                 <option value="">Detecting Cameras...</option>
               </select>
-              <button onclick="toggleContinuousScan()" id="btn-continuous-mode" class="btn btn-sm"
-                style="background:#334155; color:#fff; font-size:0.75rem; padding:4px 8px;">
+              <button onclick="toggleContinuousScan()" id="btn-continuous-mode" class="btn btn-sm u-s90">
                 Mode: Single Scan
               </button>
-              <button onclick="stopCameraScanner()" class="btn btn-danger btn-sm"
-                style="padding:4px 8px; font-size:0.75rem;">
+              <button onclick="stopCameraScanner()" class="btn btn-danger btn-sm u-s91">
                 ✕ Close Camera
               </button>
             </div>
           </div>
 
-          <div
-            style="position:relative; width:100%; max-width:440px; margin:0 auto; background:#000; border-radius:8px; overflow:hidden; min-height:240px; display:flex; align-items:center; justify-content:center;">
-            <div id="qr-reader" style="width:100%;"></div>
-            <div id="scanner-laser" class="scanner-laser" style="display:none;"></div>
+          <div class="u-s92">
+            <div id="qr-reader" class="u-s93"></div>
+            <div id="scanner-laser" class="scanner-laser u-s72"></div>
           </div>
-          <p style="text-align:center; font-size:0.75rem; color:#94a3b8; margin-top:0.6rem; margin-bottom:0;">
+          <p class="u-s94">
             Point your webcam or phone camera at the pilgrim's printed or mobile QR pass
           </p>
         </div>
 
-        <div style="display:flex; gap:8px; margin-bottom:0.75rem;">
-          <input type="text" id="scanner-input" class="form-input"
-            placeholder="Scan camera or enter token (e.g. QR-DAR-2026-000101)..."
-            style="font-family:monospace; font-size:0.95rem;">
+        <div class="u-s95">
+          <input type="text" id="scanner-input" class="form-input u-s96"
+            placeholder="Scan camera or enter token (e.g. QR-DAR-2026-000101)...">
           <button onclick="handleScanVerify()" class="btn btn-primary">Verify Token</button>
         </div>
 
-        <div
-          style="background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:0.65rem; font-size:0.75rem;">
+        <div class="u-s97">
           <strong>Quick Test Tokens:</strong>
-          <a onclick="setScanToken('QR-DAR-2026-000101-SECURE-TOKEN-X79')"
-            style="margin-left:8px; text-decoration:underline;">Test Valid Pass</a> |
-          <a onclick="setScanToken('QR-ALREADY-USED-SAMPLE')" style="margin-left:8px; text-decoration:underline;">Test
+          <a onclick="setScanToken('QR-DAR-2026-000101-SECURE-TOKEN-X79')" class="u-s98">Test Valid Pass</a> |
+          <a onclick="setScanToken('QR-ALREADY-USED-SAMPLE')" class="u-s98">Test
             Already Used</a> |
-          <a onclick="setScanToken('INVALID-CODE-999')" style="margin-left:8px; text-decoration:underline;">Test Invalid
+          <a onclick="setScanToken('INVALID-CODE-999')" class="u-s98">Test Invalid
             Token</a>
         </div>
 
         <!-- Scan Result Box -->
-        <div id="scan-feedback" style="margin-top:1rem; display:none;"></div>
+        <div id="scan-feedback" class="u-s7"></div>
       </div>
 
       <!-- Queue Control Box -->
@@ -1058,41 +434,40 @@
           <h2 class="card-title">Holding Bay Queue Regulation</h2>
           <span class="badge badge-confirmed" id="staff-queue-status">ACTIVE</span>
         </div>
-        <div class="grid-3" style="margin-bottom:1rem; text-align:center;">
-          <div style="background:#f8fafc; padding:1rem; border-radius:6px;">
-            <div style="font-size:0.75rem; color:#64748b;">NOW SERVING</div>
-            <div style="font-size:2rem; font-weight:800; color:var(--primary); font-family:monospace;"
+        <div class="grid-3 u-s99">
+          <div class="u-s100">
+            <div class="u-s101">NOW SERVING</div>
+            <div class="u-s102"
               id="staff-serving-token">A-142</div>
           </div>
-          <div style="background:#f8fafc; padding:1rem; border-radius:6px;">
-            <div style="font-size:0.75rem; color:#64748b;">WAITING PILGRIMS</div>
-            <div style="font-size:2rem; font-weight:800;" id="staff-waiting-count">58</div>
+          <div class="u-s100">
+            <div class="u-s101">WAITING PILGRIMS</div>
+            <div class="u-s103" id="staff-waiting-count">58</div>
           </div>
-          <div style="background:#f8fafc; padding:1rem; border-radius:6px;">
-            <div style="font-size:0.75rem; color:#64748b;">EST. WAIT TIME</div>
-            <div style="font-size:2rem; font-weight:800;" id="staff-wait-time">25m</div>
+          <div class="u-s100">
+            <div class="u-s101">EST. WAIT TIME</div>
+            <div class="u-s103" id="staff-wait-time">25m</div>
           </div>
         </div>
 
-        <div style="display:flex; gap:8px;">
-          <button onclick="advanceQueue()" class="btn btn-primary btn-lg" style="flex:2;"><i
+        <div class="u-s104">
+          <button onclick="advanceQueue()" class="btn btn-primary btn-lg u-s105"><i
               data-lucide="skip-forward"></i> Call Next Token Batch</button>
-          <button id="pause-queue-btn" onclick="togglePauseQueue()" class="btn btn-secondary btn-lg" style="flex:1;"><i
+          <button id="pause-queue-btn" onclick="togglePauseQueue()" class="btn btn-secondary btn-lg u-s106"><i
               data-lucide="pause"></i> Pause Lane</button>
         </div>
       </div>
     </div>
 
     <!-- ==================== 6. ADMIN EXECUTIVE DASHBOARD ==================== -->
-    <div id="view-admin" style="display:none;">
-      <div
-        style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
+    <div id="view-admin" class="u-s72">
+      <div class="u-s73">
         <div>
-          <h1 style="font-size:1.6rem;">Executive Administrator Console</h1>
-          <p style="font-size:0.85rem; color:#64748b;">Sri Siddhivinayak Temple &bull; Central Flow & AI Vision
+          <h1 class="u-s74">Executive Administrator Console</h1>
+          <p class="u-s32">Sri Siddhivinayak Temple &bull; Central Flow & AI Vision
             Oversight</p>
         </div>
-        <div style="display:flex; gap:8px;">
+        <div class="u-s104">
           <button onclick="downloadCSV('bookings')" class="btn btn-secondary btn-sm"><i data-lucide="download"></i>
             Export Bookings CSV</button>
           <button onclick="downloadCSV('crowd')" class="btn btn-primary btn-sm"><i data-lucide="download"></i> Export
@@ -1101,37 +476,37 @@
       </div>
 
       <!-- Top Metrics -->
-      <div class="grid-4" style="margin-bottom:1.5rem;">
+      <div class="grid-4 u-s19">
         <div class="card">
-          <div style="font-size:0.8rem; color:#64748b;">Today's Registered Footfall</div>
-          <div style="font-size:1.8rem; font-weight:700;">840 pilgrims</div>
-          <div style="font-size:0.75rem; color:#166534; margin-top:4px;">42 slot bookings verified</div>
+          <div class="u-s20">Today's Registered Footfall</div>
+          <div class="u-s107">840 pilgrims</div>
+          <div class="u-s23">42 slot bookings verified</div>
         </div>
         <div class="card">
-          <div style="font-size:0.8rem; color:#64748b;">Ground Staff On Duty</div>
-          <div style="font-size:1.8rem; font-weight:700;">19 / 20 Active</div>
-          <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">Across all 6 zones</div>
+          <div class="u-s20">Ground Staff On Duty</div>
+          <div class="u-s107">19 / 20 Active</div>
+          <div class="u-s25">Across all 6 zones</div>
         </div>
         <div class="card">
-          <div style="font-size:0.8rem; color:#64748b;">Emergency Distress Calls</div>
-          <div style="font-size:1.8rem; font-weight:700; color:#166534;" id="admin-emg-count">0 Open</div>
-          <div style="font-size:0.75rem; color:#166534; margin-top:4px;">Average response: 2.5m</div>
+          <div class="u-s20">Emergency Distress Calls</div>
+          <div class="u-s108" id="admin-emg-count">0 Open</div>
+          <div class="u-s23">Average response: 2.5m</div>
         </div>
         <div class="card">
-          <div style="font-size:0.8rem; color:#64748b;">Festival Surge Mode</div>
-          <div style="font-size:1.3rem; font-weight:700; color:#b45309;">ACTIVE</div>
-          <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">+25 reserve staff deployed</div>
+          <div class="u-s20">Festival Surge Mode</div>
+          <div class="u-s109">ACTIVE</div>
+          <div class="u-s25">+25 reserve staff deployed</div>
         </div>
       </div>
 
       <!-- Live CCTV Stream Sim & Heatmap -->
-      <div class="card" style="margin-bottom:1.5rem;">
+      <div class="card u-s19">
         <div class="card-header">
           <h2 class="card-title">CCTV YOLOv8 Vision Density Stream</h2>
           <button onclick="simulateCrowdShift()" class="btn btn-secondary btn-sm"><i data-lucide="sparkles"></i> Trigger
             Natural Crowd Shift</button>
         </div>
-        <div id="admin-heatmap-container" style="display:flex; gap:12px; overflow-x:auto; padding:0.5rem 0 1rem;"></div>
+        <div id="admin-heatmap-container" class="u-s26"></div>
       </div>
 
       <!-- Broadcast Notice & Staff Roster -->
@@ -1151,7 +526,7 @@
               <textarea id="admin-broadcast-text" class="form-textarea" required
                 placeholder="Broadcast text visible to all pilgrims..."></textarea>
             </div>
-            <button type="submit" class="btn btn-primary" style="width:100%;">Publish Broadcast Notice</button>
+            <button type="submit" class="btn btn-primary u-s93">Publish Broadcast Notice</button>
           </form>
         </div>
 
@@ -1159,7 +534,7 @@
           <div class="card-header">
             <h2 class="card-title">Staff Zone Deployments (20 Active)</h2>
           </div>
-          <div class="table-container" style="max-height:220px; overflow-y:auto;">
+          <div class="table-container u-s110">
             <table class="table">
               <thead>
                 <tr>
@@ -1177,68 +552,66 @@
     </div>
 
     <!-- ==================== 7. LIVE CROWD PUBLIC & CCTV VISION CENTER ==================== -->
-    <div id="view-crowd" style="display:none;">
+    <div id="view-crowd" class="u-s72">
       <!-- Title & Controls Header -->
-      <div
-        style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:10px;">
+      <div class="u-s111">
         <div>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span
-              style="width:10px; height:10px; background:#22c55e; border-radius:50%; display:inline-block; animation:pulse 1.5s infinite;"></span>
-            <h1 style="font-size:1.6rem; color:#0f172a; margin-bottom:0;">Live CCTV & AI Crowd Vision Center</h1>
+          <div class="u-s4">
+            <span class="u-s112"></span>
+            <h1 class="u-s113">Live CCTV & AI Crowd Vision Center</h1>
           </div>
-          <p style="font-size:0.85rem; color:#64748b; margin-top:2px;">
+          <p class="u-s114">
             Real-time YOLOv8 automated headcount, optical tracking, and holding bay flow regulation
           </p>
         </div>
-        <div style="display:flex; gap:8px; align-items:center;">
+        <div class="u-s115">
           <button onclick="toggleAiBoundingBoxes()" id="btn-toggle-boxes" class="btn btn-secondary btn-sm">
-            <i data-lucide="scan" style="width:14px; height:14px;"></i> AI Bounding Boxes: ON
+            <i data-lucide="scan" class="u-s6"></i> AI Bounding Boxes: ON
           </button>
           <button onclick="simulateCrowdShift()" class="btn btn-primary btn-sm">
-            <i data-lucide="sparkles" style="width:14px; height:14px;"></i> Simulate Live Shift
+            <i data-lucide="sparkles" class="u-s6"></i> Simulate Live Shift
           </button>
         </div>
       </div>
 
       <!-- Real-Time Metric Strip -->
-      <div class="grid-4" style="margin-bottom:1.25rem;">
-        <div class="card" style="padding:1rem;">
-          <div style="font-size:0.75rem; color:#64748b; font-weight:600;">DETECTED HEADCOUNT</div>
-          <div style="font-size:1.6rem; font-weight:800; color:var(--primary);" id="crowd-page-total">903 pilgrims</div>
-          <div style="font-size:0.7rem; color:#166534; margin-top:2px;">Across all 6 monitored zones</div>
+      <div class="grid-4 u-s116">
+        <div class="card u-s117">
+          <div class="u-s118">DETECTED HEADCOUNT</div>
+          <div class="u-s119" id="crowd-page-total">903 pilgrims</div>
+          <div class="u-s120">Across all 6 monitored zones</div>
         </div>
-        <div class="card" style="padding:1rem;">
-          <div style="font-size:0.75rem; color:#64748b; font-weight:600;">EST. SANCTUM WAIT</div>
-          <div style="font-size:1.6rem; font-weight:800; color:#0f172a;" id="crowd-page-wait">28 mins</div>
-          <div style="font-size:0.7rem; color:#64748b; margin-top:2px;">Average queue transit speed</div>
+        <div class="card u-s117">
+          <div class="u-s118">EST. SANCTUM WAIT</div>
+          <div class="u-s121" id="crowd-page-wait">28 mins</div>
+          <div class="u-s122">Average queue transit speed</div>
         </div>
-        <div class="card" style="padding:1rem;">
-          <div style="font-size:0.75rem; color:#64748b; font-weight:600;">AI VISION CAMERAS</div>
-          <div style="font-size:1.6rem; font-weight:800; color:#166534;">6 / 6 Online</div>
-          <div style="font-size:0.7rem; color:#64748b; margin-top:2px;">30 FPS • YOLOv8 Neural Net</div>
+        <div class="card u-s117">
+          <div class="u-s118">AI VISION CAMERAS</div>
+          <div class="u-s123">6 / 6 Online</div>
+          <div class="u-s122">30 FPS • YOLOv8 Neural Net</div>
         </div>
-        <div class="card" style="padding:1rem;">
-          <div style="font-size:0.75rem; color:#64748b; font-weight:600;">FLOW ADVISORY</div>
-          <div style="font-size:1.3rem; font-weight:800; color:#15803d;">OPTIMAL FLOW</div>
-          <div style="font-size:0.7rem; color:#64748b; margin-top:2px;">Lane 2 &amp; 3 fast-track open</div>
+        <div class="card u-s117">
+          <div class="u-s118">FLOW ADVISORY</div>
+          <div class="u-s124">OPTIMAL FLOW</div>
+          <div class="u-s122">Lane 2 &amp; 3 fast-track open</div>
         </div>
       </div>
 
       <!-- Live Zone Density Heatmap Strip -->
-      <div class="card" style="margin-bottom:1.5rem; padding:1rem;">
-        <div style="font-size:0.8rem; font-weight:700; margin-bottom:0.5rem; color:#0f172a;">Live Zone Density Strip
+      <div class="card u-s125">
+        <div class="u-s126">Live Zone Density Strip
         </div>
-        <div id="public-crowd-heatmap" style="display:flex; gap:12px; overflow-x:auto; padding:0.25rem 0;"></div>
+        <div id="public-crowd-heatmap" class="u-s127"></div>
       </div>
 
       <!-- Live 6-Camera CCTV Video Matrix -->
-      <div style="margin-bottom:1.5rem;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-          <h2 style="font-size:1.15rem; font-weight:700; color:#0f172a; display:flex; align-items:center; gap:8px;">
-            <i data-lucide="video" style="color:var(--primary);"></i> Live CCTV Computer Vision Feeds (6 Angles)
+      <div class="u-s19">
+        <div class="u-s41">
+          <h2 class="u-s128">
+            <i data-lucide="video" class="u-s36"></i> Live CCTV Computer Vision Feeds (6 Angles)
           </h2>
-          <span style="font-size:0.75rem; color:#64748b;">Click any camera feed to zoom into High-Definition
+          <span class="u-s101">Click any camera feed to zoom into High-Definition
             inspection</span>
         </div>
 
@@ -1248,34 +621,34 @@
       </div>
 
       <!-- Queue Transit & Holding Bay Flow Timeline -->
-      <div class="card" style="margin-bottom:1.5rem; padding:1.5rem;">
-        <h2 class="card-title" style="margin-bottom:1rem;"><i data-lucide="clock" style="color:var(--primary);"></i>
+      <div class="card u-s129">
+        <h2 class="card-title u-s130"><i data-lucide="clock" class="u-s36"></i>
           Sequential Pilgrim Transit & Wait-Time Timeline</h2>
-        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:1rem; text-align:center;"
+        <div class="u-s131"
           id="transit-timeline-grid">
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:1rem;">
-            <div style="font-size:0.7rem; color:#64748b; font-weight:600;">STAGE 1</div>
-            <div style="font-size:1rem; font-weight:700; color:#0f172a; margin:4px 0;">Main Gate & Security</div>
-            <div style="font-size:1.4rem; font-weight:800; color:#166534;" id="wait-stage-1">4 mins</div>
-            <div style="font-size:0.7rem; color:#64748b;">QR Verification & Bag Scan</div>
+          <div class="u-s132">
+            <div class="u-s133">STAGE 1</div>
+            <div class="u-s134">Main Gate & Security</div>
+            <div class="u-s135" id="wait-stage-1">4 mins</div>
+            <div class="u-s136">QR Verification & Bag Scan</div>
           </div>
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:1rem;">
-            <div style="font-size:0.7rem; color:#64748b; font-weight:600;">STAGE 2</div>
-            <div style="font-size:1rem; font-weight:700; color:#0f172a; margin:4px 0;">Holding Bay Complex</div>
-            <div style="font-size:1.4rem; font-weight:800; color:#b45309;" id="wait-stage-2">14 mins</div>
-            <div style="font-size:0.7rem; color:#64748b;">Bays A & B Regulated Flow</div>
+          <div class="u-s132">
+            <div class="u-s133">STAGE 2</div>
+            <div class="u-s134">Holding Bay Complex</div>
+            <div class="u-s137" id="wait-stage-2">14 mins</div>
+            <div class="u-s136">Bays A & B Regulated Flow</div>
           </div>
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:1rem;">
-            <div style="font-size:0.7rem; color:#64748b; font-weight:600;">STAGE 3</div>
-            <div style="font-size:1rem; font-weight:700; color:#0f172a; margin:4px 0;">Sanctum Corridor</div>
-            <div style="font-size:1.4rem; font-weight:800; color:#166534;" id="wait-stage-3">8 mins</div>
-            <div style="font-size:0.7rem; color:#64748b;">Inner Shrine Queue Line</div>
+          <div class="u-s132">
+            <div class="u-s133">STAGE 3</div>
+            <div class="u-s134">Sanctum Corridor</div>
+            <div class="u-s135" id="wait-stage-3">8 mins</div>
+            <div class="u-s136">Inner Shrine Queue Line</div>
           </div>
-          <div style="background:#fef3c7; border:1.5px solid #b45309; border-radius:8px; padding:1rem;">
-            <div style="font-size:0.7rem; color:#b45309; font-weight:700;">FINAL STAGE</div>
-            <div style="font-size:1rem; font-weight:700; color:#78350f; margin:4px 0;">Deity Darshan</div>
-            <div style="font-size:1.4rem; font-weight:800; color:#b45309;" id="wait-stage-4">2 mins</div>
-            <div style="font-size:0.7rem; color:#78350f;">Maha Darshan & Prasadam</div>
+          <div class="u-s138">
+            <div class="u-s139">FINAL STAGE</div>
+            <div class="u-s140">Deity Darshan</div>
+            <div class="u-s137" id="wait-stage-4">2 mins</div>
+            <div class="u-s141">Maha Darshan & Prasadam</div>
           </div>
         </div>
       </div>
@@ -1283,85 +656,78 @@
       <!-- 2-Column: Peak Hours Forecast & Live Ground Facilities -->
       <div class="grid-2">
         <!-- Today's Peak Hours Forecast Bar Chart -->
-        <div class="card" style="padding:1.5rem;">
-          <div class="card-header" style="margin-bottom:0.75rem;">
-            <h2 class="card-title" style="font-size:1rem;"><i data-lucide="bar-chart-3"
-                style="color:var(--primary);"></i> Today's Hourly Crowd Forecast</h2>
-            <span class="badge" style="background:#dcfce7; color:#166534; font-size:0.7rem;">BEST: 01:30 PM - 04:00
+        <div class="card u-s34">
+          <div class="card-header u-s142">
+            <h2 class="card-title u-s143"><i data-lucide="bar-chart-3" class="u-s36"></i> Today's Hourly Crowd Forecast</h2>
+            <span class="badge u-s144">BEST: 01:30 PM - 04:00
               PM</span>
           </div>
-          <p style="font-size:0.75rem; color:#64748b; margin-bottom:1rem;">Historical & AI predictive density pattern
+          <p class="u-s145">Historical & AI predictive density pattern
             across visiting hours:</p>
 
-          <div
-            style="display:flex; justify-content:space-between; align-items:flex-end; height:120px; padding:0 8px; border-bottom:1px solid #cbd5e1; gap:6px;">
-            <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
-              <div style="width:100%; height:60px; background:#fca5a5; border-radius:3px 3px 0 0;"
+          <div class="u-s146">
+            <div class="u-s147">
+              <div class="u-s148"
                 title="06 AM - 08 AM: High Rush"></div>
-              <span style="font-size:0.65rem; color:#64748b; margin-top:4px;">06-08</span>
+              <span class="u-s149">06-08</span>
             </div>
-            <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
-              <div style="width:100%; height:85px; background:#ef4444; border-radius:3px 3px 0 0;"
+            <div class="u-s147">
+              <div class="u-s150"
                 title="08 AM - 10 AM: Peak Surge"></div>
-              <span style="font-size:0.65rem; color:#64748b; margin-top:4px;">08-10</span>
+              <span class="u-s149">08-10</span>
             </div>
-            <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
-              <div style="width:100%; height:75px; background:#fca5a5; border-radius:3px 3px 0 0;"
+            <div class="u-s147">
+              <div class="u-s151"
                 title="10 AM - 12 PM: Moderate High"></div>
-              <span style="font-size:0.65rem; color:#64748b; margin-top:4px;">10-12</span>
+              <span class="u-s149">10-12</span>
             </div>
-            <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
-              <div style="width:100%; height:30px; background:#86efac; border-radius:3px 3px 0 0;"
+            <div class="u-s147">
+              <div class="u-s152"
                 title="12 PM - 02 PM: Calm"></div>
-              <span style="font-size:0.65rem; color:#64748b; margin-top:4px;">12-14</span>
+              <span class="u-s149">12-14</span>
             </div>
-            <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
-              <div style="width:100%; height:22px; background:#22c55e; border-radius:3px 3px 0 0;"
+            <div class="u-s147">
+              <div class="u-s153"
                 title="02 PM - 04 PM: Lowest Crowd Window"></div>
-              <span style="font-size:0.65rem; color:#15803d; font-weight:700; margin-top:4px;">14-16</span>
+              <span class="u-s154">14-16</span>
             </div>
-            <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
-              <div style="width:100%; height:70px; background:#fde047; border-radius:3px 3px 0 0;"
+            <div class="u-s147">
+              <div class="u-s155"
                 title="04 PM - 06 PM: Moderate"></div>
-              <span style="font-size:0.65rem; color:#64748b; margin-top:4px;">16-18</span>
+              <span class="u-s149">16-18</span>
             </div>
-            <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
-              <div style="width:100%; height:95px; background:#ef4444; border-radius:3px 3px 0 0;"
+            <div class="u-s147">
+              <div class="u-s156"
                 title="06 PM - 08 PM: Evening Maha Aarti Peak"></div>
-              <span style="font-size:0.65rem; color:#64748b; margin-top:4px;">18-20</span>
+              <span class="u-s149">18-20</span>
             </div>
-            <div style="display:flex; flex-direction:column; align-items:center; flex:1;">
-              <div style="width:100%; height:45px; background:#86efac; border-radius:3px 3px 0 0;"
+            <div class="u-s147">
+              <div class="u-s157"
                 title="08 PM - 10 PM: Moderate Low"></div>
-              <span style="font-size:0.65rem; color:#64748b; margin-top:4px;">20-22</span>
+              <span class="u-s149">20-22</span>
             </div>
           </div>
         </div>
 
         <!-- Live Facilities Status -->
-        <div class="card" style="padding:1.5rem;">
-          <h2 class="card-title" style="font-size:1rem; margin-bottom:0.75rem;"><i data-lucide="shield"
-              style="color:var(--primary);"></i> Live Ground Facilities &amp; Assistance</h2>
-          <div style="display:flex; flex-direction:column; gap:8px;">
-            <div
-              style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:8px 12px; border-radius:6px; font-size:0.8rem;">
+        <div class="card u-s34">
+          <h2 class="card-title u-s158"><i data-lucide="shield" class="u-s36"></i> Live Ground Facilities &amp; Assistance</h2>
+          <div class="u-s159">
+            <div class="u-s160">
               <span>🛺 Senior Citizen Golf Carts</span>
               <span class="badge badge-confirmed">3 OF 4 ACTIVE</span>
             </div>
-            <div
-              style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:8px 12px; border-radius:6px; font-size:0.8rem;">
+            <div class="u-s160">
               <span>♿ Free Wheelchair Help Desk</span>
               <span class="badge badge-confirmed">AVAILABLE AT GATE 2</span>
             </div>
-            <div
-              style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:8px 12px; border-radius:6px; font-size:0.8rem;">
+            <div class="u-s160">
               <span>👟 Footwear Deposit Counters</span>
               <span class="badge badge-confirmed">LANES 1-6 OPEN</span>
             </div>
-            <div
-              style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:8px 12px; border-radius:6px; font-size:0.8rem;">
+            <div class="u-s160">
               <span>🍲 Free Annadanam Hall Serving</span>
-              <span class="badge" style="background:#fef3c7; color:#b45309;">MEAL WINDOW OPEN</span>
+              <span class="badge u-s161">MEAL WINDOW OPEN</span>
             </div>
           </div>
         </div>
@@ -1369,15 +735,14 @@
     </div>
 
     <!-- ==================== EMAIL OTP LOGIN MODAL ==================== -->
-    <div id="otp-modal" class="modal-overlay" style="display:none;">
-      <div class="modal-content" style="max-width:440px;">
-        <div style="text-align:center; margin-bottom:1.25rem;">
-          <div
-            style="width:48px; height:48px; background:#fef3c7; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 0.75rem; color:#b45309;">
-            <i data-lucide="mail-check" style="width:24px; height:24px;"></i>
+    <div id="otp-modal" class="modal-overlay u-s72">
+      <div class="modal-content u-s162">
+        <div class="u-s163">
+          <div class="u-s164">
+            <i data-lucide="mail-check" class="u-s165"></i>
           </div>
-          <h2 style="font-size:1.3rem; color:#0f172a; margin-bottom:4px;">Pilgrim Email Authentication</h2>
-          <p style="font-size:0.8rem; color:#64748b;">Verify your email to prevent bot registrations and receive your QR
+          <h2 class="u-s166">Pilgrim Email Authentication</h2>
+          <p class="u-s20">Verify your email to prevent bot registrations and receive your QR
             Entry Pass</p>
         </div>
 
@@ -1388,14 +753,14 @@
             <input type="email" id="auth-email-input" class="form-input" placeholder="e.g. ananya.deshmukh@gmail.com"
               value="ananya.deshmukh@gmail.com" required>
           </div>
-          <button type="button" onclick="sendOtpCode()" id="btn-send-otp" class="btn btn-primary" style="width:100%;">
+          <button type="button" onclick="sendOtpCode()" id="btn-send-otp" class="btn btn-primary u-s93">
             Send 6-Digit Verification OTP
           </button>
         </div>
 
         <!-- Step B: Enter 6-Digit OTP -->
-        <div id="otp-step-code" style="display:none;">
-          <div class="alert alert-info" style="font-size:0.775rem; padding:8px 12px; margin-bottom:0.75rem;">
+        <div id="otp-step-code" class="u-s72">
+          <div class="alert alert-info u-s167">
             Code dispatched to <strong id="otp-target-email">ananya.deshmukh@gmail.com</strong>
           </div>
 
@@ -1408,51 +773,45 @@
             <input type="text" maxlength="1" class="otp-input-digit" id="otp-6" oninput="handleOtpInput(6)">
           </div>
 
-          <div
-            style="background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:0.6rem; font-size:0.75rem; text-align:center; margin-bottom:1rem;">
+          <div class="u-s168">
             <span>Evaluation Helper: </span>
-            <a onclick="demoAutoFillOtp()"
-              style="color:var(--primary); font-weight:700; text-decoration:underline; cursor:pointer;">
+            <a onclick="demoAutoFillOtp()" class="u-s169">
               ⚡ 1-Click Auto-Fill Demo OTP (<span id="demo-otp-display">749201</span>)
             </a>
           </div>
 
-          <button type="button" onclick="verifyOtpCode()" class="btn btn-primary"
-            style="width:100%; margin-bottom:0.5rem;">
+          <button type="button" onclick="verifyOtpCode()" class="btn btn-primary u-s170">
             Verify &amp; Unlock Darshan Booking
           </button>
 
-          <div style="text-align:center;">
-            <a onclick="sendOtpCode()" style="font-size:0.75rem; color:#64748b; text-decoration:underline;">Resend
+          <div class="u-s171">
+            <a onclick="sendOtpCode()" class="u-s172">Resend
               Code</a>
           </div>
         </div>
 
-        <div style="text-align:center; margin-top:1rem; border-top:1px solid #e2e8f0; padding-top:0.75rem;">
-          <button onclick="closeOtpModal()" class="btn btn-secondary btn-sm" style="font-size:0.75rem;">Close /
+        <div class="u-s173">
+          <button onclick="closeOtpModal()" class="btn btn-secondary btn-sm u-s174">Close /
             Cancel</button>
         </div>
       </div>
     </div>
 
     <!-- ==================== EMAIL CONFIRMATION PREVIEW MODAL ==================== -->
-    <div id="email-preview-modal" class="modal-overlay" style="display:none;">
-      <div class="modal-content" style="max-width:580px; padding:0; overflow:hidden;">
+    <div id="email-preview-modal" class="modal-overlay u-s72">
+      <div class="modal-content u-s175">
         <!-- Email Client Simulation Header -->
-        <div
-          style="background:#0f172a; color:#fff; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;">
-          <div style="display:flex; align-items:center; gap:8px; font-size:0.85rem;">
-            <i data-lucide="mail" style="color:#f59e0b; width:16px; height:16px;"></i>
+        <div class="u-s176">
+          <div class="u-s177">
+            <i data-lucide="mail" class="u-s178"></i>
             <span><strong>Inbox: Official Temple E-Ticket Dispatch</strong></span>
           </div>
-          <button onclick="closeEmailPreviewModal()"
-            style="background:none; border:none; color:#fff; cursor:pointer; font-size:1.2rem;">&times;</button>
+          <button onclick="closeEmailPreviewModal()" class="u-s179">&times;</button>
         </div>
 
-        <div style="padding:1.5rem; background:#f8fafc; max-height:80vh; overflow-y:auto;">
+        <div class="u-s180">
           <!-- Email Envelope details -->
-          <div
-            style="background:#ffffff; border:1px solid #e2e8f0; border-radius:6px; padding:0.75rem 1rem; margin-bottom:1rem; font-size:0.775rem;">
+          <div class="u-s181">
             <div><strong>From:</strong> reservations@srisiddhivinayaktemple.org (Verified Official)</div>
             <div><strong>To:</strong> <span id="email-preview-to">ananya.deshmukh@gmail.com</span></div>
             <div><strong>Subject:</strong> Confirmed Darshan Entry Pass #<span
@@ -1461,24 +820,21 @@
           </div>
 
           <!-- Email Content Body -->
-          <div
-            style="background:#ffffff; border:2px solid #b45309; border-radius:8px; padding:1.5rem; text-align:center;">
-            <div style="font-size:1.1rem; font-weight:800; color:#b45309; margin-bottom:2px;">Sri Siddhivinayak Temple
+          <div class="u-s182">
+            <div class="u-s183">Sri Siddhivinayak Temple
               Administration</div>
-            <div style="font-size:0.75rem; color:#64748b; margin-bottom:1rem;">Official Digital Darshan E-Ticket &amp;
+            <div class="u-s145">Official Digital Darshan E-Ticket &amp;
               Security Pass</div>
 
-            <div id="email-qrcode-box"
-              style="margin:0 auto 1rem; padding:8px; background:#fff; border:1px solid #e2e8f0; border-radius:6px; display:inline-block;">
+            <div id="email-qrcode-box" class="u-s184">
             </div>
 
-            <div style="font-family:monospace; font-weight:800; font-size:1.2rem; color:#0f172a; margin-bottom:1rem;"
+            <div class="u-s185"
               id="email-preview-booking-id">
               DAR-2026-000101
             </div>
 
-            <div
-              style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:0.85rem; text-align:left; font-size:0.8rem; margin-bottom:1rem; line-height:1.6;">
+            <div class="u-s186">
               <div><strong>Primary Devotee:</strong> <span id="email-preview-name">Ananya Deshmukh</span></div>
               <div><strong>Visit Date:</strong> <span id="email-preview-date">2026-10-01</span></div>
               <div><strong>Time Slot:</strong> <span id="email-preview-slot">08:00 AM - 10:00 AM</span></div>
@@ -1488,10 +844,9 @@
               </div>
             </div>
 
-            <div
-              style="font-size:0.75rem; color:#64748b; text-align:left; border-top:1px dashed #cbd5e1; padding-top:0.75rem;">
+            <div class="u-s187">
               <strong>Important Devotee Instructions:</strong>
-              <ul style="padding-left:1.2rem; margin-top:4px;">
+              <ul class="u-s188">
                 <li>Present this digital QR pass directly on your smartphone screen at Gate 1 Scanner.</li>
                 <li>Carry the original ID proof used during registration for random security audit.</li>
                 <li>Traditional Indian dress code is compulsory inside the Sanctum Sanctorum.</li>
@@ -1500,22 +855,21 @@
           </div>
         </div>
 
-        <div
-          style="background:#f1f5f9; padding:0.75rem 1rem; display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-size:0.75rem; color:#64748b;">Attached: Official_Pass_E_Ticket.pdf (142 KB)</span>
+        <div class="u-s189">
+          <span class="u-s101">Attached: Official_Pass_E_Ticket.pdf (142 KB)</span>
           <button onclick="closeEmailPreviewModal()" class="btn btn-primary btn-sm">Close Email</button>
         </div>
       </div>
     </div>
 
     <!-- ==================== 8. TEMPLE INFO VIEW ==================== -->
-    <div id="view-temple" style="display:none; max-width:850px; margin:0 auto;">
-      <h1 style="font-size:1.6rem; margin-bottom:0.5rem;">Temple Information & Guidelines</h1>
-      <p style="font-size:0.85rem; color:#64748b; margin-bottom:1.5rem;">Daily schedules, dress code, Annadanam, and
+    <div id="view-temple" class="u-s190">
+      <h1 class="u-s191">Temple Information & Guidelines</h1>
+      <p class="u-s192">Daily schedules, dress code, Annadanam, and
         facilities</p>
       <div class="card">
-        <h2 class="card-title" style="margin-bottom:0.75rem;">Daily Pooja & Aarti Timings</h2>
-        <ul style="padding-left:1.25rem; font-size:0.9rem; line-height:1.8;">
+        <h2 class="card-title u-s142">Daily Pooja & Aarti Timings</h2>
+        <ul class="u-s193">
           <li><strong>05:00 AM:</strong> Suprabhata Seva & Temple Gate Opening</li>
           <li><strong>06:00 AM - 12:30 PM:</strong> Morning Darshan Queue Slots</li>
           <li><strong>12:30 PM - 03:30 PM:</strong> Madhyahna Pooja & Annadanam Break</li>
@@ -1527,11 +881,11 @@
     </div>
 
     <!-- ==================== 9. HELP & SOS VIEW ==================== -->
-    <div id="view-help" style="display:none; max-width:700px; margin:0 auto;">
-      <div class="card" style="border-color:#fca5a5;">
-        <h2 class="card-title" style="color:#991b1b; margin-bottom:0.5rem;"><i data-lucide="alert-triangle"></i> Ground
+    <div id="view-help" class="u-s194">
+      <div class="card u-s195">
+        <h2 class="card-title u-s196"><i data-lucide="alert-triangle"></i> Ground
           Emergency SOS Dispatch</h2>
-        <p style="font-size:0.85rem; color:#64748b; margin-bottom:1rem;">Immediately transmits your location to on-duty
+        <p class="u-s197">Immediately transmits your location to on-duty
           medical and security staff</p>
         <form onsubmit="handleSosSubmit(event)">
           <div class="form-group">
@@ -1557,7 +911,7 @@
             <textarea id="sos-desc" class="form-textarea" required
               placeholder="e.g. Near holding bay 3, person needs immediate water and seating..."></textarea>
           </div>
-          <button type="submit" class="btn btn-danger btn-lg" style="width:100%;">Transmit Emergency SOS Alert</button>
+          <button type="submit" class="btn btn-danger btn-lg u-s93">Transmit Emergency SOS Alert</button>
         </form>
       </div>
     </div>
@@ -1565,44 +919,33 @@
   </main>
 
   <!-- ==================== CHATBOT WIDGET ==================== -->
-  <div id="chatbot-container" style="position:fixed; bottom:20px; right:20px; z-index:999;">
-    <button id="chat-toggle-btn" onclick="toggleChatbot()" class="btn btn-primary"
-      style="border-radius:9999px; padding:10px 16px; box-shadow:0 4px 12px rgba(180,83,9,0.3);">
+  <div id="chatbot-container" class="u-s198">
+    <button id="chat-toggle-btn" onclick="toggleChatbot()" class="btn btn-primary u-s199">
       <i data-lucide="message-square"></i> <span>Temple Assistant</span>
     </button>
 
-    <div id="chat-box"
-      style="display:none; width:340px; height:460px; background:#fff; border:1px solid var(--border); border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.15); flex-direction:column; overflow:hidden; position:absolute; bottom:50px; right:0;">
-      <div
-        style="background:var(--primary); color:#fff; padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
-        <div style="font-weight:600; font-size:0.9rem;">Temple Information Assistant</div>
-        <button onclick="toggleChatbot()"
-          style="background:none; border:none; color:#fff; font-size:1.1rem; cursor:pointer;">&times;</button>
+    <div id="chat-box" class="u-s200">
+      <div class="u-s201">
+        <div class="u-s202">Temple Information Assistant</div>
+        <button onclick="toggleChatbot()" class="u-s203">&times;</button>
       </div>
-      <div id="chat-messages"
-        style="flex:1; padding:12px; overflow-y:auto; background:#f8fafc; font-size:0.85rem; display:flex; flex-direction:column; gap:8px;">
-        <div style="background:#fff; padding:8px 12px; border-radius:6px; border:1px solid #e2e8f0;">
+      <div id="chat-messages" class="u-s204">
+        <div class="u-s205">
           Namaste! I am your Temple Assistant. You can ask me about darshan timings, dress code, parking, or booking
           cancellation.
         </div>
       </div>
-      <div style="padding:6px; background:#fff; border-top:1px solid #f1f5f9; display:flex; gap:4px; overflow-x:auto;">
-        <button onclick="sendQuickQuery('What time does darshan start?')"
-          style="background:#f1f5f9; border:none; border-radius:10px; padding:2px 8px; font-size:0.7rem; cursor:pointer; white-space:nowrap;">Darshan
+      <div class="u-s206">
+        <button onclick="sendQuickQuery('What time does darshan start?')" class="u-s207">Darshan
           Timings</button>
-        <button onclick="sendQuickQuery('What is the dress code?')"
-          style="background:#f1f5f9; border:none; border-radius:10px; padding:2px 8px; font-size:0.7rem; cursor:pointer; white-space:nowrap;">Dress
+        <button onclick="sendQuickQuery('What is the dress code?')" class="u-s207">Dress
           Code</button>
-        <button onclick="sendQuickQuery('Where is parking?')"
-          style="background:#f1f5f9; border:none; border-radius:10px; padding:2px 8px; font-size:0.7rem; cursor:pointer; white-space:nowrap;">Parking
+        <button onclick="sendQuickQuery('Where is parking?')" class="u-s207">Parking
           Area</button>
       </div>
-      <form onsubmit="handleChatSubmit(event)"
-        style="padding:8px; border-top:1px solid var(--border); display:flex; gap:6px;">
-        <input type="text" id="chat-input" placeholder="Type a question..."
-          style="flex:1; padding:6px 8px; border:1px solid #cbd5e1; border-radius:4px; font-size:0.85rem;">
-        <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="send"
-            style="width:14px; height:14px;"></i></button>
+      <form onsubmit="handleChatSubmit(event)" class="u-s208">
+        <input type="text" id="chat-input" placeholder="Type a question..." class="u-s209">
+        <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="send" class="u-s6"></i></button>
       </form>
     </div>
   </div>
@@ -2207,7 +1550,8 @@
     // Chatbot Assistant
     function toggleChatbot() {
       const box = document.getElementById('chat-box');
-      box.style.display = box.style.display === 'none' ? 'flex' : 'none';
+      const isHidden = !box.style.display || box.style.display === 'none' || getComputedStyle(box).display === 'none';
+      box.style.display = isHidden ? 'flex' : 'none';
       safeCreateIcons();
     }
 
