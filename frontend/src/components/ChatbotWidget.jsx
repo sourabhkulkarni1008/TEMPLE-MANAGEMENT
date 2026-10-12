@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import api from '../api/client';
 import { audioService } from '../utils/audioService';
-import { MessageSquare, X, Send, Bot, User, Sparkles, RotateCcw } from 'lucide-react';
+import { useDevice } from '../utils/useDevice';
+import { MessageSquare, X, Send, Bot, User, Sparkles, RotateCcw, ChevronDown } from 'lucide-react';
 
 const getSmartTempleReply = (query) => {
   const q = query.toLowerCase().trim();
@@ -47,6 +48,7 @@ const getSmartTempleReply = (query) => {
 };
 
 const ChatbotWidget = () => {
+  const { isMobile } = useDevice();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
@@ -59,12 +61,12 @@ const ChatbotWidget = () => {
   const messagesEndRef = useRef(null);
 
   const quickQuestions = [
-    'Hello',
-    'What are today aarti timings?',
-    'How do I book a darshan pass?',
-    'What is the live crowd status?',
-    'What is the temple dress code?',
-    'Where is the vehicle parking area?'
+    '🪔 Aarti Timings',
+    '🎟️ Book Darshan',
+    '👥 Live Crowd',
+    '🥮 Modak Prasad',
+    '👔 Dress Code',
+    '🚗 Parking Area'
   ];
 
   useEffect(() => {
@@ -74,11 +76,15 @@ const ChatbotWidget = () => {
   }, [messages, open]);
 
   const handleSend = async (questionText = null) => {
-    const q = (questionText || input).trim();
+    const rawQuestion = questionText || input;
+    // Strip leading emoji if from chip
+    const cleanQ = rawQuestion.replace(/^[^\w\s]+/, '').trim();
+    const q = cleanQ || rawQuestion.trim();
     if (!q || loading) return;
 
-    audioService.playTempleBell(1.5);
-    setMessages((prev) => [...prev, { sender: 'user', text: q }]);
+    // Fluent resonant bell chime when interacting
+    audioService.playTempleBell(1.15, true);
+    setMessages((prev) => [...prev, { sender: 'user', text: rawQuestion.trim() }]);
     setInput('');
     setLoading(true);
 
@@ -86,72 +92,118 @@ const ChatbotWidget = () => {
       const res = await api.post('/chatbot/ask', { question: q });
       if (res.success && res.answer) {
         setMessages((prev) => [...prev, { sender: 'bot', text: res.answer, category: res.category }]);
-        audioService.playTempleBell(1.35);
+        audioService.playTempleBell(1.05, false);
       } else {
         const localReply = getSmartTempleReply(q);
         setMessages((prev) => [...prev, { sender: 'bot', text: localReply }]);
-        audioService.playTempleBell(1.35);
+        audioService.playTempleBell(1.05, false);
       }
     } catch (err) {
       const localReply = getSmartTempleReply(q);
       setMessages((prev) => [...prev, { sender: 'bot', text: localReply }]);
-      audioService.playTempleBell(1.35);
+      audioService.playTempleBell(1.05, false);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleResetChat = () => {
+    setMessages([
+      {
+        sender: 'bot',
+        text: 'Namaste! I am Vinayak Seva AI. How may I assist your holy pilgrimage today?'
+      }
+    ]);
+    audioService.playTempleBell(1.2, true);
+  };
+
   return (
-    <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 1000 }}>
-      {/* Trigger Button */}
+    <div 
+      className="vinayak-seva-floating-widget"
+      style={{ 
+        position: 'fixed', 
+        bottom: isMobile ? '76px' : '26px', 
+        right: isMobile ? '14px' : '26px', 
+        zIndex: 95,
+        transition: 'bottom 0.25s ease'
+      }}
+    >
+      {/* Floating Trigger Button */}
       {!open && (
         <button
           onClick={() => {
             setOpen(true);
-            audioService.playTempleBell(1.5);
+            audioService.playTempleBell(1.0, true);
           }}
+          aria-label="Open Vinayak Seva AI Chat"
           style={{
-            background: 'linear-gradient(135deg, #b45309, #d97706)',
+            background: 'linear-gradient(135deg, #b45309 0%, #d97706 50%, #78350f 100%)',
             color: '#ffffff',
-            border: '2px solid rgba(254, 240, 138, 0.4)',
+            border: '2px solid rgba(254, 240, 138, 0.65)',
             borderRadius: '9999px',
-            padding: '10px 18px',
+            padding: isMobile ? '8px 14px' : '10px 18px',
             display: 'flex',
             alignItems: 'center',
-            gap: '10px',
-            boxShadow: '0 6px 20px rgba(180,83,9,0.35)',
+            gap: '8px',
+            boxShadow: '0 8px 25px rgba(180, 83, 9, 0.4), 0 2px 6px rgba(0,0,0,0.1)',
             cursor: 'pointer',
-            fontSize: '0.875rem',
-            fontWeight: 700
+            fontSize: isMobile ? '0.8rem' : '0.875rem',
+            fontWeight: 700,
+            animation: 'floatGentle 3s ease-in-out infinite',
+            touchAction: 'manipulation'
           }}
         >
-          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2px' }}>
-            <img src="/assets/images/siddhivinayak_logo.svg" alt="Ganesha Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          <div style={{ 
+            width: isMobile ? '26px' : '30px', 
+            height: isMobile ? '26px' : '30px', 
+            borderRadius: '50%', 
+            background: '#ffffff', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            padding: '2px',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+            flexShrink: 0
+          }}>
+            <img 
+              src="/assets/images/siddhivinayak_logo.svg" 
+              alt="Ganesha Logo" 
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+            />
           </div>
           <div style={{ textAlign: 'left', lineHeight: 1.15 }}>
-            <div>Vinayak Seva AI</div>
-            <div style={{ fontSize: '0.675rem', color: '#fef08a', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span>Vinayak Seva AI</span>
+              <Sparkles size={12} color="#fde047" />
+            </div>
+            <div style={{ fontSize: '0.625rem', color: '#fef08a', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', display: 'inline-block' }} />
-              <span>Online</span>
+              <span>Tap to Chat</span>
             </div>
           </div>
         </button>
       )}
 
-      {/* Chat Popup Box */}
+      {/* Floating Chat Modal Box */}
       {open && (
         <div
           style={{
-            width: '370px',
-            maxWidth: 'calc(100vw - 32px)',
-            height: '520px',
+            position: isMobile ? 'fixed' : 'relative',
+            bottom: isMobile ? '74px' : 'auto',
+            right: isMobile ? '12px' : 'auto',
+            left: isMobile ? '12px' : 'auto',
+            width: isMobile ? 'auto' : '380px',
+            maxWidth: isMobile ? 'calc(100vw - 24px)' : '380px',
+            height: isMobile ? 'calc(100vh - 160px)' : '530px',
+            maxHeight: isMobile ? '560px' : '530px',
             background: '#ffffff',
-            border: '1px solid #e2e8f0',
+            border: '1.5px solid rgba(245, 158, 11, 0.4)',
             borderRadius: '16px',
-            boxShadow: '0 20px 40px rgba(15,23,42,0.2), 0 0 0 1px rgba(245,158,11,0.2)',
+            boxShadow: '0 20px 45px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(245, 158, 11, 0.2)',
             display: 'flex',
             flexDirection: 'column',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            animation: 'fadeIn 0.2s ease-out'
           }}
         >
           {/* Header */}
@@ -163,32 +215,43 @@ const ChatbotWidget = () => {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              borderBottom: '1px solid rgba(245,158,11,0.25)'
+              borderBottom: '1px solid rgba(245, 158, 11, 0.3)'
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ position: 'relative', width: '36px', height: '36px', background: '#ffffff', borderRadius: '50%', padding: '2px', boxShadow: '0 0 10px rgba(245,158,11,0.4)' }}>
+              <div style={{ position: 'relative', width: '34px', height: '34px', background: '#ffffff', borderRadius: '50%', padding: '2px', boxShadow: '0 0 10px rgba(245,158,11,0.4)', flexShrink: 0 }}>
                 <img src="/assets/images/siddhivinayak_logo.svg" alt="Siddhivinayak Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 <span style={{ position: 'absolute', bottom: 0, right: 0, width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', border: '1.5px solid #0f172a' }} />
               </div>
               <div>
                 <div style={{ fontWeight: 800, fontSize: '0.925rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span>Vinayak Seva AI</span>
-                  <span style={{ fontSize: '0.6rem', background: 'rgba(245,158,11,0.2)', color: '#fde047', border: '1px solid rgba(245,158,11,0.4)', padding: '1px 5px', borderRadius: '4px', fontWeight: 700 }}>BOT</span>
+                  <span style={{ fontSize: '0.6rem', background: 'rgba(245,158,11,0.25)', color: '#fde047', border: '1px solid rgba(245,158,11,0.5)', padding: '1px 5px', borderRadius: '4px', fontWeight: 700 }}>24/7 LIVE</span>
                 </div>
-                <div style={{ fontSize: '0.675rem', color: '#94a3b8' }}>Official Temple Information Seva</div>
+                <div style={{ fontSize: '0.675rem', color: '#94a3b8' }}>Official Temple Darshan &amp; Flow Assistant</div>
               </div>
             </div>
-            <button
-              onClick={() => setOpen(false)}
-              style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#ffffff', width: '28px', height: '28px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-            >
-              <X size={16} />
-            </button>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <button
+                onClick={handleResetChat}
+                title="Restart conversation"
+                style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#ffffff', width: '28px', height: '28px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+              >
+                <RotateCcw size={14} />
+              </button>
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="Close chat"
+                style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: '#ffffff', width: '28px', height: '28px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+              >
+                <X size={16} />
+              </button>
+            </div>
           </div>
 
           {/* Messages Area */}
-          <div style={{ flex: 1, padding: '14px', overflowY: 'auto', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ flex: 1, padding: '12px 14px', overflowY: 'auto', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {messages.map((m, idx) => (
               <div
                 key={idx}
@@ -199,21 +262,22 @@ const ChatbotWidget = () => {
                 }}
               >
                 {m.sender === 'bot' && (
-                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#ffffff', border: '1px solid #f59e0b', padding: '2px', flexShrink: 0, boxShadow: '0 2px 5px rgba(0,0,0,0.08)' }}>
+                  <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: '#ffffff', border: '1px solid #f59e0b', padding: '2px', flexShrink: 0, boxShadow: '0 2px 4px rgba(0,0,0,0.06)' }}>
                     <img src="/assets/images/siddhivinayak_logo.svg" alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                   </div>
                 )}
                 <div
                   style={{
-                    maxWidth: '80%',
+                    maxWidth: '82%',
                     padding: '8px 12px',
-                    borderRadius: '8px',
+                    borderRadius: '10px',
                     fontSize: '0.85rem',
-                    lineHeight: 1.4,
+                    lineHeight: 1.45,
+                    whiteSpace: 'pre-line',
                     background: m.sender === 'user' ? '#b45309' : '#ffffff',
                     color: m.sender === 'user' ? '#ffffff' : '#0f172a',
                     border: m.sender === 'user' ? 'none' : '1px solid #e2e8f0',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
                   }}
                 >
                   {m.text}
@@ -222,8 +286,8 @@ const ChatbotWidget = () => {
             ))}
 
             {loading && (
-              <div style={{ fontSize: '0.8rem', color: '#64748b', fontStyle: 'italic', paddingLeft: '30px' }}>
-                Checking temple records...
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: '34px', fontSize: '0.775rem', color: '#b45309' }}>
+                <span style={{ animation: 'pulse 1s infinite' }}>Consulting holy shrine records...</span>
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -234,16 +298,19 @@ const ChatbotWidget = () => {
             {quickQuestions.map((qq, idx) => (
               <button
                 key={idx}
+                type="button"
                 onClick={() => handleSend(qq)}
                 style={{
-                  background: '#f1f5f9',
+                  background: '#f8fafc',
                   border: '1px solid #e2e8f0',
-                  borderRadius: '12px',
-                  padding: '3px 8px',
+                  borderRadius: '14px',
+                  padding: '4px 10px',
                   fontSize: '0.725rem',
+                  fontWeight: 600,
                   color: '#475569',
                   cursor: 'pointer',
-                  flexShrink: 0
+                  flexShrink: 0,
+                  transition: 'background-color 0.15s ease'
                 }}
               >
                 {qq}
@@ -257,32 +324,34 @@ const ChatbotWidget = () => {
               e.preventDefault();
               handleSend();
             }}
-            style={{ padding: '8px 10px', background: '#ffffff', borderTop: '1px solid #e2e8f0', display: 'flex', gap: '6px' }}
+            style={{ padding: '8px 10px', background: '#ffffff', borderTop: '1px solid #e2e8f0', display: 'flex', gap: '8px', alignItems: 'center' }}
           >
             <input
               type="text"
-              placeholder="Ask a question about your visit..."
+              placeholder="Ask about pooja, pass, crowd, or rules..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               style={{
                 flex: 1,
-                padding: '6px 10px',
-                borderRadius: '6px',
+                padding: '8px 12px',
+                borderRadius: '8px',
                 border: '1px solid #cbd5e1',
-                fontSize: '0.85rem',
+                fontSize: '16px', // Prevents iOS mobile auto-zoom
                 outline: 'none'
               }}
             />
             <button
               type="submit"
               disabled={loading || !input.trim()}
+              aria-label="Send query"
               style={{
                 background: '#b45309',
                 color: '#ffffff',
                 border: 'none',
-                borderRadius: '6px',
-                padding: '0 10px',
-                cursor: 'pointer',
+                borderRadius: '8px',
+                padding: '9px 14px',
+                cursor: loading || !input.trim() ? 'not-allowed' : 'pointer',
+                opacity: loading || !input.trim() ? 0.6 : 1,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'

@@ -78,14 +78,14 @@ const CrowdHeatmap = ({ areas = [], onAreaClick, selectedAreaId }) => {
 
   return (
     <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1.25rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
         <div>
           <h3 style={{ fontSize: '1.05rem', margin: 0 }}>Temple Flow &amp; Crowd Distribution Map</h3>
           <p style={{ fontSize: '0.825rem', margin: 0, color: '#64748b' }}>
             Linear pilgrim route progression from Entry Gate to Sanctum and Exit
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.775rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', fontSize: '0.75rem' }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
             <span style={{ width: 10, height: 10, background: '#16a34a', borderRadius: '50%' }}></span> Low (&lt;45%)
           </span>

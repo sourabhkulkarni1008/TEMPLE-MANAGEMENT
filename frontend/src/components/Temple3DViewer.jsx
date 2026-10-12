@@ -1026,7 +1026,7 @@ export default function Temple3DViewer({
     <div style={{
       position: 'relative',
       width: '100%',
-      height,
+      height: typeof window !== 'undefined' && window.innerWidth < 640 ? '390px' : height,
       borderRadius: compact ? '12px' : '20px',
       overflow: 'hidden',
       background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
@@ -1039,12 +1039,14 @@ export default function Temple3DViewer({
       {/* Top HUD Bar */}
       <div style={{
         position: 'absolute',
-        top: '16px',
-        left: '16px',
-        right: '16px',
+        top: '12px',
+        left: '12px',
+        right: '12px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '8px',
         pointerEvents: 'none',
         zIndex: 10
       }}>
@@ -1199,7 +1201,10 @@ export default function Temple3DViewer({
           padding: '6px',
           borderRadius: '14px',
           display: 'flex',
-          gap: '6px'
+          gap: '6px',
+          overflowX: 'auto',
+          maxWidth: '100%',
+          WebkitOverflowScrolling: 'touch'
         }}>
           {[
             { id: 'overview', label: 'Panoramic' },
@@ -1428,16 +1433,20 @@ export default function Temple3DViewer({
       <div style={{
         position: 'absolute',
         top: '75px',
-        right: '16px',
-        background: 'rgba(0,0,0,0.5)',
+        right: '12px',
+        background: 'rgba(0,0,0,0.55)',
         backdropFilter: 'blur(8px)',
         padding: '4px 10px',
         borderRadius: '20px',
-        fontSize: '0.7rem',
-        color: '#94a3b8',
-        pointerEvents: 'none'
+        fontSize: '0.675rem',
+        color: '#cbd5e1',
+        pointerEvents: 'none',
+        maxWidth: 'calc(100% - 24px)',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
       }}>
-        🖱️ Drag to rotate • Scroll to zoom • Click buildings to inspect
+        👆 Touch/Drag to rotate • Pinch/Scroll to zoom • Tap to inspect
       </div>
     </div>
   );
