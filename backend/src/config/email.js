@@ -27,19 +27,24 @@ export const sendEmail = async ({ to, subject, html, text, attachments = [] }) =
 
     // 1. Prioritize Gmail SMTP if configured (100% unrestricted live delivery to ANY email)
     if (transporter) {
-      const mailOptions = {
-        from: fromAddress,
-        to: Array.isArray(to) ? to.join(', ') : to,
-        subject,
-        text: text || '',
-        html
-      };
-      if (attachments && attachments.length > 0) {
-        mailOptions.attachments = attachments;
+      try {
+        const mailOptions = {
+          from: fromAddress,
+          to: Array.isArray(to) ? to.join(', ') : to,
+          subject,
+          text: text || '',
+          html
+        };
+        if (attachments && attachments.length > 0) {
+          mailOptions.attachments = attachments;
+        }
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`[GMAIL SMTP DISPATCHED] ID: ${info.messageId} to ${to}`);
+        return { success: true, service: 'gmail', messageId: info.messageId, to, isRestrictedSandbox: false };
+      } catch (smtpErr) {
+        console.warn(`[GMAIL SMTP WARNING] Failed to send via Gmail SMTP:`, smtpErr.message);
+        console.log(`[EMAIL FALLBACK] Falling through to Resend / secondary dispatch...`);
       }
-      const info = await transporter.sendMail(mailOptions);
-      console.log(`[GMAIL SMTP DISPATCHED] ID: ${info.messageId} to ${to}`);
-      return { success: true, service: 'gmail', messageId: info.messageId, to };
     }
 
     // 2. Resend Cloud API Fallback

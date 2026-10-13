@@ -9,7 +9,8 @@
     "dev": "node src/server.js",
     "watch": "node --watch-path=src/routes --watch-path=src/controllers --watch-path=src/middleware src/server.js",
     "seed": "node src/data/seedRunner.js",
-    "migrate": "node src/database/migrate.js"
+    "migrate": "node src/database/migrate.js",
+    "test:smtp": "node src/test_smtp.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
