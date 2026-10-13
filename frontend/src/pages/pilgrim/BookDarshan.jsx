@@ -18,6 +18,7 @@ const BookDarshan = () => {
   const [types, setTypes] = useState([]);
   const [slots, setSlots] = useState([]);
   const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otpDevCode, setOtpDevCode] = useState('');
 
   // Form State
   const today = new Date();
@@ -144,6 +145,14 @@ const BookDarshan = () => {
       }
       // Require email verification before entering final confirmation step
       if (!isEmailVerified) {
+        const targetEmail = pilgrimDetails.email || user?.email;
+        if (targetEmail) {
+          sendOtp(targetEmail)
+            .then((otpRes) => {
+              if (otpRes?.devCode) setOtpDevCode(otpRes.devCode);
+            })
+            .catch(() => {});
+        }
         setShowOtpModal(true);
         return;
       }
@@ -156,6 +165,14 @@ const BookDarshan = () => {
 
     // Check Email Verification Gate
     if (!isEmailVerified) {
+      const targetEmail = pilgrimDetails.email || user?.email;
+      if (targetEmail) {
+        sendOtp(targetEmail)
+          .then((otpRes) => {
+            if (otpRes?.devCode) setOtpDevCode(otpRes.devCode);
+          })
+          .catch(() => {});
+      }
       setShowOtpModal(true);
       return;
     }
@@ -837,6 +854,7 @@ const BookDarshan = () => {
         <OtpVerificationModal
           isOpen={showOtpModal}
           targetEmail={pilgrimDetails.email || user?.email}
+          devCode={otpDevCode}
           title="Verify Email to Book Darshan"
           subtitle="Enter the 6-digit verification code sent to your email to unlock ticket generation"
           onClose={() => setShowOtpModal(false)}

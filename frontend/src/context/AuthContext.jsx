@@ -51,7 +51,12 @@ export const AuthProvider = ({ children }) => {
     if (res.success && res.token) {
       localStorage.setItem('temple_token', res.token);
       setUser(res.user);
-      return { user: res.user, requiresVerification: true };
+      return { 
+        user: res.user, 
+        requiresVerification: true,
+        isSandboxRestricted: res.isSandboxRestricted,
+        devCode: res.devCode
+      };
     }
     throw new Error(res.message || 'Registration failed.');
   };

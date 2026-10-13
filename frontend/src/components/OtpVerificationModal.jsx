@@ -2,7 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { ShieldCheck, Mail, CheckCircle2, AlertCircle, RefreshCw, X, Lock } from 'lucide-react';
 
-const OtpVerificationModal = ({ isOpen, onClose, onSuccess, targetEmail, title = 'Verify Email Code', subtitle }) => {
+const OtpVerificationModal = ({ 
+  isOpen, 
+  onClose, 
+  onSuccess, 
+  targetEmail, 
+  title = 'Verify Email Code', 
+  subtitle,
+  devCode: initialDevCode
+}) => {
   const { verifyOtp, sendOtp, user } = useAuth();
   const email = targetEmail || user?.email || '';
 
@@ -13,10 +21,18 @@ const OtpVerificationModal = ({ isOpen, onClose, onSuccess, targetEmail, title =
   const [successMsg, setSuccessMsg] = useState('');
   const [countdown, setCountdown] = useState(60);
   const [canResend, setCanResend] = useState(false);
+  const [activeDevCode, setActiveDevCode] = useState(initialDevCode || '');
 
   const inputRefs = useRef([]);
 
-  // Timer countdown
+  // Sync devCode prop changes
+  useEffect(() => {
+    if (initialDevCode) {
+      setActiveDevCode(initialDevCode);
+    }
+  }, [initialDevCode]);
+
+  // Timer countdown and initial send if needed
   useEffect(() => {
     if (!isOpen) return;
     setCountdown(60);
@@ -24,6 +40,21 @@ const OtpVerificationModal = ({ isOpen, onClose, onSuccess, targetEmail, title =
     setError('');
     setSuccessMsg('');
     setOtp(['', '', '', '', '', '']);
+
+    // If no initial devCode was supplied, automatically request a fresh OTP on modal open
+    if (!initialDevCode && email) {
+      sendOtp(email)
+        .then((res) => {
+          if (res?.isSandboxRestricted && res?.devCode) {
+            setActiveDevCode(res.devCode);
+          }
+        })
+        .catch((err) => {
+          if (err.status !== 429) {
+            console.warn('[OTP INIT NOTICE]:', err.message);
+          }
+        });
+    }
 
     const timer = setInterval(() => {
       setCountdown((prev) => {
@@ -44,7 +75,7 @@ const OtpVerificationModal = ({ isOpen, onClose, onSuccess, targetEmail, title =
     }, 150);
 
     return () => clearInterval(timer);
-  }, [isOpen, email]);
+  }, [isOpen, email, initialDevCode]);
 
   if (!isOpen) return null;
 
@@ -114,8 +145,13 @@ const OtpVerificationModal = ({ isOpen, onClose, onSuccess, targetEmail, title =
     setSuccessMsg('');
 
     try {
-      await sendOtp(email);
-      setSuccessMsg(`A fresh 6-digit code has been sent to ${email}`);
+      const res = await sendOtp(email);
+      if (res?.isSandboxRestricted && res?.devCode) {
+        setActiveDevCode(res.devCode);
+        setSuccessMsg(`Fresh verification code generated. (Resend sandbox: forwarded to admin)`);
+      } else {
+        setSuccessMsg(`A fresh 6-digit code has been sent to ${email}`);
+      }
       setCountdown(60);
       setCanResend(false);
       setOtp(['', '', '', '', '', '']);
@@ -285,6 +321,55 @@ const OtpVerificationModal = ({ isOpen, onClose, onSuccess, targetEmail, title =
             </div>
           )}
 
+          {/* Resend Sandbox Helper Banner */}
+          {activeDevCode && (
+            <div
+              style={{
+                background: '#fffbeb',
+                border: '1.5px solid #fde68a',
+                borderRadius: '8px',
+                padding: '10px 12px',
+                marginBottom: '1.25rem',
+                fontSize: '0.825rem',
+                color: '#92400e'
+              }}
+            >
+              <div style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', color: '#b45309' }}>
+                <AlertCircle size={16} />
+                <span>Resend Free Sandbox Notice</span>
+              </div>
+              <p style={{ margin: '0 0 8px 0', lineHeight: 1.4, fontSize: '0.8rem', color: '#78350f' }}>
+                Resend test accounts only deliver emails to the account owner (<code>kulkarnisourabh807@gmail.com</code>).
+                For instant verification, use your code below:
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#ffffff', padding: '6px 10px', borderRadius: '6px', border: '1px solid #fef3c7' }}>
+                <span style={{ fontSize: '0.825rem', color: '#475569' }}>
+                  Verification Code: <strong style={{ letterSpacing: '3px', fontSize: '1.1rem', color: '#b45309', fontFamily: 'monospace' }}>{activeDevCode}</strong>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const digits = activeDevCode.slice(0, 6).split('');
+                    setOtp(digits);
+                    if (inputRefs.current[5]) inputRefs.current[5].focus();
+                  }}
+                  style={{
+                    background: '#b45309',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '4px 10px',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  ⚡ 1-Click Fill
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* 6 Digit Input Boxes */}
           <form onSubmit={handleVerify}>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '1.5rem' }}>
@@ -295,6 +380,9 @@ const OtpVerificationModal = ({ isOpen, onClose, onSuccess, targetEmail, title =
                   type="text"
                   maxLength={1}
                   value={digit}
+                  title={`Verification code digit ${idx + 1}`}
+                  aria-label={`Verification code digit ${idx + 1}`}
+                  placeholder="•"
                   onChange={(e) => handleInputChange(idx, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(idx, e)}
                   style={{

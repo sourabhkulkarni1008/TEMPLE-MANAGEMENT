@@ -62,7 +62,8 @@ export const sendEmail = async ({ to, subject, html, text, attachments = [] }) =
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${ENV.RESEND_API_KEY}`
+          'Authorization': `Bearer ${ENV.RESEND_API_KEY}`,
+          'User-Agent': 'resend-node/2.0.0'
         },
         body: JSON.stringify(resendPayload)
       });
@@ -70,7 +71,7 @@ export const sendEmail = async ({ to, subject, html, text, attachments = [] }) =
       const resData = await resendRes.json();
       if (resendRes.ok && resData.id) {
         console.log(`[RESEND REAL EMAIL DISPATCHED] ID: ${resData.id} to ${to}`);
-        return { success: true, service: 'resend', messageId: resData.id, to };
+        return { success: true, service: 'resend', messageId: resData.id, to, isRestrictedSandbox: false };
       } else {
         console.warn(`[RESEND API NOTICE]:`, resData);
         // If Resend test key is restricted to owner email, forward to kulkarnisourabh807@gmail.com
@@ -80,7 +81,8 @@ export const sendEmail = async ({ to, subject, html, text, attachments = [] }) =
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${ENV.RESEND_API_KEY}`
+              'Authorization': `Bearer ${ENV.RESEND_API_KEY}`,
+              'User-Agent': 'resend-node/2.0.0'
             },
             body: JSON.stringify({
               from: ENV.EMAIL_FROM || 'Shree Siddhivinayak Temple <onboarding@resend.dev>',
@@ -93,7 +95,14 @@ export const sendEmail = async ({ to, subject, html, text, attachments = [] }) =
           const fbData = await fallbackRes.json();
           if (fallbackRes.ok && fbData.id) {
             console.log(`[RESEND REAL EMAIL DISPATCHED TO OWNER] ID: ${fbData.id} for devotee ${to}`);
-            return { success: true, service: 'resend', messageId: fbData.id, forwardedTo: 'kulkarnisourabh807@gmail.com', originalTo: to };
+            return { 
+              success: true, 
+              service: 'resend', 
+              messageId: fbData.id, 
+              forwardedTo: 'kulkarnisourabh807@gmail.com', 
+              originalTo: to,
+              isRestrictedSandbox: true 
+            };
           }
         }
         return { 
@@ -101,7 +110,8 @@ export const sendEmail = async ({ to, subject, html, text, attachments = [] }) =
           service: 'resend', 
           error: resData.message || 'Resend API rejected dispatch',
           details: resData,
-          to
+          to,
+          isRestrictedSandbox: true
         };
       }
     }
@@ -112,7 +122,7 @@ export const sendEmail = async ({ to, subject, html, text, attachments = [] }) =
     console.log(`Subject: ${subject}`);
     console.log(`Timestamp: ${new Date().toISOString()}`);
     console.log(`----------------------------------------`);
-    return { success: true, simulated: true, messageId: `demo-${Date.now()}` };
+    return { success: true, simulated: true, isRestrictedSandbox: true, messageId: `demo-${Date.now()}`, to };
   } catch (error) {
     console.warn(`[EMAIL WARNING] Failed to deliver email to ${to}:`, error.message);
     return { success: false, error: error.message };

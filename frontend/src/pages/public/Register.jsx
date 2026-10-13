@@ -17,6 +17,7 @@ const Register = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
+  const [devCode, setDevCode] = useState('');
 
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -41,12 +42,15 @@ const Register = () => {
 
     setLoading(true);
     try {
-      await register({
+      const regRes = await register({
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
         password: formData.password
       });
+      if (regRes?.devCode) {
+        setDevCode(regRes.devCode);
+      }
       // Show OTP verification modal immediately
       setShowOtpModal(true);
     } catch (err) {
@@ -203,6 +207,7 @@ const Register = () => {
       <OtpVerificationModal
         isOpen={showOtpModal}
         targetEmail={formData.email}
+        devCode={devCode}
         title="Verify Email to Activate Account"
         subtitle="Enter the 6-digit code sent to your email to unlock Darshan booking"
         onClose={() => setShowOtpModal(false)}

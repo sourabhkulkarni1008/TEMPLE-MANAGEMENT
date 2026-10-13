@@ -15,8 +15,9 @@ const Login = ({ defaultRole = 'PILGRIM' }) => {
   const [loading, setLoading] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState(null);
+  const [devCode, setDevCode] = useState('');
 
-  const { login, logout } = useAuth();
+  const { login, logout, sendOtp } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -56,6 +57,11 @@ const Login = ({ defaultRole = 'PILGRIM' }) => {
       } else {
         // Pilgrim users enter the 6-digit email verification code
         setLoggedInUser(user);
+        sendOtp(user.email)
+          .then((otpRes) => {
+            if (otpRes?.devCode) setDevCode(otpRes.devCode);
+          })
+          .catch(() => {});
         setShowOtpModal(true);
       }
     } catch (err) {
@@ -235,6 +241,7 @@ const Login = ({ defaultRole = 'PILGRIM' }) => {
       <OtpVerificationModal
         isOpen={showOtpModal}
         targetEmail={loggedInUser?.email || email}
+        devCode={devCode}
         title="Email Verification Code"
         subtitle="Please enter the 6-digit code sent to your email to unlock Darshan ticket booking"
         onClose={() => setShowOtpModal(false)}

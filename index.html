@@ -163,13 +163,13 @@
             </h2>
 
             <div class="form-group">
-              <label class="form-label">Date of Visit</label>
-              <input type="date" id="book-date" class="form-input" required>
+              <label class="form-label" for="book-date">Date of Visit</label>
+              <input type="date" id="book-date" class="form-input" title="Date of Visit" aria-label="Date of Visit" required>
             </div>
 
             <div class="form-group">
-              <label class="form-label">Darshan Category</label>
-              <select id="book-type" class="form-select" onchange="updateSlots()">
+              <label class="form-label" for="book-type">Darshan Category</label>
+              <select id="book-type" class="form-select" title="Darshan Category" aria-label="Darshan Category" onchange="updateSlots()">
                 <option value="General Darshan (Sarva Darshanam)" data-price="0">General Darshan (Free - 200 quota)
                 </option>
                 <option value="Special Quick Darshan (Sheegra Darshanam)" data-price="300">Special Quick Darshan (₹300 -
@@ -182,8 +182,8 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label">Time Slot (2-Hour Window)</label>
-              <select id="book-slot" class="form-select">
+              <label class="form-label" for="book-slot">Time Slot (2-Hour Window)</label>
+              <select id="book-slot" class="form-select" title="Time Slot" aria-label="Time Slot">
                 <option value="06:00 AM - 08:00 AM">06:00 AM - 08:00 AM (Available)</option>
                 <option value="08:00 AM - 10:00 AM">08:00 AM - 10:00 AM (Available)</option>
                 <option value="10:00 AM - 12:00 PM">10:00 AM - 12:00 PM (Available)</option>
@@ -197,19 +197,19 @@
               <h3 class="u-s38">Primary Devotee
                 Information</h3>
               <div class="form-group">
-                <label class="form-label">Full Name</label>
+                <label class="form-label" for="book-name">Full Name</label>
                 <input type="text" id="book-name" class="form-input" required placeholder="e.g. Ananya Deshmukh"
                   value="Ananya Deshmukh">
               </div>
               <div class="grid-2">
                 <div class="form-group">
-                  <label class="form-label">Mobile Phone</label>
+                  <label class="form-label" for="book-phone">Mobile Phone</label>
                   <input type="tel" id="book-phone" class="form-input" required placeholder="+91 98201 55667"
                     value="+91 98201 55667">
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Devotees Count (1-6)</label>
-                  <input type="number" id="book-count" class="form-input" min="1" max="6" value="2" required>
+                  <label class="form-label" for="book-count">Devotees Count (1-6)</label>
+                  <input type="number" id="book-count" class="form-input" min="1" max="6" value="2" title="Devotees Count" aria-label="Devotees Count" placeholder="2" required>
                 </div>
               </div>
             </div>
@@ -388,7 +388,7 @@
               <span class="u-s87">Live Camera Viewfinder Active</span>
             </div>
             <div class="u-s88">
-              <select id="camera-device-select" onchange="changeCameraDevice(this.value)" class="u-s89">
+              <select id="camera-device-select" title="Select Camera Device" aria-label="Select Camera Device" onchange="changeCameraDevice(this.value)" class="u-s89">
                 <option value="">Detecting Cameras...</option>
               </select>
               <button onclick="toggleContinuousScan()" id="btn-continuous-mode" class="btn btn-sm u-s90">
@@ -765,12 +765,12 @@
           </div>
 
           <div class="otp-inputs">
-            <input type="text" maxlength="1" class="otp-input-digit" id="otp-1" oninput="handleOtpInput(1)">
-            <input type="text" maxlength="1" class="otp-input-digit" id="otp-2" oninput="handleOtpInput(2)">
-            <input type="text" maxlength="1" class="otp-input-digit" id="otp-3" oninput="handleOtpInput(3)">
-            <input type="text" maxlength="1" class="otp-input-digit" id="otp-4" oninput="handleOtpInput(4)">
-            <input type="text" maxlength="1" class="otp-input-digit" id="otp-5" oninput="handleOtpInput(5)">
-            <input type="text" maxlength="1" class="otp-input-digit" id="otp-6" oninput="handleOtpInput(6)">
+            <input type="text" maxlength="1" class="otp-input-digit" id="otp-1" title="OTP Digit 1" aria-label="OTP Digit 1" placeholder="•" oninput="handleOtpInput(1)">
+            <input type="text" maxlength="1" class="otp-input-digit" id="otp-2" title="OTP Digit 2" aria-label="OTP Digit 2" placeholder="•" oninput="handleOtpInput(2)">
+            <input type="text" maxlength="1" class="otp-input-digit" id="otp-3" title="OTP Digit 3" aria-label="OTP Digit 3" placeholder="•" oninput="handleOtpInput(3)">
+            <input type="text" maxlength="1" class="otp-input-digit" id="otp-4" title="OTP Digit 4" aria-label="OTP Digit 4" placeholder="•" oninput="handleOtpInput(4)">
+            <input type="text" maxlength="1" class="otp-input-digit" id="otp-5" title="OTP Digit 5" aria-label="OTP Digit 5" placeholder="•" oninput="handleOtpInput(5)">
+            <input type="text" maxlength="1" class="otp-input-digit" id="otp-6" title="OTP Digit 6" aria-label="OTP Digit 6" placeholder="•" oninput="handleOtpInput(6)">
           </div>
 
           <div class="u-s168">
@@ -889,16 +889,16 @@
           medical and security staff</p>
         <form onsubmit="handleSosSubmit(event)">
           <div class="form-group">
-            <label class="form-label">Nature of Emergency</label>
-            <select id="sos-type" class="form-select">
+            <label class="form-label" for="sos-type">Nature of Emergency</label>
+            <select id="sos-type" class="form-select" title="Nature of Emergency" aria-label="Nature of Emergency">
               <option>Medical (Dizziness, Heat, First-aid)</option>
               <option>Lost Child / Missing Person</option>
               <option>Security / Crowd Bottleneck</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Your Current Temple Area</label>
-            <select id="sos-area" class="form-select">
+            <label class="form-label" for="sos-area">Your Current Temple Area</label>
+            <select id="sos-area" class="form-select" title="Your Current Temple Area" aria-label="Your Current Temple Area">
               <option>Main Entrance & Security Gate</option>
               <option>Queue Complex & Holding Bays</option>
               <option>Main Sanctum / Darshan Hall</option>
@@ -907,7 +907,7 @@
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Describe Situation & Landmark</label>
+            <label class="form-label" for="sos-desc">Describe Situation & Landmark</label>
             <textarea id="sos-desc" class="form-textarea" required
               placeholder="e.g. Near holding bay 3, person needs immediate water and seating..."></textarea>
           </div>
@@ -945,7 +945,7 @@
       </div>
       <form onsubmit="handleChatSubmit(event)" class="u-s208">
         <input type="text" id="chat-input" placeholder="Type a question..." class="u-s209">
-        <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="send" class="u-s6"></i></button>
+        <button type="submit" class="btn btn-primary btn-sm" title="Send message" aria-label="Send message"><i data-lucide="send" class="u-s6"></i></button>
       </form>
     </div>
   </div>

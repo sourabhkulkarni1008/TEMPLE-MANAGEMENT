@@ -60,13 +60,30 @@ export const generateAndSendOtp = async (email, name = 'Devotee', checkCooldown 
   console.log(`======================================================\n`);
 
   // 4. Send 6-digit OTP to user's registered email using existing working email system
-  const emailRes = await sendEmail({
-    to: normalizedEmail,
-    subject: `🔐 Your Verification Code: ${code} - Sri Siddhivinayak Temple`,
-    html: emailTemplates.otpVerification(code, normalizedEmail)
-  });
+  let emailRes = null;
+  try {
+    emailRes = await sendEmail({
+      to: normalizedEmail,
+      subject: `🔐 Your Verification Code: ${code} - Sri Siddhivinayak Temple`,
+      html: emailTemplates.otpVerification(code, normalizedEmail)
+    });
+  } catch (emailErr) {
+    console.error(`[OTP EMAIL DISPATCH WARNING]:`, emailErr.message);
+  }
 
-  return { success: true, emailRes };
+  const isRestrictedSandbox = Boolean(
+    emailRes?.isRestrictedSandbox || 
+    (emailRes?.forwardedTo && emailRes?.forwardedTo !== normalizedEmail) ||
+    emailRes?.simulated
+  );
+
+  return { 
+    success: true, 
+    emailRes, 
+    code,
+    isRestrictedSandbox,
+    forwardedTo: emailRes?.forwardedTo
+  };
 };
 
 /**
@@ -88,12 +105,17 @@ export const sendOtp = async (req, res, next) => {
     const name = user ? user.name : (req.user ? req.user.name : 'Devotee');
 
     // Resend triggers cooldown check
-    await generateAndSendOtp(normalizedEmail, name, true);
+    const otpResult = await generateAndSendOtp(normalizedEmail, name, true);
 
     res.json({
       success: true,
-      message: `A fresh 6-digit verification code has been sent to ${normalizedEmail}. Valid for 5 minutes.`,
-      email: normalizedEmail
+      message: otpResult.isRestrictedSandbox
+        ? `Verification code generated. (Resend sandbox: forwarded to admin)`
+        : `A fresh 6-digit verification code has been sent to ${normalizedEmail}. Valid for 5 minutes.`,
+      email: normalizedEmail,
+      isSandboxRestricted: otpResult.isRestrictedSandbox,
+      devCode: otpResult.isRestrictedSandbox ? otpResult.code : undefined,
+      forwardedTo: otpResult.forwardedTo
     });
   } catch (err) {
     if (err.status === 429) {
@@ -243,7 +265,7 @@ export const register = async (req, res, next) => {
     });
 
     // Generate & Dispatch OTP Code via Email immediately
-    await generateAndSendOtp(newUser.email, newUser.name);
+    const otpResult = await generateAndSendOtp(newUser.email, newUser.name);
 
     // Send Welcome Email
     sendEmail({
@@ -263,9 +285,13 @@ export const register = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      message: `Registration successful! A 6-digit verification code has been sent to ${newUser.email}.`,
+      message: otpResult.isRestrictedSandbox
+        ? `Registration successful! (Resend sandbox mode active: forwarded to admin)`
+        : `Registration successful! A 6-digit verification code has been sent to ${newUser.email}.`,
       token,
       requiresVerification: true,
+      isSandboxRestricted: otpResult.isRestrictedSandbox,
+      devCode: otpResult.isRestrictedSandbox ? otpResult.code : undefined,
       user: {
         id: newUser.id,
         name: newUser.name,
