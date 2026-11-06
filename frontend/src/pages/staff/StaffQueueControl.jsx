@@ -74,72 +74,116 @@ const StaffQueueControl = () => {
 
   return (
     <div className="dashboard-layout">
-      <div className="dashboard-content">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
+      <div className="dashboard-content" style={{ padding: '1.5rem 1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem' }}>
           <div>
-            <h1 style={{ fontSize: '1.6rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <ListOrdered color="#b45309" /> Queue Regulation &amp; Token Dispatch
-            </h1>
-            <p style={{ fontSize: '0.9rem', color: '#64748b' }}>
-              Monitor holding day counts, call next token, and manage batch throughput
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+              <span style={{ 
+                display: 'inline-flex', 
+                background: 'rgba(217, 119, 6, 0.15)', 
+                color: '#d97706', 
+                padding: '8px', 
+                borderRadius: '50%',
+                border: '1px solid rgba(217, 119, 6, 0.3)'
+              }}>
+                <ListOrdered size={24} />
+              </span>
+              <h1 className="temple-gradient-text" style={{ fontSize: '1.8rem', fontWeight: 800, margin: 0 }}>
+                Queue Regulation &amp; Token Dispatch
+              </h1>
+            </div>
+            <p style={{ fontSize: '0.9rem', color: '#64748b', margin: 0 }}>
+              Live telemetry monitoring holding day density, calling next token batches, and governing pedestrian intake pace.
             </p>
           </div>
-          <button onClick={fetchQueues} className="btn btn-secondary btn-sm">
-            <RefreshCw size={14} /> Refresh
+          <button 
+            onClick={fetchQueues} 
+            className="btn btn-secondary btn-sm"
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', borderRadius: '8px', padding: '0.5rem 0.9rem', fontWeight: 600 }}
+          >
+            <RefreshCw size={14} /> Refresh Telemetry
           </button>
         </div>
 
         {message && (
-          <div className="alert alert-success" style={{ marginBottom: '1.5rem' }}>
-            {message}
+          <div className="alert alert-success" style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px', borderRadius: '10px', padding: '0.85rem 1rem' }}>
+            <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{message}</span>
           </div>
         )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {queues.map((q) => (
-            <div key={q.id} className="card" style={{ borderColor: q.highCrowdWarning ? '#fca5a5' : '#e2e8f0' }}>
+            <div 
+              key={q.id} 
+              className={`card glass-card ${q.highCrowdWarning ? '' : 'card-gold-trim'}`} 
+              style={{ 
+                borderColor: q.highCrowdWarning ? '#fca5a5' : undefined,
+                boxShadow: q.highCrowdWarning ? '0 8px 30px rgba(239, 68, 68, 0.12)' : undefined,
+                borderRadius: '16px',
+                padding: '1.75rem'
+              }}
+            >
               {/* High Crowd Warning Banner */}
               {q.highCrowdWarning && (
-                <div className="alert alert-danger" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.25rem' }}>
-                  <AlertTriangle size={18} />
-                  <span>
-                    <strong>High crowd detected in {q.areaName}:</strong> Occupancy exceeds recommended density. Batch intake paced.
+                <div className="alert alert-danger" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.25rem', borderRadius: '10px', padding: '0.85rem 1rem' }}>
+                  <AlertTriangle size={20} style={{ flexShrink: 0 }} />
+                  <span style={{ fontSize: '0.875rem' }}>
+                    <strong>High crowd density detected in {q.areaName}:</strong> Occupancy exceeds recommended safe surge threshold. Batch intake pace adjusted.
                   </span>
                 </div>
               )}
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid rgba(226, 232, 240, 0.8)', paddingBottom: '1.25rem', marginBottom: '1.5rem' }}>
                 <div>
-                  <h2 style={{ fontSize: '1.25rem', color: '#0f172a', margin: 0 }}>{q.areaName}</h2>
-                  <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '2px' }}>Queue Identifier: {q.id}</div>
+                  <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>{q.areaName}</h2>
+                  <div style={{ fontSize: '0.825rem', color: '#64748b', marginTop: '4px' }}>Queue ID: <code style={{ color: '#d97706', fontWeight: 700 }}>{q.id}</code></div>
                 </div>
                 <StatusBadge status={q.status} />
               </div>
 
               {/* Main Numbers Callout */}
-              <div className="grid-3" style={{ marginBottom: '1.5rem' }}>
-                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1.25rem', textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 600 }}>Now Serving Token</div>
-                  <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#b45309', fontFamily: 'monospace', margin: '4px 0' }}>
+              <div className="grid-3" style={{ gap: '1.25rem', marginBottom: '1.75rem' }}>
+                <div style={{ 
+                  background: 'linear-gradient(135deg, rgba(254, 243, 199, 0.5) 0%, rgba(253, 230, 138, 0.25) 100%)', 
+                  border: '1px solid rgba(245, 158, 11, 0.3)', 
+                  borderRadius: '12px', 
+                  padding: '1.5rem 1rem', 
+                  textAlign: 'center',
+                  boxShadow: '0 4px 12px rgba(217, 119, 6, 0.08)'
+                }}>
+                  <div style={{ fontSize: '0.75rem', color: '#92400e', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Now Serving Token</div>
+                  <div style={{ fontSize: '2.75rem', fontWeight: 900, color: '#b45309', fontFamily: 'monospace', margin: '4px 0', textShadow: '0 2px 8px rgba(180, 83, 9, 0.15)' }}>
                     {q.currentServingToken}
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Active Sanctum Passage</div>
+                  <div style={{ fontSize: '0.8rem', color: '#78350f', fontWeight: 500 }}>Active Sanctum Passage</div>
                 </div>
 
-                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1.25rem', textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 600 }}>Pilgrims Waiting</div>
-                  <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#0f172a', margin: '4px 0' }}>
+                <div style={{ 
+                  background: 'rgba(248, 250, 252, 0.8)', 
+                  border: '1px solid rgba(226, 232, 240, 0.9)', 
+                  borderRadius: '12px', 
+                  padding: '1.5rem 1rem', 
+                  textAlign: 'center' 
+                }}>
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Pilgrims Waiting</div>
+                  <div style={{ fontSize: '2.75rem', fontWeight: 900, color: '#0f172a', margin: '4px 0' }}>
                     {q.waitingCount}
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Inside Holding Days</div>
+                  <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 500 }}>Holding Enclosures</div>
                 </div>
 
-                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1.25rem', textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 600 }}>Estimated Wait</div>
-                  <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#0f172a', margin: '4px 0' }}>
+                <div style={{ 
+                  background: 'rgba(248, 250, 252, 0.8)', 
+                  border: '1px solid rgba(226, 232, 240, 0.9)', 
+                  borderRadius: '12px', 
+                  padding: '1.5rem 1rem', 
+                  textAlign: 'center' 
+                }}>
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Estimated Wait</div>
+                  <div style={{ fontSize: '2.75rem', fontWeight: 900, color: '#0f172a', margin: '4px 0' }}>
                     {q.estimatedWaitTimeMins}m
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Based on current throughput</div>
+                  <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 500 }}>Dynamic Speed Metric</div>
                 </div>
               </div>
 
@@ -149,10 +193,21 @@ const StaffQueueControl = () => {
                   onClick={() => handleNextToken(q.id)}
                   disabled={actionLoading || q.status === 'PAUSED'}
                   className="btn btn-primary btn-lg"
-                  style={{ flex: 2, minWidth: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                  style={{ 
+                    flex: 2, 
+                    minWidth: '220px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    gap: '10px',
+                    padding: '0.9rem',
+                    fontWeight: 800,
+                    borderRadius: '10px',
+                    boxShadow: '0 4px 14px rgba(217, 119, 6, 0.35)'
+                  }}
                 >
-                  <SkipForward size={18} />
-                  <span>Call Next Token Batch</span>
+                  <SkipForward size={20} />
+                  <span>Call Next Token Batch &rarr;</span>
                 </button>
 
                 {q.status === 'ACTIVE' ? (
@@ -160,20 +215,40 @@ const StaffQueueControl = () => {
                     onClick={() => handlePause(q.id)}
                     disabled={actionLoading}
                     className="btn btn-secondary btn-lg"
-                    style={{ flex: 1, minWidth: '150px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: '#ca8a04', borderColor: '#fde047' }}
+                    style={{ 
+                      flex: 1, 
+                      minWidth: '160px', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      gap: '8px', 
+                      color: '#d97706', 
+                      borderColor: '#fde68a',
+                      borderRadius: '10px',
+                      fontWeight: 700
+                    }}
                   >
                     <Pause size={18} />
-                    <span>Pause Queue</span>
+                    <span>Pause Intake</span>
                   </button>
                 ) : (
                   <button
                     onClick={() => handleResume(q.id)}
                     disabled={actionLoading}
                     className="btn btn-success btn-lg"
-                    style={{ flex: 1, minWidth: '150px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                    style={{ 
+                      flex: 1, 
+                      minWidth: '160px', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      gap: '8px',
+                      borderRadius: '10px',
+                      fontWeight: 700
+                    }}
                   >
                     <Play size={18} />
-                    <span>Resume Queue</span>
+                    <span>Resume Intake</span>
                   </button>
                 )}
               </div>

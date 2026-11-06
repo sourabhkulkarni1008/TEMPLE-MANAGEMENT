@@ -103,182 +103,269 @@ const AdminStaff = () => {
 
   return (
     <div className="dashboard-layout">
-      <div className="dashboard-content">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
+      <div className="dashboard-content" style={{ padding: '1.5rem 1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem' }}>
           <div>
-            <h1 style={{ fontSize: '1.6rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <UserCheck color="#b45309" /> Temple Staff Roster &amp; Zone Deployments
-            </h1>
-            <p style={{ fontSize: '0.9rem', color: '#64748b' }}>Manage 20+ active marshals, entry scanners, medical assistants, and cleaning staff</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+              <span style={{ 
+                display: 'inline-flex', 
+                background: 'rgba(217, 119, 6, 0.15)', 
+                color: '#d97706', 
+                padding: '8px', 
+                borderRadius: '50%',
+                border: '1px solid rgba(217, 119, 6, 0.3)'
+              }}>
+                <UserCheck size={24} />
+              </span>
+              <h1 className="temple-gradient-text" style={{ fontSize: '1.8rem', fontWeight: 800, margin: 0 }}>
+                Temple Staff Roster &amp; Zone Deployments
+              </h1>
+            </div>
+            <p style={{ fontSize: '0.9rem', color: '#64748b', margin: 0 }}>
+              Oversee security marshals, gate QR scanners, medical assistants, and ground sanitation personnel.
+            </p>
           </div>
-          <button onClick={handleOpenAdd} className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <PlusCircle size={16} />
-            <span>Add Staff Member</span>
+          <button 
+            onClick={handleOpenAdd} 
+            className="btn btn-primary" 
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px',
+              padding: '0.75rem 1.25rem',
+              fontWeight: 700,
+              borderRadius: '8px',
+              boxShadow: '0 4px 14px rgba(217, 119, 6, 0.35)'
+            }}
+          >
+            <PlusCircle size={18} />
+            <span>Onboard Staff Officer</span>
           </button>
         </div>
 
         {message && (
-          <div className="alert alert-success" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <CheckCircle2 size={16} />
-            <span>{message}</span>
+          <div className="alert alert-success" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '0.85rem 1rem', borderRadius: '10px', marginBottom: '1.5rem' }}>
+            <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>{message}</span>
           </div>
         )}
 
         {/* Modal for Add / Edit */}
         {showModal && (
-          <div className="modal-overlay">
-            <div className="modal-content" style={{ maxWidth: '520px' }}>
-              <div className="modal-header">
-                <h3 style={{ margin: 0 }}>{editingId ? 'Edit Staff Assignment' : 'Onboard New Staff Officer'}</h3>
-                <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}>&times;</button>
+          <div className="modal-overlay" style={{ backdropFilter: 'blur(8px)', background: 'rgba(15, 23, 42, 0.65)' }}>
+            <div className="modal-content glass-card card-gold-trim" style={{ padding: 0, borderRadius: '16px', maxWidth: '540px', overflow: 'hidden' }}>
+              <div style={{ 
+                background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', 
+                color: '#ffffff', 
+                padding: '1.25rem 1.5rem', 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                borderBottom: '2px solid rgba(245, 158, 11, 0.4)'
+              }}>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <UserCheck size={20} style={{ color: '#f59e0b' }} /> {editingId ? 'Edit Staff Assignment' : 'Onboard New Staff Officer'}
+                </h3>
+                <button 
+                  onClick={() => setShowModal(false)} 
+                  aria-label="Close dialog"
+                  style={{ 
+                    background: 'none', 
+                    border: 'none', 
+                    fontSize: '1.4rem', 
+                    color: '#94a3b8', 
+                    cursor: 'pointer',
+                    padding: '2px 8px',
+                    lineHeight: 1
+                  }}
+                >
+                  &times;
+                </button>
               </div>
 
-              {error && <div className="alert alert-danger">{error}</div>}
+              <div style={{ padding: '1.75rem 1.5rem' }}>
+                {error && (
+                  <div className="alert alert-danger" style={{ marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '0.85rem' }}>
+                    {error}
+                  </div>
+                )}
 
-              <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label className="form-label">Full Name</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    required
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  />
-                </div>
-
-                <div className="grid-2">
-                  <div className="form-group">
-                    <label className="form-label">Email</label>
+                <form onSubmit={handleSubmit}>
+                  <div className="form-group" style={{ marginBottom: '1.1rem' }}>
+                    <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Full Name</label>
                     <input
-                      type="email"
+                      type="text"
                       className="form-input"
                       required
-                      disabled={!!editingId}
-                      value={form.email}
-                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      style={{ borderRadius: '8px' }}
                     />
                   </div>
-                  <div className="form-group">
-                    <label className="form-label">Mobile Phone</label>
-                    <input
-                      type="tel"
-                      className="form-input"
-                      required
-                      value={form.phone}
-                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                    />
-                  </div>
-                </div>
 
-                <div className="grid-2">
-                  <div className="form-group">
-                    <label className="form-label">Department</label>
+                  <div className="grid-2" style={{ gap: '1rem', marginBottom: '1.1rem' }}>
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Email Address</label>
+                      <input
+                        type="email"
+                        className="form-input"
+                        required
+                        disabled={!!editingId}
+                        value={form.email}
+                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        style={{ borderRadius: '8px' }}
+                      />
+                    </div>
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Mobile Phone</label>
+                      <input
+                        type="tel"
+                        className="form-input"
+                        required
+                        value={form.phone}
+                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                        style={{ borderRadius: '8px' }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid-2" style={{ gap: '1rem', marginBottom: '1.1rem' }}>
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Department</label>
+                      <select
+                        className="form-select"
+                        value={form.department}
+                        onChange={(e) => setForm({ ...form, department: e.target.value })}
+                        style={{ borderRadius: '8px' }}
+                      >
+                        <option value="Entry Management">Entry Management</option>
+                        <option value="Queue Management">Queue Management</option>
+                        <option value="Security">Security</option>
+                        <option value="Help Desk">Help Desk</option>
+                        <option value="Medical Assistance">Medical Assistance</option>
+                        <option value="Cleaning & Sanitation">Cleaning & Sanitation</option>
+                        <option value="Prasadam Management">Prasadam Management</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Shift</label>
+                      <select
+                        className="form-select"
+                        value={form.shift}
+                        onChange={(e) => setForm({ ...form, shift: e.target.value })}
+                        style={{ borderRadius: '8px' }}
+                      >
+                        <option value="Morning (06:00 - 14:00)">Morning (06:00 - 14:00)</option>
+                        <option value="Evening (14:00 - 22:00)">Evening (14:00 - 22:00)</option>
+                        <option value="Night (22:00 - 06:00)">Night (22:00 - 06:00)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '1.1rem' }}>
+                    <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Assigned Temple Zone</label>
                     <select
                       className="form-select"
-                      value={form.department}
-                      onChange={(e) => setForm({ ...form, department: e.target.value })}
+                      value={form.assignedArea}
+                      onChange={(e) => setForm({ ...form, assignedArea: e.target.value })}
+                      style={{ borderRadius: '8px' }}
                     >
-                      <option value="Entry Management">Entry Management</option>
-                      <option value="Queue Management">Queue Management</option>
-                      <option value="Security">Security</option>
-                      <option value="Help Desk">Help Desk</option>
-                      <option value="Medical Assistance">Medical Assistance</option>
-                      <option value="Cleaning & Sanitation">Cleaning & Sanitation</option>
-                      <option value="Prasadam Management">Prasadam Management</option>
+                      <option value="Main Entrance & Security Gate">Main Entrance & Security Gate</option>
+                      <option value="Queue Complex & Holding Days">Queue Complex & Holding Days</option>
+                      <option value="Main Sanctum / Darshan Hall">Main Sanctum / Darshan Hall</option>
+                      <option value="Prasadam Distribution Counter">Prasadam Distribution Counter</option>
+                      <option value="Exit Corridor & Shoe Stand">Exit Corridor & Shoe Stand</option>
+                      <option value="North & South Parking Lot">North & South Parking Lot</option>
                     </select>
                   </div>
 
-                  <div className="form-group">
-                    <label className="form-label">Shift</label>
+                  <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                    <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Duty Status</label>
                     <select
                       className="form-select"
-                      value={form.shift}
-                      onChange={(e) => setForm({ ...form, shift: e.target.value })}
+                      value={form.status}
+                      onChange={(e) => setForm({ ...form, status: e.target.value })}
+                      style={{ borderRadius: '8px' }}
                     >
-                      <option value="Morning (06:00 - 14:00)">Morning (06:00 - 14:00)</option>
-                      <option value="Evening (14:00 - 22:00)">Evening (14:00 - 22:00)</option>
-                      <option value="Night (22:00 - 06:00)">Night (22:00 - 06:00)</option>
+                      <option value="ON_DUTY">ON_DUTY</option>
+                      <option value="OFF_DUTY">OFF_DUTY</option>
+                      <option value="ON_LEAVE">ON_LEAVE</option>
                     </select>
                   </div>
-                </div>
 
-                <div className="form-group">
-                  <label className="form-label">Assigned Temple Zone</label>
-                  <select
-                    className="form-select"
-                    value={form.assignedArea}
-                    onChange={(e) => setForm({ ...form, assignedArea: e.target.value })}
-                  >
-                    <option value="Main Entrance & Security Gate">Main Entrance & Security Gate</option>
-                    <option value="Queue Complex & Holding Days">Queue Complex & Holding Days</option>
-                    <option value="Main Sanctum / Darshan Hall">Main Sanctum / Darshan Hall</option>
-                    <option value="Prasadam Distribution Counter">Prasadam Distribution Counter</option>
-                    <option value="Exit Corridor & Shoe Stand">Exit Corridor & Shoe Stand</option>
-                    <option value="North & South Parking Lot">North & South Parking Lot</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Duty Status</label>
-                  <select
-                    className="form-select"
-                    value={form.status}
-                    onChange={(e) => setForm({ ...form, status: e.target.value })}
-                  >
-                    <option value="ON_DUTY">ON_DUTY</option>
-                    <option value="OFF_DUTY">OFF_DUTY</option>
-                    <option value="ON_LEAVE">ON_LEAVE</option>
-                  </select>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '1rem' }}>
-                  <button type="button" onClick={() => setShowModal(false)} className="btn btn-secondary">
-                    Cancel
-                  </button>
-                  <button type="submit" className="btn btn-primary" disabled={actionLoading}>
-                    {actionLoading ? 'Saving...' : (editingId ? 'Save Updates' : 'Add Staff Member')}
-                  </button>
-                </div>
-              </form>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                    <button 
+                      type="button" 
+                      onClick={() => setShowModal(false)} 
+                      className="btn btn-secondary"
+                      style={{ borderRadius: '8px', padding: '0.65rem 1.25rem' }}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      type="submit" 
+                      className="btn btn-primary" 
+                      disabled={actionLoading}
+                      style={{ borderRadius: '8px', padding: '0.65rem 1.25rem', fontWeight: 700 }}
+                    >
+                      {actionLoading ? 'Saving...' : (editingId ? 'Save Updates' : 'Add Staff Member')}
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         )}
 
         {/* Staff Table */}
-        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-          <div className="table-container" style={{ border: 'none' }}>
+        <div className="card card-gold-trim glass-card" style={{ padding: 0, overflow: 'hidden', borderRadius: '16px' }}>
+          <div className="table-container" style={{ border: 'none', margin: 0 }}>
             <table className="table">
               <thead>
                 <tr>
-                  <th>Staff Code</th>
+                  <th style={{ paddingLeft: '1.25rem' }}>Staff Code</th>
                   <th>Officer Name</th>
                   <th>Department</th>
                   <th>Assigned Zone</th>
                   <th>Shift</th>
                   <th>Duty Status</th>
-                  <th>Actions</th>
+                  <th style={{ paddingRight: '1.25rem' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {staffList.map((s) => (
                   <tr key={s.id}>
-                    <td style={{ fontWeight: 600, fontFamily: 'monospace' }}>{s.employeeCode}</td>
+                    <td style={{ fontWeight: 700, fontFamily: 'monospace', color: '#b45309', paddingLeft: '1.25rem' }}>{s.employeeCode}</td>
                     <td>
-                      <strong>{s.name}</strong>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{s.email}</div>
+                      <strong style={{ color: '#0f172a' }}>{s.name}</strong>
+                      <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{s.email}</div>
                     </td>
-                    <td>{s.department}</td>
-                    <td>{s.assignedArea}</td>
-                    <td style={{ fontSize: '0.8rem' }}>{s.shift}</td>
-                    <td><StatusBadge status={s.status} /></td>
                     <td>
-                      <div style={{ display: 'flex', gap: '6px' }}>
-                        <button onClick={() => handleOpenEdit(s)} className="btn btn-secondary btn-sm" style={{ padding: '2px 6px' }} title="Edit">
-                          <Edit2 size={13} />
+                      <span style={{ fontSize: '0.8rem', fontWeight: 600, background: 'rgba(241, 245, 249, 0.9)', padding: '2px 8px', borderRadius: '6px' }}>
+                        {s.department}
+                      </span>
+                    </td>
+                    <td style={{ fontSize: '0.85rem' }}>{s.assignedArea}</td>
+                    <td style={{ fontSize: '0.825rem', color: '#475569' }}>{s.shift}</td>
+                    <td><StatusBadge status={s.status} /></td>
+                    <td style={{ paddingRight: '1.25rem' }}>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button 
+                          onClick={() => handleOpenEdit(s)} 
+                          className="btn btn-secondary btn-sm" 
+                          style={{ padding: '4px 8px', borderRadius: '6px' }} 
+                          title="Edit Staff Member"
+                        >
+                          <Edit2 size={14} />
                         </button>
-                        <button onClick={() => handleDelete(s.id, s.name)} className="btn btn-danger btn-sm" style={{ padding: '2px 6px' }} title="Delete">
-                          <Trash2 size={13} />
+                        <button 
+                          onClick={() => handleDelete(s.id, s.name)} 
+                          className="btn btn-danger btn-sm" 
+                          style={{ padding: '4px 8px', borderRadius: '6px' }} 
+                          title="Delete Staff Member"
+                        >
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     </td>

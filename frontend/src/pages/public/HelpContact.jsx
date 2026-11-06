@@ -33,18 +33,21 @@ const HelpContact = () => {
 
   return (
     <div className="main-content">
-      <div className="container" style={{ maxWidth: '850px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>Pilgrim Assistance &amp; Help Desk</h1>
-          <p style={{ fontSize: '0.95rem' }}>Emergency dispatch, lost items desk, and 24/7 helpline contacts</p>
+      <div className="container" style={{ maxWidth: '880px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2.25rem' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'linear-gradient(135deg, #fffbeb, #fef3c7)', border: '1px solid #fde68a', color: '#92400e', padding: '3px 14px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.75rem' }}>
+            24/7 Devotee Safety Desk
+          </div>
+          <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem' }}>Pilgrim Assistance &amp; Help Desk</h1>
+          <p style={{ fontSize: '0.95rem', color: '#64748b' }}>Emergency ground dispatch, lost items desk, and 24/7 temple helpline contacts</p>
         </div>
 
         {/* Tab Buttons */}
-        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>
+        <div style={{ display: 'flex', gap: '0.65rem', marginBottom: '1.75rem', borderBottom: '1px solid rgba(245, 158, 11, 0.2)', paddingBottom: '0.75rem', flexWrap: 'wrap' }}>
           <button
             onClick={() => setActiveTab('sos')}
             className={`btn btn-sm ${activeTab === 'sos' ? 'btn-danger' : 'btn-secondary'}`}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700 }}
           >
             <AlertTriangle size={15} />
             <span>Emergency SOS Help</span>
@@ -52,7 +55,7 @@ const HelpContact = () => {
           <button
             onClick={() => setActiveTab('contacts')}
             className={`btn btn-sm ${activeTab === 'contacts' ? 'btn-primary' : 'btn-secondary'}`}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700 }}
           >
             <Phone size={15} />
             <span>Temple Helplines</span>
@@ -60,7 +63,7 @@ const HelpContact = () => {
           <button
             onClick={() => setActiveTab('lostfound')}
             className={`btn btn-sm ${activeTab === 'lostfound' ? 'btn-primary' : 'btn-secondary'}`}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700 }}
           >
             <Package size={15} />
             <span>Lost &amp; Found Assistance</span>
@@ -69,22 +72,23 @@ const HelpContact = () => {
 
         {/* Tab 1: Emergency SOS Help */}
         {activeTab === 'sos' && (
-          <div className="card" style={{ borderColor: '#fca5a5' }}>
-            <div className="card-header" style={{ borderBottomColor: '#fee2e2' }}>
+          <div className="card glass-card" style={{ border: '2px solid rgba(239, 68, 68, 0.35)', padding: '2rem' }}>
+            <div className="card-header" style={{ borderBottomColor: 'rgba(239, 68, 68, 0.2)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <AlertTriangle color="#dc2626" size={20} />
-                <h2 className="card-title" style={{ color: '#991b1b' }}>Ground Emergency Dispatch</h2>
+                <AlertTriangle color="#dc2626" size={22} />
+                <h2 className="card-title" style={{ color: '#991b1b', fontWeight: 800 }}>Ground Emergency Dispatch</h2>
               </div>
+              <span className="badge badge-high">High Priority Action</span>
             </div>
 
             {sosSubmitted ? (
-              <div style={{ padding: '2rem', textAlign: 'center' }}>
-                <CheckCircle2 color="#16a34a" size={42} style={{ marginBottom: '0.75rem' }} />
-                <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Alert Dispatched to Ground Staff</h3>
-                <p style={{ fontSize: '0.9rem', color: '#475569', maxWidth: '500px', margin: '0 auto 1.5rem' }}>
-                  Our emergency response team stationed near <strong>{sosForm.area}</strong> has been notified with high priority. Please stay in your current location.
+              <div style={{ padding: '2.5rem 1.5rem', textAlign: 'center' }}>
+                <CheckCircle2 color="#16a34a" size={48} style={{ marginBottom: '1rem' }} />
+                <h3 style={{ fontSize: '1.35rem', marginBottom: '0.5rem', fontWeight: 800 }}>Alert Dispatched to Ground Staff</h3>
+                <p style={{ fontSize: '0.92rem', color: '#475569', maxWidth: '520px', margin: '0 auto 1.75rem', lineHeight: 1.6 }}>
+                  Our emergency response team stationed near <strong style={{ color: '#0f172a' }}>{sosForm.area}</strong> has been notified with high priority. Please stay in your current location.
                 </p>
-                <button onClick={() => setSosSubmitted(false)} className="btn btn-secondary btn-sm">
+                <button onClick={() => setSosSubmitted(false)} className="btn btn-secondary btn-sm" style={{ fontWeight: 700 }}>
                   Send Another Report
                 </button>
               </div>

@@ -67,36 +67,41 @@ export default function CommandPalette({ isOpen, onClose }) {
     <div style={{
       position: 'fixed',
       inset: 0,
-      background: 'rgba(15, 23, 42, 0.65)',
-      backdropFilter: 'blur(8px)',
+      background: 'rgba(6, 11, 24, 0.75)',
+      backdropFilter: 'blur(10px)',
+      WebkitBackdropFilter: 'blur(10px)',
       zIndex: 9999,
       display: 'flex',
       alignItems: 'flex-start',
       justifyContent: 'center',
-      paddingTop: '15vh',
+      paddingTop: '14vh',
       animation: 'fadeIn 0.15s ease'
     }} onClick={onClose}>
       <div 
         style={{
           width: '100%',
-          maxWidth: '600px',
+          maxWidth: '620px',
           background: '#ffffff',
-          borderRadius: '16px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(245, 158, 11, 0.25)',
-          overflow: 'hidden'
+          borderRadius: '18px',
+          boxShadow: '0 25px 60px -12px rgba(6, 11, 24, 0.35), 0 0 0 1px rgba(245, 158, 11, 0.35)',
+          overflow: 'hidden',
+          position: 'relative'
         }}
         onClick={e => e.stopPropagation()}
       >
+        {/* Top Gold Gradient Filament */}
+        <div style={{ height: '3px', background: 'var(--gold-metallic)' }} />
+
         {/* Search input header */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
           padding: '16px 20px',
-          borderBottom: '1px solid #e2e8f0',
-          background: '#f8fafc'
+          borderBottom: '1px solid rgba(245, 158, 11, 0.15)',
+          background: 'linear-gradient(180deg, #fffdfa 0%, #fcf8f0 100%)'
         }}>
-          <Search size={20} color="#b45309" />
+          <Search size={20} color="#c2410c" />
           <input
             ref={inputRef}
             type="text"
@@ -114,23 +119,25 @@ export default function CommandPalette({ isOpen, onClose }) {
               fontSize: '1.05rem',
               color: '#0f172a',
               outline: 'none',
-              fontWeight: 500
+              fontWeight: 600,
+              fontFamily: 'inherit'
             }}
           />
           <kbd style={{
             fontSize: '0.725rem',
-            background: '#e2e8f0',
-            padding: '2px 8px',
-            borderRadius: '4px',
-            color: '#64748b',
-            fontWeight: 600
+            background: '#ffffff',
+            border: '1px solid #fde68a',
+            padding: '3px 8px',
+            borderRadius: '6px',
+            color: '#b45309',
+            fontWeight: 700
           }}>ESC</kbd>
         </div>
 
         {/* Command suggestions list */}
-        <div style={{ maxHeight: '360px', overflowY: 'auto', padding: '8px' }}>
+        <div style={{ maxHeight: '370px', overflowY: 'auto', padding: '10px' }}>
           {filteredCommands.length === 0 ? (
-            <div style={{ padding: '24px', textAlign: 'center', color: '#94a3b8', fontSize: '0.9rem' }}>
+            <div style={{ padding: '28px', textAlign: 'center', color: '#94a3b8', fontSize: '0.9rem' }}>
               No matching actions found. Try typing 'Darshan', 'Queue', or 'Pass'.
             </div>
           ) : (
@@ -144,10 +151,11 @@ export default function CommandPalette({ isOpen, onClose }) {
                   justifyContent: 'space-between',
                   padding: '12px 16px',
                   borderRadius: '10px',
-                  background: idx === selectedIndex ? '#fef3c7' : 'transparent',
+                  background: idx === selectedIndex ? 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)' : 'transparent',
                   color: idx === selectedIndex ? '#78350f' : '#1e293b',
+                  border: idx === selectedIndex ? '1px solid #fde68a' : '1px solid transparent',
                   cursor: 'pointer',
-                  transition: 'background 0.1s'
+                  transition: 'all 0.12s ease'
                 }}
                 onMouseEnter={() => setSelectedIndex(idx)}
               >
@@ -157,18 +165,19 @@ export default function CommandPalette({ isOpen, onClose }) {
                     padding: '8px',
                     borderRadius: '8px',
                     display: 'flex',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                    border: '1px solid rgba(245, 158, 11, 0.2)',
+                    boxShadow: '0 2px 6px rgba(15, 23, 42, 0.04)'
                   }}>
                     {cmd.icon}
                   </div>
                   <div>
-                    <div style={{ fontWeight: 600, fontSize: '0.925rem' }}>{cmd.title}</div>
-                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{cmd.category}</div>
+                    <div style={{ fontWeight: 700, fontSize: '0.93rem' }}>{cmd.title}</div>
+                    <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 500 }}>{cmd.category}</div>
                   </div>
                 </div>
                 {idx === selectedIndex && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 600, color: '#b45309' }}>
-                    <span>Select</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 700, color: '#c2410c' }}>
+                    <span>Execute</span>
                     <ArrowRight size={14} />
                   </div>
                 )}
@@ -179,9 +188,9 @@ export default function CommandPalette({ isOpen, onClose }) {
 
         {/* Bottom Helper footer */}
         <div style={{
-          padding: '10px 20px',
-          background: '#f1f5f9',
-          borderTop: '1px solid #e2e8f0',
+          padding: '12px 20px',
+          background: '#fcf8f0',
+          borderTop: '1px solid rgba(245, 158, 11, 0.15)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -189,8 +198,8 @@ export default function CommandPalette({ isOpen, onClose }) {
           color: '#64748b'
         }}>
           <span>Use <strong>↑</strong> <strong>↓</strong> to navigate, <strong>Enter</strong> to open</span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <Zap size={12} color="#f59e0b" /> Real-time instant product search
+          <span style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#b45309', fontWeight: 600 }}>
+            <Zap size={13} color="#f59e0b" /> Real-time instant command palette
           </span>
         </div>
       </div>

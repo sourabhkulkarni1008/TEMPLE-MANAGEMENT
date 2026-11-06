@@ -129,30 +129,34 @@ const AdminDashboard = () => {
         </div>
 
         {/* Analytics & Distribution Grid */}
-        <div className="grid-2" style={{ marginBottom: '1.5rem' }}>
+        <div className="grid-2" style={{ marginBottom: '1.75rem' }}>
           {/* Hourly Visitor Distribution Simple Chart */}
-          <div className="card">
+          <div className="card card-gold-trim glass-card">
             <div className="card-header">
               <h2 className="card-title">Peak Visiting Hours Footfall Profile</h2>
-              <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Today's Distribution</span>
+              <span className="badge badge-low" style={{ fontSize: '0.72rem' }}>Today's Distribution</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', height: '180px', paddingTop: '20px', gap: '6px' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', height: '180px', paddingTop: '20px', gap: '8px' }}>
               {report?.hourlyDistribution?.map((h, i) => {
                 const heightPct = Math.min(100, Math.round((h.visitors / 600) * 100));
                 return (
                   <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
-                    <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '2px' }}>{h.visitors}</div>
+                    <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, marginBottom: '4px' }}>{h.visitors}</div>
                     <div
                       style={{
                         width: '100%',
-                        maxWidth: '28px',
+                        maxWidth: '32px',
                         height: `${heightPct}%`,
-                        background: heightPct > 75 ? '#b45309' : '#f59e0b',
-                        borderRadius: '4px 4px 0 0'
+                        background: heightPct > 75 
+                          ? 'linear-gradient(180deg, #c2410c 0%, #ea580c 100%)' 
+                          : 'linear-gradient(180deg, #f59e0b 0%, #d97706 100%)',
+                        borderRadius: '6px 6px 0 0',
+                        boxShadow: '0 2px 6px rgba(245, 158, 11, 0.2)',
+                        transition: 'height 0.3s ease'
                       }}
                       title={`${h.hour}: ${h.visitors} pilgrims`}
                     />
-                    <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '6px' }}>{h.hour}</div>
+                    <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '8px', fontWeight: 600 }}>{h.hour}</div>
                   </div>
                 );
               })}
@@ -160,19 +164,20 @@ const AdminDashboard = () => {
           </div>
 
           {/* Darshan Breakdown */}
-          <div className="card">
+          <div className="card card-gold-trim glass-card">
             <div className="card-header">
               <h2 className="card-title">Bookings by Darshan Category</h2>
+              <span className="badge badge-gold" style={{ fontSize: '0.72rem' }}>Pass Volumes</span>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {report?.darshanBreakdown?.map((db, i) => (
                 <div key={i}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '3px' }}>
-                    <span>{db.type.split('(')[0]}</span>
-                    <strong>{db.count} pilgrims</strong>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', marginBottom: '5px' }}>
+                    <span style={{ fontWeight: 600, color: '#0f172a' }}>{db.type.split('(')[0]}</span>
+                    <strong style={{ color: '#c2410c' }}>{db.count} pilgrims</strong>
                   </div>
-                  <div style={{ width: '100%', background: '#f1f5f9', height: '8px', borderRadius: '4px', overflow: 'hidden' }}>
-                    <div style={{ width: `${Math.min(100, db.count * 1.5)}%`, background: '#b45309', height: '100%' }} />
+                  <div style={{ width: '100%', background: '#ede4d3', height: '9px', borderRadius: '5px', overflow: 'hidden' }}>
+                    <div style={{ width: `${Math.min(100, db.count * 1.5)}%`, background: 'var(--saffron-gradient)', height: '100%', borderRadius: '5px' }} />
                   </div>
                 </div>
               ))}
@@ -182,32 +187,32 @@ const AdminDashboard = () => {
 
         {/* Fast Admin Navigation Tiles */}
         <div className="grid-3">
-          <Link to="/admin/crowd" className="card" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-              <Eye size={18} color="#b45309" />
-              <h3 style={{ fontSize: '1.05rem', margin: 0 }}>CCTV Crowd Vision Monitor</h3>
+          <Link to="/admin/crowd" className="card card-gold-trim glass-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+              <Eye size={18} color="#c2410c" />
+              <h3 style={{ fontSize: '1.1rem', margin: 0, fontWeight: 700 }}>CCTV Crowd Vision Monitor</h3>
             </div>
-            <p style={{ fontSize: '0.825rem', color: '#64748b' }}>
+            <p style={{ fontSize: '0.86rem', color: '#64748b', margin: 0, lineHeight: 1.5 }}>
               View live AI vision detections, occupancy analytics, and trigger density simulations.
             </p>
           </Link>
 
-          <Link to="/admin/darshan" className="card" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-              <CalendarCheck size={18} color="#b45309" />
-              <h3 style={{ fontSize: '1.05rem', margin: 0 }}>Slot Quota Management</h3>
+          <Link to="/admin/darshan" className="card card-gold-trim glass-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+              <CalendarCheck size={18} color="#c2410c" />
+              <h3 style={{ fontSize: '1.1rem', margin: 0, fontWeight: 700 }}>Slot Quota Management</h3>
             </div>
-            <p style={{ fontSize: '0.825rem', color: '#64748b' }}>
+            <p style={{ fontSize: '0.86rem', color: '#64748b', margin: 0, lineHeight: 1.5 }}>
               Configure daily time slots, capacity limits, and emergency overflow quotas.
             </p>
           </Link>
 
-          <Link to="/admin/staff" className="card" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-              <UserCheck size={18} color="#b45309" />
-              <h3 style={{ fontSize: '1.05rem', margin: 0 }}>Staff Roster &amp; Zones</h3>
+          <Link to="/admin/staff" className="card card-gold-trim glass-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+              <UserCheck size={18} color="#c2410c" />
+              <h3 style={{ fontSize: '1.1rem', margin: 0, fontWeight: 700 }}>Staff Roster &amp; Zones</h3>
             </div>
-            <p style={{ fontSize: '0.825rem', color: '#64748b' }}>
+            <p style={{ fontSize: '0.86rem', color: '#64748b', margin: 0, lineHeight: 1.5 }}>
               Assign marshals, entry scanners, first-aid responders, and manage shift rosters.
             </p>
           </Link>

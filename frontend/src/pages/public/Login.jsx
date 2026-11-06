@@ -7,7 +7,7 @@ import OtpVerificationModal from '../../components/OtpVerificationModal';
 
 const Login = ({ defaultRole = 'PILGRIM' }) => {
   const { isMobile } = useDevice();
-  const [role, setRole] = useState(isMobile ? 'PILGRIM' : defaultRole);
+  const [role, setRole] = useState(defaultRole);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -21,16 +21,12 @@ const Login = ({ defaultRole = 'PILGRIM' }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // If path is /staff/login or /admin/login on desktop, sync role state
+  // Sync role state from URL if path is /staff/login or /admin/login
   React.useEffect(() => {
-    if (isMobile) {
-      setRole('PILGRIM');
-    } else {
-      if (location.pathname.includes('/admin')) setRole('ADMIN');
-      else if (location.pathname.includes('/staff')) setRole('STAFF');
-      else setRole('PILGRIM');
-    }
-  }, [location.pathname, isMobile]);
+    if (location.pathname.includes('/admin')) setRole('ADMIN');
+    else if (location.pathname.includes('/staff')) setRole('STAFF');
+    else setRole(defaultRole || 'PILGRIM');
+  }, [location.pathname, defaultRole]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,17 +34,8 @@ const Login = ({ defaultRole = 'PILGRIM' }) => {
     setLoading(true);
 
     try {
-      const activeRole = isMobile ? 'PILGRIM' : role;
-      const result = await login(email, password, isMobile ? null : activeRole);
+      const result = await login(email, password, role);
       const user = result.user || result;
-
-      // On mobile devices, staff and admin logins are strictly blocked per security requirements
-      if (isMobile && (user.role === 'ADMIN' || user.role === 'STAFF')) {
-        logout();
-        setError('Staff and Admin management accounts are restricted to desktop/laptop computers. Please log in from a desktop workstation.');
-        setLoading(false);
-        return;
-      }
 
       if (user.role === 'ADMIN') {
         navigate('/admin/dashboard');
@@ -75,54 +62,49 @@ const Login = ({ defaultRole = 'PILGRIM' }) => {
     navigate('/user/dashboard');
   };
 
-  const isStaffOrAdminUrl = location.pathname.includes('/staff') || location.pathname.includes('/admin');
-
   return (
-    <div className="main-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ maxWidth: '440px', width: '100%', padding: '0 1rem' }}>
-        <div className="card" style={{ padding: '2rem' }}>
+    <div className="main-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 200px)' }}>
+      <div style={{ maxWidth: '460px', width: '100%', padding: '0 1rem' }}>
+        <div className="card card-gold-trim glass-card" style={{ padding: isMobile ? '1.75rem 1.25rem' : '2.25rem' }}>
           {/* Header */}
-          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-            <div style={{ display: 'inline-flex', background: '#fef3c7', color: '#b45309', padding: '10px', borderRadius: '50%', marginBottom: '0.5rem' }}>
-              <Landmark size={28} />
+          <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+            <div style={{ 
+              display: 'inline-flex', 
+              background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)', 
+              border: '1px solid #fde68a',
+              color: '#c2410c', 
+              padding: '12px', 
+              borderRadius: '50%', 
+              marginBottom: '0.75rem',
+              boxShadow: '0 4px 12px rgba(245, 158, 11, 0.2)'
+            }}>
+              <Landmark size={30} />
             </div>
-            <h2 style={{ fontSize: '1.35rem', marginBottom: '4px' }}>
-              {isMobile ? 'Pilgrim Portal Login' : 'Temple Portal Login'}
+            <h2 style={{ fontSize: isMobile ? '1.35rem' : '1.5rem', marginBottom: '4px', fontWeight: 800 }}>
+              Temple Portal Access
             </h2>
-            <p style={{ fontSize: '0.85rem' }}>
-              {isMobile 
-                ? 'Sign in to access your Darshan bookings and digital passes' 
-                : 'Access your bookings, duty roster, or administrative tools'}
+            <p style={{ fontSize: '0.88rem', color: '#64748b' }}>
+              Sign in to manage darshan passes, duty rosters, or administrative telemetry
             </p>
           </div>
 
-          {/* Desktop-Only Notice if Mobile user landed on Staff/Admin URL */}
-          {isMobile && isStaffOrAdminUrl && (
-            <div className="alert alert-warning" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0.75rem', fontSize: '0.825rem', marginBottom: '1.25rem' }}>
-              <Monitor size={18} style={{ flexShrink: 0 }} />
-              <span>
-                Staff and Admin consoles require a desktop computer. Mobile access is provided exclusively for Pilgrims.
-              </span>
-            </div>
-          )}
-
-          {/* Role Switch Tabs: Rendered exclusively on Desktop */}
-          {!isMobile && (
-            <div style={{ display: 'flex', background: '#f1f5f9', padding: '4px', borderRadius: '6px', marginBottom: '1.5rem' }}>
+          {/* Role Switch Tabs: Accessible on all devices (Mobile & Desktop) */}
+          <div style={{ display: 'flex', background: '#f8f4ec', padding: '5px', borderRadius: '10px', marginBottom: '1.65rem', gap: '4px', border: '1px solid #ede4d3' }}>
               <button
                 type="button"
                 onClick={() => { setRole('PILGRIM'); setError(''); }}
                 style={{
                   flex: 1,
-                  padding: '6px 0',
+                  padding: '7px 0',
                   border: 'none',
-                  borderRadius: '4px',
-                  fontSize: '0.825rem',
-                  fontWeight: 600,
+                  borderRadius: '6px',
+                  fontSize: '0.84rem',
+                  fontWeight: 700,
                   cursor: 'pointer',
                   background: role === 'PILGRIM' ? '#ffffff' : 'transparent',
-                  color: role === 'PILGRIM' ? '#b45309' : '#64748b',
-                  boxShadow: role === 'PILGRIM' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none'
+                  color: role === 'PILGRIM' ? '#c2410c' : '#64748b',
+                  boxShadow: role === 'PILGRIM' ? '0 2px 6px rgba(15,23,42,0.08)' : 'none',
+                  transition: 'all 0.15s ease'
                 }}
               >
                 Pilgrim
@@ -132,15 +114,16 @@ const Login = ({ defaultRole = 'PILGRIM' }) => {
                 onClick={() => { setRole('STAFF'); setError(''); }}
                 style={{
                   flex: 1,
-                  padding: '6px 0',
+                  padding: '7px 0',
                   border: 'none',
-                  borderRadius: '4px',
-                  fontSize: '0.825rem',
-                  fontWeight: 600,
+                  borderRadius: '6px',
+                  fontSize: '0.84rem',
+                  fontWeight: 700,
                   cursor: 'pointer',
                   background: role === 'STAFF' ? '#ffffff' : 'transparent',
-                  color: role === 'STAFF' ? '#b45309' : '#64748b',
-                  boxShadow: role === 'STAFF' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none'
+                  color: role === 'STAFF' ? '#c2410c' : '#64748b',
+                  boxShadow: role === 'STAFF' ? '0 2px 6px rgba(15,23,42,0.08)' : 'none',
+                  transition: 'all 0.15s ease'
                 }}
               >
                 Staff
@@ -150,21 +133,21 @@ const Login = ({ defaultRole = 'PILGRIM' }) => {
                 onClick={() => { setRole('ADMIN'); setError(''); }}
                 style={{
                   flex: 1,
-                  padding: '6px 0',
+                  padding: '7px 0',
                   border: 'none',
-                  borderRadius: '4px',
-                  fontSize: '0.825rem',
-                  fontWeight: 600,
+                  borderRadius: '6px',
+                  fontSize: '0.84rem',
+                  fontWeight: 700,
                   cursor: 'pointer',
                   background: role === 'ADMIN' ? '#ffffff' : 'transparent',
-                  color: role === 'ADMIN' ? '#b45309' : '#64748b',
-                  boxShadow: role === 'ADMIN' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none'
+                  color: role === 'ADMIN' ? '#c2410c' : '#64748b',
+                  boxShadow: role === 'ADMIN' ? '0 2px 6px rgba(15,23,42,0.08)' : 'none',
+                  transition: 'all 0.15s ease'
                 }}
               >
                 Admin
               </button>
             </div>
-          )}
 
           {error && (
             <div className="alert alert-danger" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0.75rem', marginBottom: '1.25rem' }}>

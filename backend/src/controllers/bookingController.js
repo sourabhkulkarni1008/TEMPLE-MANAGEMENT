@@ -25,6 +25,7 @@ export const createBooking = async (req, res, next) => {
     const userId = req.user ? req.user.id : 'usr-guest';
     const pilgrimName = primaryPilgrimName || (req.user ? req.user.name : 'Pilgrim');
     const pilgrimPhone = primaryPilgrimPhone || (req.user ? req.user.phone : '');
+    const familyMembersList = Array.isArray(req.body.familyMembers) ? req.body.familyMembers : [];
 
     // Check user verification status if logged in user
     if (req.user && req.user.role === 'PILGRIM') {
@@ -34,6 +35,24 @@ export const createBooking = async (req, res, next) => {
           success: false,
           message: 'Email verification required. Please enter the 6-digit verification code sent to your email to complete booking.',
           requiresVerification: true
+        });
+      }
+    }
+
+    const finalUserId = (req.user && db.findById('users', req.user.id)) ? req.user.id : (db.data.users[0]?.id || 'usr-pilgrim-01');
+
+    // Prevent duplicate and conflicting bookings for the same user on the same date and slot
+    if (finalUserId && finalUserId !== 'usr-guest') {
+      const conflicting = db.find('bookings', b =>
+        b.userId === finalUserId &&
+        b.bookingStatus === 'CONFIRMED' &&
+        b.bookingDate === bookingDate &&
+        (b.slotTime === slotTime || (slotId && b.slotId === slotId))
+      );
+      if (conflicting.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Conflicting booking detected: You already hold an active confirmed pass (${conflicting[0].id}) for ${bookingDate} (${slotTime}). Please choose another slot or manage your existing reservation.`
         });
       }
     }
@@ -71,7 +90,6 @@ export const createBooking = async (req, res, next) => {
     }
     const bookingCount = db.data.bookings.length + 135;
     const bookingId = generateBookingId(bookingCount);
-    const finalUserId = (req.user && db.findById('users', req.user.id)) ? req.user.id : (db.data.users[0]?.id || 'usr-pilgrim-01');
     const qrToken = generateQrSecureToken(bookingId, finalUserId);
 
     const newBooking = db.insert('bookings', {
@@ -82,6 +100,7 @@ export const createBooking = async (req, res, next) => {
       bookingDate,
       slotTime,
       numberOfPeople: parseInt(numberOfPeople, 10),
+      familyMembers: familyMembersList,
       primaryPilgrimName: pilgrimName,
       primaryPilgrimPhone: pilgrimPhone,
       primaryPilgrimIdProof: primaryPilgrimIdProof || null,
@@ -276,10 +295,173 @@ export const cancelBooking = async (req, res, next) => {
       });
     }
 
+    // In-app cancellation notification
+    db.insert('notifications', {
+      userId: booking.userId,
+      title: 'Darshan Booking Cancelled',
+      message: `Your booking ${booking.id} for ${booking.bookingDate} (${booking.slotTime}) has been cancelled and quota released.`,
+      type: 'BOOKING',
+      readStatus: false
+    });
+
     res.json({
       success: true,
       message: 'Booking cancelled successfully.',
       booking: updated
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Reschedule a Confirmed Booking
+ * PUT /api/bookings/:id/reschedule
+ */
+export const rescheduleBooking = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { newDate, newSlotId, newSlotTime } = req.body;
+
+    if (!newDate) {
+      return res.status(400).json({ success: false, message: 'New darshan date is required for rescheduling.' });
+    }
+
+    const booking = db.findById('bookings', id);
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking not found.' });
+    }
+
+    if (req.user.role === 'PILGRIM' && booking.userId !== req.user.id) {
+      return res.status(403).json({ success: false, message: 'You can only reschedule your own bookings.' });
+    }
+
+    if (booking.bookingStatus !== 'CONFIRMED') {
+      return res.status(400).json({
+        success: false,
+        message: `Only active Confirmed bookings can be rescheduled. Current status: ${booking.bookingStatus}.`
+      });
+    }
+
+    // Check for conflicting booking for the same user on newDate & newSlotTime
+    const partySize = parseInt(booking.numberOfPeople, 10) || 1;
+    const resolvedSlotTime = newSlotTime || booking.slotTime;
+
+    const conflict = db.find('bookings', b =>
+      b.id !== booking.id &&
+      b.userId === booking.userId &&
+      b.bookingStatus === 'CONFIRMED' &&
+      b.bookingDate === newDate &&
+      b.slotTime === resolvedSlotTime
+    );
+
+    if (conflict.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Conflict detected: You already hold active booking ${conflict[0].id} for ${newDate} at ${resolvedSlotTime}.`
+      });
+    }
+
+    // Find and validate target slot
+    let targetSlot = null;
+    if (newSlotId) {
+      targetSlot = db.findById('darshanSlots', newSlotId);
+    }
+    if (!targetSlot) {
+      const candidates = db.find('darshanSlots', s =>
+        s.slotDate === newDate &&
+        (s.darshanType.toLowerCase().includes(booking.darshanType.toLowerCase()) || booking.darshanType.toLowerCase().includes(s.darshanType.toLowerCase()))
+      );
+      if (candidates.length > 0) {
+        targetSlot = candidates.find(s => !newSlotTime || `${s.startTime} - ${s.endTime}` === newSlotTime || newSlotTime.includes(s.startTime)) || candidates[0];
+      }
+    }
+
+    if (targetSlot) {
+      const remaining = Math.max(0, targetSlot.capacity - targetSlot.bookedCount);
+      if (targetSlot.bookedCount + partySize > targetSlot.capacity) {
+        return res.status(400).json({
+          success: false,
+          message: `The selected slot on ${newDate} only has ${remaining} passes remaining. Required: ${partySize}.`
+        });
+      }
+    }
+
+    // Release capacity from old slot
+    if (booking.slotId) {
+      const oldSlot = db.findById('darshanSlots', booking.slotId);
+      if (oldSlot) {
+        const releasedCount = Math.max(0, oldSlot.bookedCount - partySize);
+        db.update('darshanSlots', oldSlot.id, {
+          bookedCount: releasedCount,
+          status: releasedCount < oldSlot.capacity ? 'OPEN' : 'FULL'
+        });
+      }
+    }
+
+    // Reserve capacity on new slot
+    let finalSlotId = booking.slotId;
+    let finalSlotTime = resolvedSlotTime;
+    if (targetSlot) {
+      const newBookedCount = targetSlot.bookedCount + partySize;
+      db.update('darshanSlots', targetSlot.id, {
+        bookedCount: newBookedCount,
+        status: newBookedCount >= targetSlot.capacity ? 'FULL' : 'OPEN'
+      });
+      finalSlotId = targetSlot.id;
+      finalSlotTime = `${targetSlot.startTime} - ${targetSlot.endTime}`;
+    }
+
+    // Generate superseding secure QR token so old physical pass cannot be scanned
+    const newQrToken = generateQrSecureToken(booking.id, booking.userId);
+
+    const updated = db.update('bookings', booking.id, {
+      bookingDate: newDate,
+      slotTime: finalSlotTime,
+      slotId: finalSlotId,
+      qrToken: newQrToken,
+      rescheduledAt: new Date().toISOString()
+    });
+
+    const qrDataUrl = await generateQrDataUrl(newQrToken);
+    const qrBuffer = await generateQrBuffer(newQrToken);
+
+    // In-app Notification
+    db.insert('notifications', {
+      userId: booking.userId,
+      title: 'Darshan Pass Rescheduled',
+      message: `Your booking ${booking.id} has been successfully rescheduled to ${newDate} (${finalSlotTime}).`,
+      type: 'BOOKING',
+      readStatus: false
+    });
+
+    // Email Notification
+    const user = db.findById('users', booking.userId);
+    const recipientEmail = booking.primaryPilgrimEmail || (user ? user.email : null);
+    if (recipientEmail) {
+      const attachments = [];
+      if (qrBuffer) {
+        attachments.push({
+          filename: `${booking.id}-Updated-Pass-QR.png`,
+          content: qrBuffer,
+          contentType: 'image/png'
+        });
+      }
+      sendEmail({
+        to: recipientEmail,
+        subject: `Darshan Pass Rescheduled: ${booking.id} - ${newDate}`,
+        html: emailTemplates.bookingRescheduled(updated),
+        attachments
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `Booking successfully rescheduled to ${newDate} (${finalSlotTime}).`,
+      booking: {
+        ...updated,
+        qrDataUrl
+      }
     });
   } catch (err) {
     next(err);

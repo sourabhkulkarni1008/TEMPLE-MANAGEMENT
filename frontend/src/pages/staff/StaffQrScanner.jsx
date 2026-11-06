@@ -337,17 +337,19 @@ const StaffQrScanner = () => {
               style={{
                 position: 'relative',
                 width: '100%',
-                background: '#090d16',
-                borderRadius: '10px',
+                background: '#060b18',
+                borderRadius: '14px',
                 overflow: 'hidden',
                 minHeight: '260px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                border: '2px solid #1e293b'
+                border: isScanning ? '2px solid rgba(245, 158, 11, 0.6)' : '2px solid #1e293b',
+                boxShadow: isScanning ? '0 0 24px rgba(245, 158, 11, 0.2)' : 'none'
               }}
             >
               <div id="staff-qr-reader" style={{ width: '100%' }}></div>
+              {isScanning && <div className="scanner-laser-line" />}
 
               {!isScanning && (
                 <div style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>

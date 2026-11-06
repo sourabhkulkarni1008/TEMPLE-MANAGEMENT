@@ -183,6 +183,46 @@ export const emailTemplates = {
     </html>
   `,
 
+  bookingRescheduled: (booking) => `
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"><style>
+      body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; color: #1e293b; margin: 0; padding: 20px; }
+      .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; border: 1.5px solid #d97706; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
+      .header { background: linear-gradient(135deg, #0f172a 0%, #311302 50%, #b45309 100%); color: #ffffff; padding: 24px; text-align: center; }
+      .content { padding: 24px; line-height: 1.6; }
+      .badge-rescheduled { display: inline-block; background: #fef3c7; color: #b45309; padding: 4px 12px; border-radius: 9999px; font-weight: 700; font-size: 13px; border: 1px solid #fde68a; margin-bottom: 12px; }
+      .slot-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 14px; margin: 16px 0; }
+      .footer { background: #f1f5f9; padding: 16px; text-align: center; font-size: 13px; color: #64748b; }
+    </style></head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h2 style="margin:0;">${ENV.TEMPLE_NAME}</h2>
+          <p style="margin:4px 0 0 0; font-size:14px; color:#fef08a;">Darshan Slot Rescheduled</p>
+        </div>
+        <div class="content">
+          <div style="text-align: center;">
+            <span class="badge-rescheduled">&#10003; RESERVATION RESCHEDULED</span>
+          </div>
+          <p>Dear <strong>${booking.primaryPilgrimName}</strong>,</p>
+          <p>Your darshan booking <strong>${booking.id}</strong> has been successfully rescheduled to a new time window:</p>
+          <div class="slot-box">
+            <p style="margin:4px 0;"><strong>New Visit Date:</strong> ${booking.bookingDate}</p>
+            <p style="margin:4px 0;"><strong>New Slot Time:</strong> ${booking.slotTime}</p>
+            <p style="margin:4px 0;"><strong>Category:</strong> ${booking.darshanType}</p>
+            <p style="margin:4px 0;"><strong>Devotees:</strong> ${booking.numberOfPeople} person(s)</p>
+          </div>
+          <p>Your previous digital pass QR token has been automatically superseded by your updated pass. Please present your updated QR code upon gate arrival.</p>
+        </div>
+        <div class="footer">
+          ${ENV.TEMPLE_NAME} &bull; ${ENV.TEMPLE_LOCATION} &bull; Helpline: ${ENV.TEMPLE_CONTACT_PHONE}
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+
   passwordReset: (resetUrl) => `
     <!DOCTYPE html>
     <html>

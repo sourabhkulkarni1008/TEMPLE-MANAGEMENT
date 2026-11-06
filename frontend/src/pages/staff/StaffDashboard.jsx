@@ -120,20 +120,20 @@ const StaffDashboard = () => {
         {/* Operational Modules Grid */}
         <div className="grid-2">
           {/* Recent QR Verifications */}
-          <div className="card">
+          <div className="card card-gold-trim glass-card">
             <div className="card-header">
               <h2 className="card-title">Recent Gate Check-Ins</h2>
-              <Link to="/staff/qr-scanner" style={{ fontSize: '0.825rem' }}>Open Scanner</Link>
+              <Link to="/staff/qr-scanner" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#c2410c' }}>Open QR Scanner &rarr;</Link>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {recentScans.length === 0 ? (
-                <p style={{ fontSize: '0.85rem', color: '#64748b' }}>No entries scanned during current shift yet.</p>
+                <p style={{ fontSize: '0.88rem', color: '#64748b', padding: '1rem 0' }}>No entries scanned during current shift yet.</p>
               ) : (
                 recentScans.map((s) => (
-                  <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0', borderBottom: '1px solid #f1f5f9' }}>
+                  <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 0.85rem', background: '#f8f4ec', borderRadius: '8px', border: '1px solid #ede4d3' }}>
                     <div>
-                      <div style={{ fontWeight: 600, fontSize: '0.875rem' }}>{s.primaryPilgrimName}</div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{s.id} &bull; {s.numberOfPeople} person(s) &bull; {s.darshanType}</div>
+                      <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#0f172a' }}>{s.primaryPilgrimName}</div>
+                      <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '2px' }}>{s.id} &bull; {s.numberOfPeople} person(s) &bull; {s.darshanType}</div>
                     </div>
                     <span className="badge badge-checked-in">Verified &check;</span>
                   </div>
@@ -143,25 +143,25 @@ const StaffDashboard = () => {
           </div>
 
           {/* Quick Shift Tools */}
-          <div className="card">
+          <div className="card card-gold-trim glass-card">
             <div className="card-header">
               <h2 className="card-title">Staff Shift Controls</h2>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <Link to="/staff/qr-scanner" className="btn btn-primary" style={{ justifyContent: 'flex-start' }}>
-                <QrCode size={16} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <Link to="/staff/qr-scanner" className="btn btn-primary" style={{ justifyContent: 'flex-start', padding: '0.85rem 1.25rem' }}>
+                <QrCode size={18} />
                 <span>Verify Pilgrim QR Token (Camera / Manual Entry)</span>
               </Link>
-              <Link to="/staff/queue" className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>
-                <ListOrdered size={16} />
+              <Link to="/staff/queue" className="btn btn-secondary" style={{ justifyContent: 'flex-start', padding: '0.85rem 1.25rem' }}>
+                <ListOrdered size={18} color="#c2410c" />
                 <span>Advance or Pause Queue Token Movement</span>
               </Link>
-              <Link to="/staff/emergency" className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>
-                <AlertTriangle size={16} />
+              <Link to="/staff/emergency" className="btn btn-secondary" style={{ justifyContent: 'flex-start', padding: '0.85rem 1.25rem' }}>
+                <AlertTriangle size={18} color="#dc2626" />
                 <span>View &amp; Resolve Active Ground Emergencies</span>
               </Link>
-              <Link to="/staff/tasks" className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>
-                <Clock size={16} />
+              <Link to="/staff/tasks" className="btn btn-secondary" style={{ justifyContent: 'flex-start', padding: '0.85rem 1.25rem' }}>
+                <Clock size={18} color="#c2410c" />
                 <span>View Shift Schedule &amp; Assigned Duties</span>
               </Link>
             </div>

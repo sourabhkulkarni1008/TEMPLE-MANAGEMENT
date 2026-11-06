@@ -16,19 +16,14 @@ const ProtectedRoute = ({ allowedRoles = [] }) => {
     );
   }
 
-  // Mobile restriction: Staff and Admin interfaces are strictly restricted to desktop workstations
-  if (isMobile && !allowedRoles.includes('PILGRIM')) {
-    return <Navigate to="/desktop-required" replace />;
-  }
-
   if (!user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
   if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
     // Redirect to proper role dashboard
-    if (user.role === 'ADMIN') return <Navigate to={isMobile ? "/desktop-required" : "/admin/dashboard"} replace />;
-    if (user.role === 'STAFF') return <Navigate to={isMobile ? "/desktop-required" : "/staff/dashboard"} replace />;
+    if (user.role === 'ADMIN') return <Navigate to="/admin/dashboard" replace />;
+    if (user.role === 'STAFF') return <Navigate to="/staff/dashboard" replace />;
     return <Navigate to="/user/dashboard" replace />;
   }
 

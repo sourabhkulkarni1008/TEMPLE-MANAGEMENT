@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react';
 
 /**
  * Hook to detect whether the user is on a mobile device or tablet.
- * Per requirements:
- * - Mobile phones and tablets (< 1024px or touch-based mobile/tablet agents) are restricted to the Pilgrim interface.
- * - Desktop/laptops (>= 1024px) retain Pilgrim, Staff, and Admin interfaces.
+ * Used for rendering mobile-first UI components (hamburger drawer, mobile bottom navigation,
+ * touch-optimized forms and handheld scanner views) across Pilgrim, Staff, and Admin portals.
  */
 export const useDevice = () => {
   const checkIsMobile = () => {

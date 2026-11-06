@@ -31,9 +31,37 @@ const BookDarshan = () => {
     phone: user?.phone || '',
     email: user?.email || '',
     numberOfPeople: 1,
+    familyMembers: [],
     needsAssistance: false,
     prasadOffering: false
   });
+
+  const handleDevoteeCountChange = (count) => {
+    const num = parseInt(count, 10);
+    const currentFam = [...(pilgrimDetails.familyMembers || [])];
+    const neededFamCount = Math.max(0, num - 1);
+    const updatedFam = [];
+    for (let i = 0; i < neededFamCount; i++) {
+      if (currentFam[i]) {
+        updatedFam.push(currentFam[i]);
+      } else {
+        updatedFam.push({ name: '', age: '', gender: 'Male', idProofType: 'Aadhaar Card', idProofNumber: '' });
+      }
+    }
+    setPilgrimDetails({
+      ...pilgrimDetails,
+      numberOfPeople: num,
+      familyMembers: updatedFam
+    });
+  };
+
+  const handleFamilyMemberChange = (index, field, value) => {
+    const updated = [...(pilgrimDetails.familyMembers || [])];
+    if (updated[index]) {
+      updated[index] = { ...updated[index], [field]: value };
+      setPilgrimDetails({ ...pilgrimDetails, familyMembers: updated });
+    }
+  };
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -143,6 +171,31 @@ const BookDarshan = () => {
         setError('Please enter a valid 10-digit mobile number.');
         return;
       }
+
+      // Validate slot capacity against selected party size
+      if (selectedSlot && selectedSlot.capacity !== undefined) {
+        const remainingPasses = Math.max(0, selectedSlot.capacity - (selectedSlot.bookedCount || 0));
+        if (remainingPasses < parseInt(pilgrimDetails.numberOfPeople, 10)) {
+          setError(`Selected slot only has ${remainingPasses} pass(es) remaining, which is less than your party size of ${pilgrimDetails.numberOfPeople}. Please select a different slot or reduce party size.`);
+          return;
+        }
+      }
+
+      // Validate family members if party size > 1
+      if (pilgrimDetails.numberOfPeople > 1 && pilgrimDetails.familyMembers) {
+        for (let i = 0; i < pilgrimDetails.familyMembers.length; i++) {
+          const fam = pilgrimDetails.familyMembers[i];
+          if (!fam.name || !fam.name.trim()) {
+            setError(`Please enter the full name for Accompanying Devotee #${i + 2}.`);
+            return;
+          }
+          if (!fam.age || isNaN(fam.age) || parseInt(fam.age, 10) <= 0 || parseInt(fam.age, 10) > 120) {
+            setError(`Please enter a valid age for Accompanying Devotee #${i + 2}.`);
+            return;
+          }
+        }
+      }
+
       // Require email verification before entering final confirmation step
       if (!isEmailVerified) {
         const targetEmail = pilgrimDetails.email || user?.email;
@@ -190,6 +243,7 @@ const BookDarshan = () => {
         primaryPilgrimPhone: pilgrimDetails.phone,
         primaryPilgrimEmail: pilgrimDetails.email || user?.email,
         primaryPilgrimIdProof: 'VERIFIED_DEVOTEE_PASS',
+        familyMembers: pilgrimDetails.familyMembers || [],
         totalAmount: (selectedType.price || 0) * parseInt(pilgrimDetails.numberOfPeople, 10)
       };
 
@@ -320,13 +374,15 @@ const BookDarshan = () => {
         )}
 
         {/* Upgraded Progress Stepper */}
-        <div style={{
-          background: '#ffffff',
-          border: '1px solid #e2e8f0',
-          borderRadius: '12px',
-          padding: '0.85rem 1rem',
-          marginBottom: '1.5rem',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
+        <div className="glass-card" style={{
+          background: 'rgba(255, 255, 255, 0.92)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          border: '1px solid rgba(245, 158, 11, 0.28)',
+          borderRadius: '16px',
+          padding: '1.15rem 1.35rem',
+          marginBottom: '1.75rem',
+          boxShadow: '0 4px 20px rgba(15, 23, 42, 0.04), 0 0 10px rgba(245, 158, 11, 0.08)'
         }}>
           <div style={{
             display: 'flex',
@@ -335,7 +391,7 @@ const BookDarshan = () => {
           }}>
             {[
               { num: 1, title: 'Visit Date', icon: <Calendar size={15} /> },
-              { num: 2, title: 'Darshan Category', icon: <Ticket size={15} /> },
+              { num: 2, title: 'Category', icon: <Ticket size={15} /> },
               { num: 3, title: 'Time Slot', icon: <Clock size={15} /> },
               { num: 4, title: 'Devotee Info', icon: <User size={15} /> },
               { num: 5, title: 'Confirm & QR', icon: <QrCode size={15} /> }
@@ -348,38 +404,39 @@ const BookDarshan = () => {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <div
                       style={{
-                        width: '32px',
-                        height: '32px',
+                        width: '34px',
+                        height: '34px',
                         borderRadius: '50%',
-                        background: isCurrent ? 'linear-gradient(135deg, #b45309, #78350f)' : (isDone ? '#16a34a' : '#f1f5f9'),
+                        background: isCurrent ? 'var(--saffron-gradient)' : (isDone ? 'linear-gradient(135deg, #10b981, #059669)' : '#f8f4ec'),
                         color: isCurrent || isDone ? '#ffffff' : '#64748b',
+                        border: isCurrent ? '2px solid #fde68a' : (isDone ? '2px solid #a7f3d0' : '1px solid #ede4d3'),
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontWeight: 700,
-                        fontSize: '0.8rem',
-                        boxShadow: isCurrent ? '0 0 0 3px rgba(245, 158, 11, 0.25)' : 'none',
-                        transition: 'all 0.2s ease',
+                        fontWeight: 800,
+                        fontSize: '0.84rem',
+                        boxShadow: isCurrent ? '0 0 14px rgba(249, 115, 22, 0.35)' : 'none',
+                        transition: 'all 0.22s ease',
                         flexShrink: 0
                       }}
                     >
                       {isDone ? <Check size={16} /> : s.num}
                     </div>
                     <div className="stepper-label" style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ fontSize: '0.65rem', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase' }}>Step {s.num}</span>
-                      <span style={{ fontSize: '0.825rem', fontWeight: isCurrent ? 700 : 500, color: isCurrent ? '#b45309' : (isDone ? '#0f172a' : '#64748b'), whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: '0.65rem', color: isCurrent ? '#c2410c' : '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Step {s.num}</span>
+                      <span style={{ fontSize: '0.84rem', fontWeight: isCurrent ? 800 : 600, color: isCurrent ? '#0f172a' : (isDone ? '#1e293b' : '#64748b'), whiteSpace: 'nowrap' }}>
                         {s.title}
                       </span>
                     </div>
                   </div>
                   {idx < 4 && (
-                    <div style={{ flex: 1, height: '2px', background: isDone ? '#16a34a' : '#e2e8f0', margin: '0 8px', minWidth: '6px' }} />
+                    <div style={{ flex: 1, height: '3px', background: isDone ? 'linear-gradient(90deg, #10b981, #059669)' : '#ede4d3', margin: '0 8px', minWidth: '8px', borderRadius: '2px' }} />
                   )}
                 </React.Fragment>
               );
             })}
           </div>
-          <div className="mobile-step-indicator" style={{ display: 'none', textAlign: 'center', fontSize: '0.8rem', fontWeight: 600, color: '#b45309', marginTop: '8px' }}>
+          <div className="mobile-step-indicator" style={{ display: 'none', textAlign: 'center', fontSize: '0.82rem', fontWeight: 700, color: '#c2410c', marginTop: '10px' }}>
             Step {step} of 5: {[ 'Choose Visit Date', 'Select Darshan Category', 'Choose 2-Hour Time Slot', 'Enter Devotee Details', 'Booking Confirmation & QR Pass' ][step - 1]}
           </div>
         </div>
@@ -663,7 +720,7 @@ const BookDarshan = () => {
                       <button
                         key={num}
                         type="button"
-                        onClick={() => setPilgrimDetails({ ...pilgrimDetails, numberOfPeople: num })}
+                        onClick={() => handleDevoteeCountChange(num)}
                         style={{
                           flex: 1,
                           padding: '10px 0',
@@ -683,6 +740,108 @@ const BookDarshan = () => {
                   })}
                 </div>
               </div>
+
+              {/* Accompanying Family Members Details (Rendered if party > 1) */}
+              {pilgrimDetails.numberOfPeople > 1 && (
+                <div style={{ marginTop: '1.25rem', borderTop: '1px dashed #cbd5e1', paddingTop: '1.25rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.75rem' }}>
+                    <Users size={18} color="#b45309" />
+                    <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                      Accompanying Family Members ({pilgrimDetails.numberOfPeople - 1} Devotee{pilgrimDetails.numberOfPeople > 2 ? 's' : ''})
+                    </h3>
+                  </div>
+                  <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '1rem' }}>
+                    Enter names and ages for accompanying pilgrims to register them on your family sanctum pass.
+                  </p>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {pilgrimDetails.familyMembers.map((fam, idx) => (
+                      <div 
+                        key={idx} 
+                        style={{ 
+                          background: '#f8fafc', 
+                          border: '1.5px solid #e2e8f0', 
+                          borderRadius: '10px', 
+                          padding: '1rem',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+                        }}
+                      >
+                        <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#b45309', marginBottom: '0.6rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span>DEVOTEE #{idx + 2} (FAMILY MEMBER)</span>
+                          <span style={{ fontSize: '0.72rem', background: '#fef3c7', color: '#92400e', padding: '2px 8px', borderRadius: '12px' }}>
+                            Pass Included
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
+                          <div>
+                            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
+                              Full Name *
+                            </label>
+                            <input
+                              type="text"
+                              className="form-input"
+                              placeholder="Devotee name"
+                              style={{ padding: '8px 10px', fontSize: '0.85rem' }}
+                              value={fam.name}
+                              onChange={(e) => handleFamilyMemberChange(idx, 'name', e.target.value)}
+                              required
+                            />
+                          </div>
+
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                            <div>
+                              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
+                                Age *
+                              </label>
+                              <input
+                                type="number"
+                                min="1"
+                                max="120"
+                                className="form-input"
+                                placeholder="Age"
+                                style={{ padding: '8px 10px', fontSize: '0.85rem' }}
+                                value={fam.age}
+                                onChange={(e) => handleFamilyMemberChange(idx, 'age', e.target.value)}
+                                required
+                              />
+                            </div>
+                            <div>
+                              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
+                                Gender
+                              </label>
+                              <select
+                                className="form-select"
+                                style={{ padding: '8px 10px', fontSize: '0.85rem' }}
+                                value={fam.gender}
+                                onChange={(e) => handleFamilyMemberChange(idx, 'gender', e.target.value)}
+                              >
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div>
+                            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
+                              ID Proof (Optional)
+                            </label>
+                            <input
+                              type="text"
+                              className="form-input"
+                              placeholder="Aadhaar / Voter ID"
+                              style={{ padding: '8px 10px', fontSize: '0.85rem' }}
+                              value={fam.idProofNumber || ''}
+                              onChange={(e) => handleFamilyMemberChange(idx, 'idProofNumber', e.target.value)}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Additional Options: Senior Assistance */}
               <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '0.85rem 1rem', marginTop: '1rem' }}>
@@ -816,6 +975,23 @@ const BookDarshan = () => {
                   <div style={{ fontWeight: 700, color: '#0f172a' }}>{pilgrimDetails.numberOfPeople} Person(s)</div>
                 </div>
               </div>
+
+              {/* Accompanying Family Members List in Voucher */}
+              {pilgrimDetails.familyMembers && pilgrimDetails.familyMembers.length > 0 && (
+                <div style={{ marginTop: '1rem', borderTop: '1px dashed #fde68a', paddingTop: '0.85rem' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#92400e', textTransform: 'uppercase', marginBottom: '6px' }}>
+                    Registered Accompanying Devotees:
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px' }}>
+                    {pilgrimDetails.familyMembers.map((fam, idx) => (
+                      <div key={idx} style={{ background: '#fef3c7', padding: '6px 10px', borderRadius: '6px', fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ fontWeight: 600, color: '#78350f' }}>{idx + 2}. {fam.name}</span>
+                        <span style={{ color: '#92400e' }}>{fam.age} yrs &bull; {fam.gender}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div style={{ borderTop: '1px solid #fde68a', marginTop: '1rem', paddingTop: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: 700, color: '#0f172a' }}>Total Amount Payable:</span>

@@ -827,10 +827,11 @@ export default function Temple3DViewer({
       position: 'relative',
       width: '100%',
       height: typeof window !== 'undefined' && window.innerWidth < 640 ? '390px' : height,
-      borderRadius: compact ? '12px' : '20px',
+      borderRadius: compact ? '14px' : '22px',
       overflow: 'hidden',
-      background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
-      boxShadow: '0 20px 35px -5px rgba(0,0,0,0.25), 0 0 0 1px rgba(245, 158, 11, 0.15)',
+      background: 'linear-gradient(135deg, #060b18 0%, #0f172a 50%, #1e1b4b 100%)',
+      border: '2px solid rgba(245, 158, 11, 0.35)',
+      boxShadow: '0 24px 50px -10px rgba(6, 11, 24, 0.45), 0 0 28px rgba(245, 158, 11, 0.16)',
       fontFamily: 'Inter, sans-serif'
     }}>
       {/* 3D WebGL Canvas Container */}

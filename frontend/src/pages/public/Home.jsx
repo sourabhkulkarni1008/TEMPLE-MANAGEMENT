@@ -208,69 +208,106 @@ const Home = () => {
 
         {/* 4-COLUMN REAL-TIME TEMPLE METRICS GRID */}
         <div className="grid-4" style={{ marginBottom: '2.5rem' }}>
-          <div className="card" style={{ padding: '1.25rem', borderLeft: '4px solid #b45309' }}>
+          <div className="card card-gold-trim" style={{ padding: '1.4rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Active Temple Occupancy</div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>
-                  {liveDevoteeCount} <span style={{ fontSize: '0.8rem', fontWeight: 500, color: '#64748b' }}>devotees</span>
+                <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0f172a', marginTop: '2px', fontFamily: 'Outfit, sans-serif' }}>
+                  {liveDevoteeCount} <span style={{ fontSize: '0.82rem', fontWeight: 500, color: '#64748b' }}>devotees</span>
                 </div>
               </div>
               <StatusBadge status={crowdData?.summary?.overallCrowdLevel || 'MODERATE'} />
             </div>
-            <div style={{ width: '100%', background: '#e2e8f0', height: '6px', borderRadius: '3px', margin: '10px 0 6px', overflow: 'hidden' }}>
-              <div style={{ width: `${Math.min(100, Math.round((liveDevoteeCount / 1200) * 100))}%`, height: '100%', background: 'linear-gradient(90deg, #16a34a, #f59e0b)' }} />
+            <div style={{ width: '100%', background: '#f1e5d1', height: '7px', borderRadius: '4px', margin: '12px 0 6px', overflow: 'hidden' }}>
+              <div style={{ width: `${Math.min(100, Math.round((liveDevoteeCount / 1200) * 100))}%`, height: '100%', background: 'linear-gradient(90deg, #10b981, #f59e0b, #ea580c)' }} />
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.725rem', color: '#64748b' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: '#64748b', fontWeight: 500 }}>
               <span>Capacity: 1,200</span>
-              <span>{Math.round((liveDevoteeCount / 1200) * 100)}% Saturation</span>
+              <span style={{ fontWeight: 700, color: '#c2410c' }}>{Math.round((liveDevoteeCount / 1200) * 100)}% Saturation</span>
             </div>
           </div>
 
-          <div className="card" style={{ padding: '1.25rem', borderLeft: '4px solid #16a34a' }}>
+          <div className="card card-gold-trim" style={{ padding: '1.4rem' }}>
             <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Queue Waiting Time</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#166534', marginTop: '2px' }}>
-              12 - 16 <span style={{ fontSize: '0.8rem', fontWeight: 500, color: '#64748b' }}>mins</span>
+            <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#166534', marginTop: '2px', fontFamily: 'Outfit, sans-serif' }}>
+              12 - 16 <span style={{ fontSize: '0.82rem', fontWeight: 500, color: '#64748b' }}>mins</span>
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#166534', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
-              <Check size={14} /> Normal turnstile transit pace
+            <div style={{ fontSize: '0.75rem', color: '#166534', marginTop: '10px', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 700 }}>
+              <span className="pulse-dot" style={{ background: '#10b981', width: '7px', height: '7px' }} />
+              Normal turnstile transit pace
             </div>
           </div>
 
-          <div className="card" style={{ padding: '1.25rem', borderLeft: '4px solid #0284c7' }}>
+          <div className="card card-gold-trim" style={{ padding: '1.4rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
               <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Temple Gate Timings</div>
-              <span style={{ fontSize: '0.7rem', background: '#e0f2fe', color: '#0369a1', padding: '2px 6px', borderRadius: '10px', fontWeight: 700 }}>
+              <span className="badge badge-low" style={{ fontSize: '0.68rem', padding: '1px 6px' }}>
                 OPEN
               </span>
             </div>
-            <div style={{ fontWeight: 800, fontSize: '1.25rem', color: '#0f172a', marginTop: '2px' }}>
+            <div style={{ fontWeight: 800, fontSize: '1.35rem', color: '#0f172a', marginTop: '2px', fontFamily: 'Outfit, sans-serif' }}>
               05:00 AM - 10:30 PM
             </div>
-            <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '6px' }}>
-              Maha Deeparadhana at <strong>07:00 PM</strong>
+            <p style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '6px' }}>
+              Maha Deeparadhana at <strong style={{ color: '#c2410c' }}>07:00 PM</strong>
             </p>
           </div>
 
-          <div className="card" style={{ padding: '1.25rem', borderLeft: '4px solid #f59e0b' }}>
+          <div className="card card-gold-trim" style={{ padding: '1.4rem' }}>
             <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>24/7 Pilgrim Helpline</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#b45309', marginTop: '2px' }}>
+            <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#b45309', marginTop: '2px', fontFamily: 'Outfit, sans-serif' }}>
               +91 98765 43210
             </div>
-            <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '6px' }}>
+            <p style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '6px' }}>
               Emergency First-Aid &amp; Assistance Desk
             </p>
           </div>
         </div>
 
+        {/* 3D LIVING TEMPLE INTERACTIVE TOUR INVITATION BANNER */}
+        <div 
+          className="glass-card" 
+          style={{ 
+            marginBottom: '2.5rem', 
+            padding: '1.75rem 2rem', 
+            background: 'linear-gradient(135deg, rgba(6, 11, 24, 0.95) 0%, rgba(15, 23, 42, 0.92) 60%, rgba(69, 26, 3, 0.88) 100%)',
+            border: '2px solid rgba(245, 158, 11, 0.35)',
+            color: '#ffffff',
+            boxShadow: '0 16px 36px rgba(6, 11, 24, 0.35)'
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
+            <div style={{ maxWidth: '640px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <span style={{ background: 'rgba(245, 158, 11, 0.25)', border: '1px solid #f59e0b', color: '#fef08a', padding: '2px 10px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  IMMERSIVE 3D WEBGL EXPERIENCE
+                </span>
+                <span className="pulse-dot" style={{ width: '7px', height: '7px', background: '#22c55e' }} />
+              </div>
+              <h2 style={{ fontSize: '1.5rem', color: '#ffffff', fontWeight: 800, marginBottom: '6px' }}>
+                Explore the 3D Living Temple Sanctum &amp; Queue Simulation
+              </h2>
+              <p style={{ fontSize: '0.92rem', color: '#cbd5e1', lineHeight: 1.55, margin: 0 }}>
+                Navigate our interactive 3D digital shrine diorama featuring active devotee paths, Garbhagriha Vedic ambiance, holy diya offerings, and day/sunset/night spiritual lighting cycles.
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <Link to="/temple" className="btn btn-gold btn-lg" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Box size={18} />
+                <span>Launch 3D Explorer</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+
         {/* Live Crowd Density Map Section */}
         <div style={{ marginBottom: '2.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
             <div>
-              <h2 style={{ fontSize: '1.35rem' }}>Real-Time Temple Area Crowd Density</h2>
-              <p style={{ fontSize: '0.875rem' }}>Live area occupancy indicators for smooth darshan flow and queue regulation</p>
+              <h2 style={{ fontSize: '1.45rem', fontWeight: 800 }}>Real-Time Temple Area Crowd Density</h2>
+              <p style={{ fontSize: '0.88rem', color: '#64748b' }}>Live area occupancy indicators for smooth darshan flow and queue regulation</p>
             </div>
-            <Link to="/crowd" className="btn btn-secondary btn-sm">
+            <Link to="/crowd" className="btn btn-secondary btn-sm" style={{ fontWeight: 700 }}>
               View Detailed Analytics &rarr;
             </Link>
           </div>
@@ -280,33 +317,61 @@ const Home = () => {
 
         {/* Available Darshan Categories */}
         <div style={{ marginBottom: '2.5rem' }}>
-          <div style={{ marginBottom: '1rem' }}>
-            <h2 style={{ fontSize: '1.35rem' }}>Darshan Booking Categories</h2>
-            <p style={{ fontSize: '0.875rem' }}>Select a darshan category to view quotas and proceed with slot reservation</p>
+          <div style={{ marginBottom: '1.15rem' }}>
+            <h2 style={{ fontSize: '1.45rem', fontWeight: 800 }}>Darshan Booking Categories</h2>
+            <p style={{ fontSize: '0.88rem', color: '#64748b' }}>Select a darshan category to view quotas and proceed with slot reservation</p>
           </div>
 
           <div className="grid-2">
             {darshanTypes.map((dt) => (
-              <div key={dt.id} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div 
+                key={dt.id} 
+                className="card card-gold-trim" 
+                style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  justifyContent: 'space-between',
+                  background: 'var(--glass-bg)',
+                  backdropFilter: 'var(--glass-blur)',
+                  WebkitBackdropFilter: 'var(--glass-blur)',
+                  border: '1px solid var(--glass-border)',
+                  padding: '1.65rem'
+                }}
+              >
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                    <h3 style={{ fontSize: '1.1rem', color: '#0f172a' }}>{dt.name}</h3>
-                    <span style={{ fontWeight: 700, color: dt.price === 0 ? '#166534' : '#b45309', fontSize: '1.1rem' }}>
-                      {dt.price === 0 ? 'Free' : `₹${dt.price}`}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.65rem' }}>
+                    <h3 style={{ fontSize: '1.2rem', color: '#0f172a', fontWeight: 700 }}>{dt.name}</h3>
+                    <span 
+                      style={{ 
+                        fontWeight: 800, 
+                        color: dt.price === 0 ? '#166534' : '#c2410c', 
+                        fontSize: '1.25rem',
+                        background: dt.price === 0 ? '#ecfdf5' : '#fffbeb',
+                        border: dt.price === 0 ? '1px solid #a7f3d0' : '1px solid #fde68a',
+                        padding: '2px 10px',
+                        borderRadius: '20px',
+                        fontFamily: 'Outfit, sans-serif'
+                      }}
+                    >
+                      {dt.price === 0 ? 'Free Pass' : `₹${dt.price}`}
                     </span>
                   </div>
-                  <p style={{ fontSize: '0.875rem', marginBottom: '1rem', lineHeight: 1.5 }}>{dt.description}</p>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', fontSize: '0.8rem', color: '#64748b', marginBottom: '1rem', background: '#f8fafc', padding: '8px 12px', borderRadius: '6px' }}>
+                  <p style={{ fontSize: '0.9rem', marginBottom: '1.15rem', lineHeight: 1.55, color: '#475569' }}>{dt.description}</p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', fontSize: '0.82rem', color: '#64748b', marginBottom: '1.25rem', background: 'rgba(254, 243, 199, 0.4)', padding: '9px 14px', borderRadius: '8px', border: '1px solid rgba(245, 158, 11, 0.2)' }}>
                     <span><strong>Duration:</strong> {dt.approxDuration}</span>
                     <span>
-                      <strong style={{ color: dt.availablePasses > 0 ? (dt.price === 0 ? '#166534' : '#b45309') : '#991b1b' }}>
+                      <strong style={{ color: dt.availablePasses > 0 ? (dt.price === 0 ? '#166534' : '#c2410c') : '#991b1b' }}>
                         {dt.price === 0 ? 'Free Passes Left:' : 'Passes Available:'} {dt.availablePasses ?? dt.quotaPerSlot}
                       </strong>
                     </span>
                   </div>
                 </div>
-                <Link to={`/user/book-darshan?type=${encodeURIComponent(dt.name)}`} className="btn btn-primary" style={{ width: '100%' }}>
-                  {dt.price === 0 ? 'Book Free Pass' : 'Reserve Paid Slot'}
+                <Link 
+                  to={`/user/book-darshan?type=${encodeURIComponent(dt.name)}`} 
+                  className={dt.price === 0 ? 'btn btn-primary' : 'btn btn-gold'} 
+                  style={{ width: '100%', fontSize: '0.95rem' }}
+                >
+                  {dt.price === 0 ? 'Book Guaranteed Free Pass' : 'Reserve Fast-Track Slot'}
                 </Link>
               </div>
             ))}
@@ -314,13 +379,24 @@ const Home = () => {
         </div>
 
         {/* Essential Pilgrim Guidelines Banner */}
-        <div className="card" style={{ background: '#fffbeb', borderColor: '#fde68a', padding: '1.5rem' }}>
-          <h3 style={{ fontSize: '1.1rem', color: '#92400e', marginBottom: '0.5rem' }}>Visiting Guidelines &amp; Protocol</h3>
-          <ul style={{ paddingLeft: '1.25rem', fontSize: '0.875rem', color: '#78350f', lineHeight: 1.7 }}>
-            <li>Pilgrims must arrive at the entry gate 15 minutes before the scheduled booking time slot.</li>
-            <li>Digital QR pass generated after booking must be presented on mobile or physical printout.</li>
-            <li>Free footwear storage and purified drinking water stations are available across all holding days.</li>
-            <li>Traditional dress code is encouraged inside the temple premises.</li>
+        <div 
+          className="glass-card" 
+          style={{ 
+            background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 60%, #fff7ed 100%)', 
+            borderColor: '#fde68a', 
+            padding: '1.75rem',
+            boxShadow: '0 8px 24px rgba(245, 158, 11, 0.12)'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.75rem' }}>
+            <ShieldCheck size={20} color="#b45309" />
+            <h3 style={{ fontSize: '1.2rem', color: '#92400e', margin: 0, fontWeight: 700 }}>Sacred Visiting Guidelines &amp; Devotee Protocol</h3>
+          </div>
+          <ul style={{ paddingLeft: '1.25rem', fontSize: '0.9rem', color: '#78350f', lineHeight: 1.8 }}>
+            <li>Pilgrims must arrive at the designated entry gate <strong>15 minutes before</strong> the scheduled booking time slot.</li>
+            <li>Digital QR pass generated after booking must be presented on mobile or physical printout for barcode turnstile scan.</li>
+            <li>Free footwear storage and purified drinking water stations are available across all queue holding bays.</li>
+            <li>Traditional respectful dress code is encouraged inside the holy temple sanctum.</li>
           </ul>
         </div>
       </div>

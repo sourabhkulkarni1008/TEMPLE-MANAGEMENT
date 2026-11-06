@@ -4,6 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
+  <script type="text/javascript">
+    aclib.runAutoTag({
+      zoneId: 'tueq8l0wka',
+    });
+  </script>
   <title>Smart Temple Management & Pilgrim Flow System</title>
   <meta name="description"
     content="Online Darshan Booking, Live CCTV Crowd Vision, Smart Queue Regulation & Emergency Management">
@@ -48,13 +54,82 @@
           <option value="STAFF">Staff View (Rajesh - Gate Entry)</option>
           <option value="ADMIN">Admin View (Executive Officer)</option>
         </select>
-        <button id="dashboard-btn" onclick="openCurrentDashboard()" class="btn btn-primary btn-sm">
+        <button id="dashboard-btn" onclick="openCurrentDashboard()" class="btn btn-primary btn-sm" title="Open Role Dashboard">
           <i data-lucide="user" class="u-s6"></i>
           <span id="role-dashboard-label">Dashboard</span>
+        </button>
+        <!-- Mobile Hamburger Menu Button -->
+        <button id="mobile-menu-btn" class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Open Navigation Menu" title="Menu">
+          <i data-lucide="menu"></i>
         </button>
       </div>
     </div>
   </header>
+
+  <!-- Mobile Drawer Overlay & Panel -->
+  <div id="mobile-drawer-overlay" class="mobile-drawer-overlay" onclick="toggleMobileMenu(false)"></div>
+  <aside id="mobile-drawer" class="mobile-drawer" aria-label="Mobile Navigation Menu">
+    <div class="mobile-drawer-header">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div class="brand-icon"><i data-lucide="landmark"></i></div>
+        <div>
+          <div style="font-weight:700; color:#0f172a; font-size:1rem;">Sri Siddhivinayak</div>
+          <div style="font-size:0.7rem; color:var(--primary); font-weight:600;">PORTAL MENU</div>
+        </div>
+      </div>
+      <button onclick="toggleMobileMenu(false)" style="background:none; border:none; color:#64748b; cursor:pointer; padding:6px;" aria-label="Close menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <!-- Active User Role in Drawer -->
+    <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:10px; padding:0.85rem; margin-top:1rem;">
+      <div style="font-size:0.7rem; font-weight:700; color:#b45309; text-transform:uppercase; margin-bottom:4px;">Current Role</div>
+      <select id="mobile-role-select" onchange="changeRole(this.value); toggleMobileMenu(false);" class="form-select" style="width:100%; font-size:0.85rem; padding:6px 8px; border-color:#b45309; background:#ffffff;">
+        <option value="PILGRIM">Pilgrim View (Ananya)</option>
+        <option value="STAFF">Staff View (Rajesh - Gate Entry)</option>
+        <option value="ADMIN">Admin View (Executive Officer)</option>
+      </select>
+    </div>
+
+    <!-- Mobile Drawer Navigation Links -->
+    <div class="mobile-drawer-links">
+      <div style="font-size:0.7rem; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.05em; padding:0.5rem 0.5rem 0.2rem;">Main Navigation</div>
+      <a class="mobile-drawer-link" id="mob-nav-home" onclick="switchView('home'); toggleMobileMenu(false);">
+        <i data-lucide="home"></i> <span>Home Portal</span>
+      </a>
+      <a class="mobile-drawer-link" id="mob-nav-book" onclick="switchView('book'); toggleMobileMenu(false);">
+        <i data-lucide="calendar-check"></i> <span>Book Darshan Slot</span>
+      </a>
+      <a class="mobile-drawer-link" id="mob-nav-crowd" onclick="switchView('crowd'); toggleMobileMenu(false);">
+        <i data-lucide="eye"></i> <span>Live Crowd & CCTV</span>
+      </a>
+      <a class="mobile-drawer-link" id="mob-nav-temple" onclick="switchView('temple'); toggleMobileMenu(false);">
+        <i data-lucide="map-pin"></i> <span>Temple Info & Timings</span>
+      </a>
+      <a class="mobile-drawer-link" id="mob-nav-help" onclick="switchView('help'); toggleMobileMenu(false);" style="color:#dc2626;">
+        <i data-lucide="alert-triangle"></i> <span>Emergency SOS & Help</span>
+      </a>
+
+      <div style="font-size:0.7rem; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.05em; padding:0.75rem 0.5rem 0.2rem;">Console & Services</div>
+      <a class="mobile-drawer-link" id="mob-nav-pilgrim" onclick="switchView('pilgrim'); toggleMobileMenu(false);">
+        <i data-lucide="user"></i> <span>Pilgrim Dashboard & Pass</span>
+      </a>
+      <a class="mobile-drawer-link" id="mob-nav-staff" onclick="switchView('staff'); toggleMobileMenu(false);">
+        <i data-lucide="scan-line"></i> <span>Staff Gate Scanner</span>
+      </a>
+      <a class="mobile-drawer-link" id="mob-nav-admin" onclick="switchView('admin'); toggleMobileMenu(false);">
+        <i data-lucide="shield-check"></i> <span>Admin Command Center</span>
+      </a>
+    </div>
+
+    <!-- Sacred Chime Button -->
+    <div style="margin-top:auto; padding-top:1rem; border-top:1px solid var(--border);">
+      <button onclick="playAudioTone('bell');" class="btn btn-secondary" style="width:100%; border-color:#fde68a; background:#fffbeb; color:#b45309; font-weight:600;">
+        <i data-lucide="bell"></i> <span>Ring Temple Bell</span>
+      </button>
+    </div>
+  </aside>
 
   <!-- Notification Toast Banner (Dynamic) -->
   <div id="toast-container" class="container u-s7">
@@ -1295,6 +1370,17 @@
         osc.connect(gain);
         gain.connect(ctx.destination);
 
+        if (type === 'bell') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 1.2);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 1.2);
+          return;
+        }
+
         if (type === 'success') {
           osc.type = 'triangle';
           osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
@@ -1875,6 +1961,28 @@
       switchView('home');
     }
 
+    // Mobile Navigation Drawer Toggle Handler
+    function toggleMobileMenu(forceState) {
+      const drawer = document.getElementById('mobile-drawer');
+      const overlay = document.getElementById('mobile-drawer-overlay');
+      const btn = document.getElementById('mobile-menu-btn');
+      if (!drawer || !overlay) return;
+
+      const isOpen = forceState !== undefined ? forceState : !drawer.classList.contains('open');
+      if (isOpen) {
+        drawer.classList.add('open');
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        if (btn) btn.innerHTML = '<i data-lucide="x"></i>';
+      } else {
+        drawer.classList.remove('open');
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+        if (btn) btn.innerHTML = '<i data-lucide="menu"></i>';
+      }
+      safeCreateIcons();
+    }
+
     // Navigation Switcher with Auth Gatekeeper for Booking
     function switchView(viewName) {
       // If user wants to book, check if email is verified
@@ -1883,16 +1991,47 @@
         return;
       }
 
+      // Close mobile drawer on navigation
+      toggleMobileMenu(false);
+
       const views = ['home', 'book', 'pass', 'pilgrim', 'staff', 'admin', 'crowd', 'temple', 'help'];
       views.forEach(v => {
         const el = document.getElementById(`view-${v}`);
         if (el) el.style.display = (v === viewName) ? 'block' : 'none';
+        
+        // Desktop nav links
         const navEl = document.getElementById(`nav-${v}`);
         if (navEl) {
           if (v === viewName) navEl.classList.add('active');
           else navEl.classList.remove('active');
         }
+
+        // Mobile drawer links
+        const mobNavEl = document.getElementById(`mob-nav-${v}`);
+        if (mobNavEl) {
+          if (v === viewName) mobNavEl.classList.add('active');
+          else mobNavEl.classList.remove('active');
+        }
       });
+
+      // Update mobile bottom nav active status
+      const botItems = ['home', 'book', 'crowd', 'help'];
+      botItems.forEach(b => {
+        const botEl = document.getElementById(`bot-nav-${b}`);
+        if (botEl) {
+          if (b === viewName) botEl.classList.add('active');
+          else botEl.classList.remove('active');
+        }
+      });
+      const botDash = document.getElementById('bot-nav-dash');
+      if (botDash) {
+        if (['pilgrim', 'staff', 'admin', 'pass'].includes(viewName)) {
+          botDash.classList.add('active');
+        } else {
+          botDash.classList.remove('active');
+        }
+      }
+
       window.scrollTo(0, 0);
       if (viewName === 'crowd') {
         initCctvSimulation();
@@ -1907,6 +2046,13 @@
       if (newRole === 'ADMIN') label.innerText = 'Admin Console';
       else if (newRole === 'STAFF') label.innerText = 'Staff Console';
       else label.innerText = 'My Dashboard';
+
+      // Sync both role selectors (desktop and mobile drawer)
+      const roleSelect = document.getElementById('role-select');
+      if (roleSelect && roleSelect.value !== newRole) roleSelect.value = newRole;
+      const mobRoleSelect = document.getElementById('mobile-role-select');
+      if (mobRoleSelect && mobRoleSelect.value !== newRole) mobRoleSelect.value = newRole;
+
       openCurrentDashboard();
     }
 
@@ -1969,8 +2115,48 @@
       safeCreateIcons();
     }
 
-    window.onload = initHome;
+    function handleHashRoute() {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      if (!hash) return;
+      if (hash === 'admin' || hash === 'staff' || hash === 'pilgrim') {
+        changeRole(hash.toUpperCase());
+      } else if (['home', 'book', 'pass', 'crowd', 'temple', 'help'].includes(hash)) {
+        switchView(hash);
+      }
+    }
+
+    window.addEventListener('hashchange', handleHashRoute);
+
+    const origInitHome = initHome;
+    window.onload = function() {
+      origInitHome();
+      handleHashRoute();
+    };
   </script>
+
+  <!-- Fixed Mobile Bottom Navigation Bar (Thumb Reachable) -->
+  <nav id="mobile-bottom-bar" class="mobile-bottom-bar" aria-label="Mobile Quick Navigation">
+    <button class="mobile-bottom-item active" id="bot-nav-home" onclick="switchView('home')" aria-label="Home">
+      <div class="mobile-bottom-icon"><i data-lucide="home"></i></div>
+      <span>Home</span>
+    </button>
+    <button class="mobile-bottom-item" id="bot-nav-book" onclick="switchView('book')" aria-label="Book Darshan">
+      <div class="mobile-bottom-icon"><i data-lucide="calendar-check"></i></div>
+      <span>Book</span>
+    </button>
+    <button class="mobile-bottom-item" id="bot-nav-crowd" onclick="switchView('crowd')" aria-label="Live Crowd">
+      <div class="mobile-bottom-icon"><i data-lucide="eye"></i></div>
+      <span>Crowd</span>
+    </button>
+    <button class="mobile-bottom-item" id="bot-nav-dash" onclick="openCurrentDashboard()" aria-label="Dashboard">
+      <div class="mobile-bottom-icon"><i data-lucide="user"></i></div>
+      <span>Dashboard</span>
+    </button>
+    <button class="mobile-bottom-item sos-item" id="bot-nav-help" onclick="switchView('help')" aria-label="Emergency SOS">
+      <div class="mobile-bottom-icon"><i data-lucide="alert-triangle"></i></div>
+      <span>SOS</span>
+    </button>
+  </nav>
 </body>
 
 </html>

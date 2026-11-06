@@ -415,6 +415,15 @@ class MySQLDataStore {
     if (!booking) {
       return { status: 'INVALID', message: `Token "${cleanToken}" is not registered in temple gate records.` };
     }
+
+    // Check if presented QR token has been superseded by a newer token (e.g. after rescheduling)
+    if (cleanToken.startsWith('QR-') && booking.qrToken && booking.qrToken !== cleanToken) {
+      return {
+        status: 'INVALID',
+        message: 'This QR code has been superseded by an updated or rescheduled pass. Please scan the latest QR pass.',
+        booking
+      };
+    }
     if (booking.bookingStatus === 'CHECKED_IN') {
       return {
         status: 'ALREADY_USED',

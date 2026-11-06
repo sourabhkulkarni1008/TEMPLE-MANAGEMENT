@@ -44,77 +44,78 @@ const CrowdHeatmap = ({ areas = [], onAreaClick, selectedAreaId }) => {
         onClick={() => onAreaClick && onAreaClick(area)}
         style={{
           background: colors.bg,
-          border: `2px solid ${isSelected ? '#b45309' : colors.border}`,
-          borderRadius: '8px',
-          padding: '1rem',
+          border: `2px solid ${isSelected ? '#ea580c' : colors.border}`,
+          borderRadius: '12px',
+          padding: '1.15rem',
           cursor: onAreaClick ? 'pointer' : 'default',
-          transition: 'all 0.15s ease',
-          boxShadow: isSelected ? '0 0 0 2px rgba(180,83,9,0.3)' : 'none',
-          minWidth: '170px'
+          transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+          boxShadow: isSelected ? '0 0 0 3px rgba(234, 88, 12, 0.25), 0 8px 20px rgba(0,0,0,0.06)' : '0 2px 8px rgba(15, 23, 42, 0.04)',
+          minWidth: '185px',
+          position: 'relative'
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-          <span style={{ fontWeight: 600, fontSize: '0.875rem', color: '#0f172a' }}>{area.name.split('&')[0]}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+          <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#0f172a' }}>{area.name.split('&')[0]}</span>
           <StatusBadge status={area.crowdLevel} />
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', margin: '0.4rem 0' }}>
-          <span style={{ fontSize: '1.25rem', fontWeight: 700, color: colors.text }}>{area.currentCount}</span>
-          <span style={{ fontSize: '0.8rem', color: '#64748b' }}>/ {area.capacity} people</span>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px', margin: '0.5rem 0' }}>
+          <span style={{ fontSize: '1.4rem', fontWeight: 800, color: colors.text, fontFamily: 'Outfit, sans-serif' }}>{area.currentCount}</span>
+          <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 500 }}>/ {area.capacity} devotees</span>
         </div>
 
         {/* Occupancy Bar */}
-        <div style={{ width: '100%', background: 'rgba(255,255,255,0.7)', height: '6px', borderRadius: '3px', overflow: 'hidden' }}>
-          <div style={{ width: `${Math.min(100, area.occupancyPct)}%`, height: '100%', background: colors.bar, borderRadius: '3px' }} />
+        <div style={{ width: '100%', background: 'rgba(255,255,255,0.85)', height: '7px', borderRadius: '4px', overflow: 'hidden', margin: '4px 0' }}>
+          <div style={{ width: `${Math.min(100, area.occupancyPct)}%`, height: '100%', background: colors.bar, borderRadius: '4px' }} />
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.725rem', color: '#64748b', marginTop: '4px' }}>
-          <span>Occupancy: {area.occupancyPct}%</span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}><Video size={10} /> {area.cameraId || 'CAM'}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: '#64748b', marginTop: '6px' }}>
+          <span style={{ fontWeight: 600 }}>Occupancy: {area.occupancyPct}%</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#0284c7', fontWeight: 600 }}><Video size={11} /> {area.cameraId || 'CAM'}</span>
         </div>
       </div>
     );
   };
 
   return (
-    <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1.25rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
+    <div className="glass-card" style={{ padding: '1.4rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.15rem' }}>
         <div>
-          <h3 style={{ fontSize: '1.05rem', margin: 0 }}>Temple Flow &amp; Crowd Distribution Map</h3>
-          <p style={{ fontSize: '0.825rem', margin: 0, color: '#64748b' }}>
+          <h3 style={{ fontSize: '1.12rem', margin: 0, fontWeight: 700, color: '#0f172a' }}>Temple Flow &amp; Crowd Distribution Map</h3>
+          <p style={{ fontSize: '0.84rem', margin: '2px 0 0', color: '#64748b' }}>
             Linear pilgrim route progression from Entry Gate to Sanctum and Exit
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', fontSize: '0.75rem' }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-            <span style={{ width: 10, height: 10, background: '#16a34a', borderRadius: '50%' }}></span> Low (&lt;45%)
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', fontSize: '0.76rem', background: '#f8f4ec', padding: '4px 10px', borderRadius: '20px', border: '1px solid #ede4d3' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 600, color: '#166534' }}>
+            <span className="pulse-dot" style={{ width: 8, height: 8, background: '#16a34a' }}></span> Low (&lt;45%)
           </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-            <span style={{ width: 10, height: 10, background: '#ca8a04', borderRadius: '50%' }}></span> Moderate (45-74%)
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 600, color: '#854d0e' }}>
+            <span className="pulse-dot" style={{ width: 8, height: 8, background: '#ca8a04' }}></span> Moderate (45-74%)
           </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-            <span style={{ width: 10, height: 10, background: '#dc2626', borderRadius: '50%' }}></span> High (&ge;75%)
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 600, color: '#991b1b' }}>
+            <span className="pulse-dot" style={{ width: 8, height: 8, background: '#dc2626' }}></span> High (&ge;75%)
           </span>
         </div>
       </div>
 
       {/* Main Flow Sequential Chain */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', overflowX: 'auto', padding: '0.5rem 0 1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', overflowX: 'auto', padding: '0.5rem 0 1.25rem' }}>
         {renderZoneCard(entryArea)}
-        <ArrowRight size={20} color="#94a3b8" />
+        <ArrowRight size={22} color="#ca8a04" style={{ flexShrink: 0 }} />
         {renderZoneCard(queueArea)}
-        <ArrowRight size={20} color="#94a3b8" />
+        <ArrowRight size={22} color="#ca8a04" style={{ flexShrink: 0 }} />
         {renderZoneCard(sanctumArea)}
-        <ArrowRight size={20} color="#94a3b8" />
+        <ArrowRight size={22} color="#ca8a04" style={{ flexShrink: 0 }} />
         {renderZoneCard(exitArea)}
       </div>
 
       {/* Auxiliary Zones (Prasadam & Parking) */}
-      <div style={{ borderTop: '1px dashed #e2e8f0', paddingTop: '1rem', marginTop: '0.5rem' }}>
-        <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', marginBottom: '0.5rem' }}>
+      <div style={{ borderTop: '1px dashed rgba(245, 158, 11, 0.25)', paddingTop: '1.15rem', marginTop: '0.5rem' }}>
+        <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#c2410c', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.65rem' }}>
           AUXILIARY TEMPLE AMENITIES &amp; TRANSIT
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1.15rem' }}>
           {renderZoneCard(prasadArea)}
           {renderZoneCard(parkArea)}
         </div>

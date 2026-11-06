@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../api/client';
-import { User, Lock, CheckCircle2, AlertCircle } from 'lucide-react';
+import { User, Lock, CheckCircle2, AlertCircle, Shield, Phone, Mail, Key } from 'lucide-react';
 
 const PilgrimProfile = () => {
   const { user } = useAuth();
@@ -49,100 +49,162 @@ const PilgrimProfile = () => {
 
   return (
     <div className="dashboard-layout">
-      <div className="dashboard-content" style={{ maxWidth: '640px', margin: '0 auto' }}>
-        <div style={{ marginBottom: '1.5rem' }}>
-          <h1 style={{ fontSize: '1.6rem', color: '#0f172a' }}>Pilgrim Profile Settings</h1>
-          <p style={{ fontSize: '0.9rem', color: '#64748b' }}>Manage your personal details, contact mobile number, and security</p>
+      <div className="dashboard-content" style={{ maxWidth: '680px', margin: '0 auto', padding: '1.5rem 1rem' }}>
+        <div style={{ marginBottom: '1.75rem' }}>
+          <h1 className="temple-gradient-text" style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '6px' }}>
+            Pilgrim Profile & Security
+          </h1>
+          <p style={{ fontSize: '0.9rem', color: '#64748b' }}>
+            Manage your personal identity details, active contact phone, and account access credentials.
+          </p>
+        </div>
+
+        {/* Profile Card Header with Initials */}
+        <div className="card glass-card" style={{ padding: '1.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1.25rem', borderRadius: '16px' }}>
+          <div style={{ 
+            width: '64px', 
+            height: '64px', 
+            borderRadius: '50%', 
+            background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', 
+            color: '#f59e0b', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            fontSize: '1.5rem',
+            fontWeight: 800,
+            border: '2px solid rgba(217, 119, 6, 0.4)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+          }}>
+            {name ? name.charAt(0).toUpperCase() : 'P'}
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: '#0f172a' }}>{name || 'Devotee'}</h2>
+              <span className="badge badge-primary" style={{ textTransform: 'uppercase', fontSize: '0.7rem', padding: '2px 8px' }}>
+                {user?.role || 'PILGRIM'}
+              </span>
+            </div>
+            <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0 }}>
+              Registered Pilgrim Member &bull; Devotee ID: #{user?._id?.slice(-6) || '847291'}
+            </p>
+          </div>
         </div>
 
         {message && (
-          <div className="alert alert-success" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <CheckCircle2 size={16} />
-            <span>{message}</span>
+          <div className="alert alert-success" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '0.85rem 1rem', borderRadius: '10px', marginBottom: '1.25rem' }}>
+            <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>{message}</span>
           </div>
         )}
 
         {error && (
-          <div className="alert alert-danger" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <AlertCircle size={16} />
-            <span>{error}</span>
+          <div className="alert alert-danger" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '0.85rem 1rem', borderRadius: '10px', marginBottom: '1.25rem' }}>
+            <AlertCircle size={18} style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>{error}</span>
           </div>
         )}
 
-        <div className="card">
+        <div className="card card-gold-trim glass-card" style={{ padding: '2rem', borderRadius: '16px' }}>
           <form onSubmit={handleUpdate}>
-            <div className="form-group">
-              <label className="form-label">Full Name</label>
-              <input
-                type="text"
-                className="form-input"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0f172a', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <User size={18} style={{ color: '#d97706' }} /> Basic Personal Info
+              </h3>
 
-            <div className="form-group">
-              <label className="form-label">Email Address (Read Only)</label>
-              <input
-                type="email"
-                className="form-input"
-                disabled
-                value={user?.email || ''}
-                style={{ background: '#f1f5f9', cursor: 'not-allowed' }}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Mobile Contact Number</label>
-              <input
-                type="tel"
-                className="form-input"
-                required
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
-            </div>
-
-            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '1.25rem', marginTop: '1.5rem', marginBottom: '1.25rem' }}>
-              <h3 style={{ fontSize: '1rem', marginBottom: '0.75rem' }}>Change Security Password</h3>
-
-              <div className="form-group">
-                <label className="form-label">Current Password</label>
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
+                <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Full Devotee Name</label>
                 <input
-                  type="password"
+                  type="text"
                   className="form-input"
-                  placeholder="Enter only if changing password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  style={{ borderRadius: '8px' }}
                 />
               </div>
 
-              <div className="grid-2">
-                <div className="form-group">
-                  <label className="form-label">New Password</label>
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
+                <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Email Address (Verified Account)</label>
+                <input
+                  type="email"
+                  className="form-input"
+                  disabled
+                  value={user?.email || ''}
+                  style={{ background: 'rgba(241, 245, 249, 0.7)', cursor: 'not-allowed', borderRadius: '8px' }}
+                />
+              </div>
+
+              <div className="form-group" style={{ margin: 0 }}>
+                <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Mobile Contact Number</label>
+                <input
+                  type="tel"
+                  className="form-input"
+                  required
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  style={{ borderRadius: '8px' }}
+                />
+              </div>
+            </div>
+
+            <div style={{ borderTop: '1px solid rgba(226, 232, 240, 0.8)', paddingTop: '1.5rem', marginTop: '1.5rem', marginBottom: '1.5rem' }}>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Key size={18} style={{ color: '#d97706' }} /> Security & Password
+              </h3>
+              <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '1rem' }}>
+                Leave empty if you do not want to alter your current login credentials.
+              </p>
+
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
+                <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Current Password</label>
+                <input
+                  type="password"
+                  className="form-input"
+                  placeholder="Enter current password to authorize change"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  style={{ borderRadius: '8px' }}
+                />
+              </div>
+
+              <div className="grid-2" style={{ gap: '1rem' }}>
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>New Password</label>
                   <input
                     type="password"
                     className="form-input"
                     placeholder="Min 6 characters"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
+                    style={{ borderRadius: '8px' }}
                   />
                 </div>
-                <div className="form-group">
-                  <label className="form-label">Confirm New Password</label>
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Confirm New Password</label>
                   <input
                     type="password"
                     className="form-input"
                     placeholder="Re-type new password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
+                    style={{ borderRadius: '8px' }}
                   />
                 </div>
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: '100%' }}>
+            <button 
+              type="submit" 
+              className="btn btn-primary" 
+              disabled={loading} 
+              style={{ 
+                width: '100%', 
+                padding: '0.85rem', 
+                fontWeight: 700,
+                borderRadius: '8px',
+                boxShadow: '0 4px 14px rgba(217, 119, 6, 0.35)'
+              }}
+            >
               {loading ? 'Saving Changes...' : 'Save Profile Changes'}
             </button>
           </form>

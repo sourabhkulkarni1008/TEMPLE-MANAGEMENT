@@ -50,103 +50,165 @@ const StaffEmergencies = () => {
 
   return (
     <div className="dashboard-layout">
-      <div className="dashboard-content">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
+      <div className="dashboard-content" style={{ padding: '1.5rem 1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem' }}>
           <div>
-            <h1 style={{ fontSize: '1.6rem', color: '#dc2626', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <AlertTriangle /> Emergency Response Incident Log
-            </h1>
-            <p style={{ fontSize: '0.9rem', color: '#64748b' }}>
-              Ground incidents reported by pilgrims and security stations
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+              <span style={{ 
+                display: 'inline-flex', 
+                background: 'rgba(239, 68, 68, 0.15)', 
+                color: '#dc2626', 
+                padding: '8px', 
+                borderRadius: '50%',
+                border: '1px solid rgba(239, 68, 68, 0.3)'
+              }}>
+                <AlertTriangle size={24} />
+              </span>
+              <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#dc2626', margin: 0 }}>
+                Emergency Response Incident Log
+              </h1>
+            </div>
+            <p style={{ fontSize: '0.9rem', color: '#64748b', margin: 0 }}>
+              Live dispatch log for medical, crowd-surge, and security events reported across temple zones.
             </p>
           </div>
-          <button onClick={fetchEmergencies} className="btn btn-secondary btn-sm">
-            <RefreshCw size={14} /> Refresh
+          <button 
+            onClick={fetchEmergencies} 
+            className="btn btn-secondary btn-sm"
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', borderRadius: '8px', fontWeight: 600, padding: '0.5rem 0.9rem' }}
+          >
+            <RefreshCw size={14} /> Refresh Incidents
           </button>
         </div>
 
         {/* Modal for resolving with notes */}
         {selectedIncident && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h3 style={{ margin: 0, color: '#0f172a' }}>Resolve Incident: {selectedIncident.emergencyType}</h3>
-                <button onClick={() => setSelectedIncident(null)} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}>&times;</button>
-              </div>
-
-              <p style={{ fontSize: '0.85rem', color: '#475569', marginBottom: '1rem' }}>
-                Location: <strong>{selectedIncident.area}</strong> &bull; Reporter: <strong>{selectedIncident.reporterName} ({selectedIncident.reporterPhone})</strong>
-              </p>
-
-              <div className="form-group">
-                <label className="form-label">Resolution Actions &amp; Medical / Security Notes</label>
-                <textarea
-                  className="form-textarea"
-                  required
-                  placeholder="e.g. First-aid team administered glucose and attendee was escorted safely..."
-                  value={resolutionNotes}
-                  onChange={(e) => setResolutionNotes(e.target.value)}
-                />
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-                <button onClick={() => setSelectedIncident(null)} className="btn btn-secondary">
-                  Cancel
-                </button>
-                <button
-                  onClick={() => handleUpdateStatus(selectedIncident.id, 'RESOLVED')}
-                  className="btn btn-success"
-                  disabled={actionLoading}
+          <div className="modal-overlay" style={{ backdropFilter: 'blur(8px)', background: 'rgba(15, 23, 42, 0.65)' }}>
+            <div className="modal-content glass-card card-gold-trim" style={{ padding: 0, borderRadius: '16px', maxWidth: '540px', overflow: 'hidden' }}>
+              <div style={{ 
+                background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', 
+                color: '#ffffff', 
+                padding: '1.25rem 1.5rem', 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                borderBottom: '2px solid rgba(245, 158, 11, 0.4)'
+              }}>
+                <h3 style={{ margin: 0, color: '#ffffff', fontSize: '1.15rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <CheckCircle2 size={20} style={{ color: '#10b981' }} /> Resolve Incident: {selectedIncident.emergencyType}
+                </h3>
+                <button 
+                  onClick={() => setSelectedIncident(null)} 
+                  aria-label="Close dialog"
+                  style={{ 
+                    background: 'none', 
+                    border: 'none', 
+                    fontSize: '1.4rem', 
+                    color: '#94a3b8', 
+                    cursor: 'pointer',
+                    padding: '2px 8px',
+                    lineHeight: 1
+                  }}
                 >
-                  {actionLoading ? 'Saving...' : 'Mark Incident as Resolved'}
+                  &times;
                 </button>
+              </div>
+
+              <div style={{ padding: '1.5rem' }}>
+                <div style={{ 
+                  background: 'rgba(241, 245, 249, 0.7)', 
+                  padding: '0.85rem 1rem', 
+                  borderRadius: '8px', 
+                  fontSize: '0.85rem', 
+                  color: '#334155', 
+                  marginBottom: '1.25rem',
+                  lineHeight: 1.5
+                }}>
+                  Location: <strong>{selectedIncident.area}</strong> &bull; Reporter: <strong>{selectedIncident.reporterName} ({selectedIncident.reporterPhone})</strong>
+                </div>
+
+                <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                  <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>Resolution Actions &amp; Medical / Security Notes</label>
+                  <textarea
+                    className="form-textarea"
+                    required
+                    placeholder="e.g. First-aid team administered glucose and attendee was escorted safely..."
+                    value={resolutionNotes}
+                    onChange={(e) => setResolutionNotes(e.target.value)}
+                    style={{ borderRadius: '8px', minHeight: '90px' }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                  <button 
+                    onClick={() => setSelectedIncident(null)} 
+                    className="btn btn-secondary"
+                    style={{ borderRadius: '8px', padding: '0.65rem 1.25rem' }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleUpdateStatus(selectedIncident.id, 'RESOLVED')}
+                    className="btn btn-success"
+                    disabled={actionLoading}
+                    style={{ borderRadius: '8px', padding: '0.65rem 1.25rem', fontWeight: 700 }}
+                  >
+                    {actionLoading ? 'Saving...' : 'Mark Incident as Resolved'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         )}
 
         {/* List of Emergencies */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {emergencies.length === 0 ? (
-            <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-              <CheckCircle2 size={36} color="#16a34a" style={{ margin: '0 auto 8px' }} />
-              <h3 style={{ fontSize: '1.1rem' }}>All Clear</h3>
-              <p style={{ fontSize: '0.85rem', color: '#64748b' }}>No pending emergency incidents on temple grounds.</p>
+            <div className="card glass-card card-gold-trim" style={{ textAlign: 'center', padding: '3.5rem 1rem', borderRadius: '16px' }}>
+              <CheckCircle2 size={44} color="#16a34a" style={{ margin: '0 auto 12px' }} />
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginBottom: '4px' }}>All Clear &amp; Secure</h3>
+              <p style={{ fontSize: '0.9rem', color: '#64748b', margin: 0 }}>No pending or active emergency incidents currently reported on temple grounds.</p>
             </div>
           ) : (
             emergencies.map((emg) => (
               <div
                 key={emg.id}
-                className="card"
+                className="card glass-card"
                 style={{
-                  borderColor: emg.status === 'PENDING' ? '#fca5a5' : (emg.status === 'RESPONDING' ? '#fde047' : '#e2e8f0'),
+                  borderLeft: emg.status === 'PENDING' ? '5px solid #ef4444' : (emg.status === 'RESPONDING' ? '5px solid #f59e0b' : '5px solid #10b981'),
+                  borderRadius: '14px',
+                  padding: '1.5rem',
+                  boxShadow: emg.status === 'PENDING' ? '0 6px 24px rgba(239, 68, 68, 0.12)' : undefined,
                   marginBottom: 0
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px', marginBottom: '0.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px', marginBottom: '0.75rem' }}>
                   <div>
-                    <span style={{ fontWeight: 700, fontSize: '1.1rem', color: emg.status === 'PENDING' ? '#991b1b' : '#0f172a' }}>
-                      {emg.emergencyType} Alert
-                    </span>
-                    <div style={{ fontSize: '0.825rem', color: '#475569', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
-                      <MapPin size={13} color="#b45309" /> <strong>{emg.area}</strong> &bull; Reporter: {emg.reporterName} ({emg.reporterPhone})
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {emg.status === 'PENDING' && <span className="pulse-dot" style={{ background: '#ef4444' }} />}
+                      <span style={{ fontWeight: 800, fontSize: '1.2rem', color: emg.status === 'PENDING' ? '#dc2626' : '#0f172a' }}>
+                        {emg.emergencyType} Incident
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: '#475569', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+                      <MapPin size={15} style={{ color: '#d97706' }} /> <strong>{emg.area}</strong> &bull; Reporter: {emg.reporterName} ({emg.reporterPhone})
                     </div>
                   </div>
                   <StatusBadge status={emg.status} />
                 </div>
 
-                <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '6px', fontSize: '0.875rem', margin: '0.5rem 0 1rem', color: '#1e293b' }}>
+                <div style={{ background: 'rgba(248, 250, 252, 0.8)', padding: '0.9rem 1.1rem', borderRadius: '8px', fontSize: '0.9rem', margin: '0.5rem 0 1rem', color: '#1e293b', border: '1px solid rgba(226, 232, 240, 0.8)', lineHeight: 1.5 }}>
                   {emg.description}
                 </div>
 
                 {emg.resolutionNotes && (
-                  <div style={{ fontSize: '0.8rem', background: '#f0fdf4', color: '#166534', padding: '6px 10px', borderRadius: '4px', marginBottom: '1rem' }}>
+                  <div style={{ fontSize: '0.825rem', background: '#f0fdf4', color: '#166534', padding: '8px 12px', borderRadius: '6px', marginBottom: '1rem', border: '1px solid #bbf7d0', lineHeight: 1.4 }}>
                     <strong>Resolution Log:</strong> {emg.resolutionNotes} (Resolved on {new Date(emg.resolvedAt).toLocaleString()})
                   </div>
                 )}
 
                 {/* Status Action Buttons */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', color: '#94a3b8' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', fontSize: '0.775rem', color: '#94a3b8', borderTop: '1px solid rgba(226, 232, 240, 0.8)', paddingTop: '0.85rem' }}>
                   <div>Reported at: {new Date(emg.createdAt).toLocaleString()}</div>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     {emg.status === 'PENDING' && (
@@ -154,6 +216,7 @@ const StaffEmergencies = () => {
                         onClick={() => handleUpdateStatus(emg.id, 'RESPONDING')}
                         className="btn btn-primary btn-sm"
                         disabled={actionLoading}
+                        style={{ borderRadius: '6px', fontWeight: 700 }}
                       >
                         Accept &amp; Dispatch Unit
                       </button>
@@ -165,6 +228,7 @@ const StaffEmergencies = () => {
                           setResolutionNotes('');
                         }}
                         className="btn btn-success btn-sm"
+                        style={{ borderRadius: '6px', fontWeight: 700 }}
                       >
                         Complete / Mark Resolved
                       </button>

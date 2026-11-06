@@ -70,16 +70,46 @@ const Sidebar = () => {
 
   return (
     <aside className="sidebar">
-      <div style={{ marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid #f1f5f9' }}>
-        <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', fontWeight: 600 }}>
-          {role} PORTAL
-        </div>
-        <div style={{ fontWeight: 600, fontSize: '0.925rem', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {user.name}
+      {/* User Session & Role Card */}
+      <div style={{ 
+        marginBottom: '1.5rem', 
+        padding: '0.85rem', 
+        background: 'linear-gradient(135deg, rgba(255, 251, 235, 0.8) 0%, rgba(254, 243, 199, 0.5) 100%)', 
+        border: '1px solid rgba(245, 158, 11, 0.25)', 
+        borderRadius: '12px',
+        boxShadow: '0 2px 8px rgba(245, 158, 11, 0.08)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ 
+            width: '38px', 
+            height: '38px', 
+            borderRadius: '50%', 
+            background: 'var(--saffron-gradient)', 
+            color: '#ffffff', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            fontWeight: 800, 
+            fontSize: '1rem',
+            boxShadow: '0 2px 6px rgba(249, 115, 22, 0.3)'
+          }}>
+            {user?.name ? user.name[0].toUpperCase() : 'U'}
+          </div>
+          <div style={{ overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <span className="pulse-dot" style={{ width: '6px', height: '6px', background: '#10b981' }}></span>
+              <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: '#c2410c', fontWeight: 800, letterSpacing: '0.05em' }}>
+                {role} PORTAL
+              </span>
+            </div>
+            <div style={{ fontWeight: 700, fontSize: '0.92rem', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {user.name}
+            </div>
+          </div>
         </div>
       </div>
 
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
         {links.map((item) => {
           const Icon = item.icon;
           return (
@@ -89,18 +119,25 @@ const Sidebar = () => {
               style={({ isActive }) => ({
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.75rem',
-                padding: '0.6rem 0.85rem',
-                borderRadius: '6px',
-                fontSize: '0.875rem',
-                fontWeight: isActive ? 600 : 500,
-                color: isActive ? '#b45309' : '#475569',
-                backgroundColor: isActive ? '#fef3c7' : 'transparent',
-                textDecoration: 'none'
+                gap: '0.85rem',
+                padding: '0.65rem 0.95rem',
+                borderRadius: '8px',
+                fontSize: '0.88rem',
+                fontWeight: isActive ? 700 : 500,
+                color: isActive ? '#c2410c' : '#475569',
+                backgroundColor: isActive ? 'rgba(254, 243, 199, 0.75)' : 'transparent',
+                borderLeft: isActive ? '3px solid #ea580c' : '3px solid transparent',
+                boxShadow: isActive ? '0 2px 6px rgba(245, 158, 11, 0.12)' : 'none',
+                textDecoration: 'none',
+                transition: 'all 0.18s ease'
               })}
             >
-              <Icon size={18} />
-              <span>{item.label}</span>
+              {({ isActive }) => (
+                <>
+                  <Icon size={18} color={isActive ? '#c2410c' : '#64748b'} />
+                  <span>{item.label}</span>
+                </>
+              )}
             </NavLink>
           );
         })}

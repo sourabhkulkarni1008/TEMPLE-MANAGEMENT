@@ -119,53 +119,56 @@ const LiveCrowdPublic = () => {
         </div>
 
         {/* Top Summary Bar */}
-        <div className="grid-3" style={{ marginBottom: '1.5rem' }}>
-          <div className="card" style={{ padding: '1.25rem' }}>
+        <div className="grid-3" style={{ marginBottom: '1.75rem' }}>
+          <div className="card card-gold-trim glass-card" style={{ padding: '1.4rem' }}>
             <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Total Devotees on Complex Grounds</span>
-            <div style={{ fontSize: '1.8rem', fontWeight: 800, marginTop: '4px', color: '#0f172a' }}>
-              {data?.summary?.totalVisitorsInside || '745'} <span style={{ fontSize: '0.9rem', fontWeight: 400, color: '#64748b' }}>/ {data?.summary?.totalCapacity || '1480'} capacity</span>
+            <div style={{ fontSize: '1.9rem', fontWeight: 800, marginTop: '4px', color: '#0f172a', fontFamily: 'Outfit, sans-serif' }}>
+              {data?.summary?.totalVisitorsInside || '745'} <span style={{ fontSize: '0.9rem', fontWeight: 500, color: '#64748b' }}>/ {data?.summary?.totalCapacity || '1480'} capacity</span>
             </div>
           </div>
 
-          <div className="card" style={{ padding: '1.25rem' }}>
+          <div className="card card-gold-trim glass-card" style={{ padding: '1.4rem' }}>
             <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Overall Complex Density Level</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '6px' }}>
-              <span style={{ fontSize: '1.6rem', fontWeight: 800 }}>{data?.summary?.overallOccupancyPct || '50.3'}%</span>
+              <span style={{ fontSize: '1.75rem', fontWeight: 800, fontFamily: 'Outfit, sans-serif' }}>{data?.summary?.overallOccupancyPct || '50.3'}%</span>
               <StatusBadge status={data?.summary?.overallCrowdLevel || 'MODERATE'} />
             </div>
           </div>
 
-          <div className="card" style={{ padding: '1.25rem' }}>
+          <div className="card card-gold-trim glass-card" style={{ padding: '1.4rem' }}>
             <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Computer Vision Engine</span>
-            <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0f172a', marginTop: '4px' }}>
+            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', marginTop: '4px', fontFamily: 'Outfit, sans-serif' }}>
               YOLOv8 Real-Time Detection
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#16a34a', marginTop: '4px', fontWeight: 600 }}>
-              ● 6 Active High-Definition Stream Feeds
+            <div style={{ fontSize: '0.78rem', color: '#16a34a', marginTop: '6px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span className="pulse-dot" style={{ width: '7px', height: '7px', background: '#10b981' }} />
+              6 Active High-Definition Stream Feeds
             </div>
           </div>
         </div>
 
         {/* View Switcher: 3D Living Model vs 2D Heatmap */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <div style={{ display: 'flex', gap: '6px', background: '#ffffff', border: '1px solid #e2e8f0', padding: '4px', borderRadius: '10px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.15rem', flexWrap: 'wrap', gap: '10px' }}>
+          <div style={{ display: 'flex', gap: '6px', background: 'rgba(255, 255, 255, 0.9)', border: '1px solid rgba(245, 158, 11, 0.3)', padding: '5px', borderRadius: '12px', boxShadow: '0 2px 6px rgba(15, 23, 42, 0.04)' }}>
             <button
               onClick={() => {
                 setViewTab('3D');
                 audioService.playTempleBell(1.1);
               }}
               style={{
-                background: viewTab === '3D' ? '#b45309' : 'transparent',
-                color: viewTab === '3D' ? '#ffffff' : '#64748b',
+                background: viewTab === '3D' ? 'var(--saffron-gradient)' : 'transparent',
+                color: viewTab === '3D' ? '#ffffff' : '#475569',
                 border: 'none',
-                padding: '6px 14px',
-                borderRadius: '6px',
-                fontSize: '0.85rem',
+                padding: '7px 16px',
+                borderRadius: '8px',
+                fontSize: '0.86rem',
                 fontWeight: 700,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px'
+                gap: '6px',
+                boxShadow: viewTab === '3D' ? '0 2px 8px rgba(249, 115, 22, 0.3)' : 'none',
+                transition: 'all 0.15s ease'
               }}
             >
               <Box size={16} />
@@ -174,17 +177,19 @@ const LiveCrowdPublic = () => {
             <button
               onClick={() => setViewTab('2D_HEATMAP')}
               style={{
-                background: viewTab === '2D_HEATMAP' ? '#b45309' : 'transparent',
-                color: viewTab === '2D_HEATMAP' ? '#ffffff' : '#64748b',
+                background: viewTab === '2D_HEATMAP' ? 'var(--saffron-gradient)' : 'transparent',
+                color: viewTab === '2D_HEATMAP' ? '#ffffff' : '#475569',
                 border: 'none',
-                padding: '6px 14px',
-                borderRadius: '6px',
-                fontSize: '0.85rem',
-                fontWeight: 600,
+                padding: '7px 16px',
+                borderRadius: '8px',
+                fontSize: '0.86rem',
+                fontWeight: 700,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px'
+                gap: '6px',
+                boxShadow: viewTab === '2D_HEATMAP' ? '0 2px 8px rgba(249, 115, 22, 0.3)' : 'none',
+                transition: 'all 0.15s ease'
               }}
             >
               <Layers size={16} />
@@ -192,7 +197,8 @@ const LiveCrowdPublic = () => {
             </button>
           </div>
 
-          <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
+          <span style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span className="pulse-dot" style={{ width: '6px', height: '6px', background: '#0284c7' }} />
             Auto-refreshing every 6 seconds
           </span>
         </div>
